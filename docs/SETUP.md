@@ -113,3 +113,18 @@ $env:PATH = '<RETRO_TOOLS_DIR>\cmake-clang\bin;' + $env:PATH
 ### Uninstall
 
 Delete the folder `<RETRO_TOOLS_DIR>`.
+
+## Disc identity (T0.4)
+
+The script `tools\disc_identify.py` reads the disc in `ps1_game\` and prints its identity. Run it from the repo root:
+
+```
+<RETRO_TOOLS_DIR>\python\python.exe -I tools\disc_identify.py
+```
+
+- It writes `work\disc_identity.json`. The `work\` folder is git-ignored.
+- It uses only the Python standard library. This fits the embeddable Python from T0.3.
+- It is deterministic. Running it again gives the same output.
+- It does not change anything in `ps1_game\`.
+- If a `.cue` or `.bin` file is missing or misnamed, it stops with a clear message.
+- The results are in `docs/DISC.md`. The file holds hashes and the serial only.
