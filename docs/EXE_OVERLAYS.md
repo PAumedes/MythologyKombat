@@ -332,6 +332,10 @@ Scope: one level, TEMPLE (function `0x8002B688`, id 140). Only this level's over
 - Earlier runs, not the committed tool, saw other reads. `read_file` calls with ids `0x55` (85) and `0x90` (144) ran at about frames 4002 and 4007. They also used buffer `0x8013100C`. Id `0x8C` (140) was also seen. What the ids 85 and 144 load, and whether they copy into the window, is not known (question 181).
 - The screen at the pause showed a mission objective and a loading message. This is an agent observation. The screenshot is not committed.
 
+## Overlay strategy (T2.14)
+
+The chosen route for these overlays is in `docs/DECISIONS.md` (D11). The runtime route stays on for now. The next step is the AOT static route, through `aot\overlays.json` (T2.15) and `GAME_OVERLAY_STATIC_C` (T2.16). Nothing is built yet. The DLL cache `release` route is not used now.
+
 ## Not yet confirmed
 
 See `docs/OPEN_QUESTIONS.md`, questions 44 to 52, 130 to 139, and 178 to 183.

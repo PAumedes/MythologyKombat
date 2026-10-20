@@ -37,8 +37,8 @@ The orchestrator updates the Status column; nobody else edits this table.
 | T2.11 | Main menu and first fight | T2.10 | USER + agents | in-progress |
 | T2.12 | Overlay facts from the EXE and disc | T1.4 | agents | done |
 | T2.13 | Runtime proof: overlay RAM equals file bytes | T2.11, T2.12 | USER + agents | done |
-| T2.14 | Overlay strategy decision | T2.13 | agents | in-progress |
-| T2.15 | Write aot/overlays.json | T2.14 | agents | todo |
+| T2.14 | Overlay strategy decision | T2.13 | agents | done |
+| T2.15 | Write aot/overlays.json | T2.14 | agents | in-progress |
 | T2.16 | Static overlay build, link and audit | T2.15, T2.4 | agents | todo |
 | T2.17 | Overlay coverage across all nine level functions | T2.16 | USER + agents | todo |
 | T2.18 | Replay infrastructure: scaffold and boot-to-menu route | T2.5 | agents | done |

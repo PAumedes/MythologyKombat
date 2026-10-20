@@ -109,3 +109,33 @@ _Filled in by the doc-writer as tasks pass review._
 - Reason: the native server has no `pc_break`. This method gives a before and after view of the copy. The check for untraced writers (DMA, for example) found 0 inconsistencies.
 - Limits: the ring has capacity 1 << 20. The pause lands inside the copy, so the tool resumes one frame and pauses again. See `docs/EXE_OVERLAYS.md` ("Runtime proof (T2.13)") and `docs/SETUP.md` ("Runtime overlay proof (T2.13)").
 - Open items are in `docs/OPEN_QUESTIONS.md` (178 to 183).
+
+## D11 Overlay strategy: runtime route now, AOT static route next, no DLL release route (T2.14)
+
+- Context: the eight `.OVR` files all load at `0x80130FF8` (`docs/EXE_OVERLAYS.md`). Today they run through the runtime route. No overlay toolchain is staged. The startup log says `tcc tier active but no bundled toolchain at build\overlay_toolchain (overlay gaps -> interpreter)`. Measured for T2.14: 0 overlay native dispatches, and about 1,100 interpreter dispatches per second during the FMV. The FMV pace is set by vsync, not by the overlays (D9).
+- Decision, in this order:
+  1. Keep the runtime route working. This is the interpreter plus runtime autocompile, with `[runtime] overlay_cache = true` in `game.toml`. Nothing changes now.
+  2. Next, the AOT static route. Write `aot\overlays.json` (T2.15) for the eight `.OVR` files. Set `static_output` to `generated/overlays_static.c`. Link that file into the exe with `GAME_OVERLAY_STATIC_C` (T2.16). The profile holds addresses, sizes and hashes only, so it may be committed (D8). The generated C stays git-ignored.
+  3. Do not use the DLL cache or the `release` route now.
+- Not chosen, and why:
+  - The DLL cache with `release`. It ships audited DLL shards in a `cache\` folder. Those shards come from play or from a developer's machine (`psxrecomp\docs\AOT_SHARDING.md`, `psxrecomp\docs\COMPILING_OVERLAYS.md`, section 0). This repo has no release packaging yet. The cache also grows with play, which this local build does not need.
+  - Runtime captures as the source. Captures come from play. The static route reads only the disc. No playthrough is needed (`psxrecomp\docs\AOT_SHARDING.md`, "Production pipeline").
+  - Staging the overlay toolchain now. This decision does not do it. Question 99 stays open.
+- Reason:
+  - This is a local, single-user build.
+  - No captures or playthrough are needed.
+  - The output is deterministic from disc bytes. The upstream `static` step extracts, compiles and audits from the disc. It reuses its output when no input changes (`psxrecomp\docs\AOT_SHARDING.md`, "Linking recipes into the runtime").
+  - The generated C stays git-ignored, as D8 and `CLAUDE.md` require.
+  - T2.13 showed the window bytes equal the disc bytes after the copy, for TEMPLE.
+- Assumption: no patching happens to the window after the copy. This is proven for TEMPLE only (T2.13). The other seven are pending (T2.17).
+- The T2.14 "user commit answer" condition is met by D8 (question 75, answered yes). Nothing is built in T2.14.
+- Risks and open items:
+  - Only TEMPLE is runtime-proven. The static entries and `overlay_loader_status` checks for the other levels are T2.17.
+  - The copy overwrites 16 bytes, `0x80130FFC` to `0x8013100B`. These were BIOS heap before the copy. Whether the game uses them is not known (`docs/EXE_OVERLAYS.md`, question 180).
+  - Four overlays start with an address table: BRIDGE (32 words), FIRE (27), WATER (83) and WIND (102). Each needs an `excluded_ranges` entry (SHA-256 and reason) or a verified entry. Anything not proven stays listed as open. It is not weakened.
+  - The `--cps` option must match the runtime build. This build has not been checked for it.
+  - If the disc does not match `disc_hashes`, `static` exits 3 (`psxrecomp\docs\AOT_SHARDING.md`).
+  - The AOT audit must pass, with guarded entries for every image (T2.16).
+  - The static shard is a fixed snapshot. It does not grow with play (`psxrecomp\docs\COMPILING_OVERLAYS.md`, section 2).
+  - Revisit if the interpreter fallback becomes a real cost. It is not the FMV bottleneck. Vsync is (D9).
+- Open items are in `docs/OPEN_QUESTIONS.md` (99 and 180). See `docs/EXE_OVERLAYS.md` ("Overlay strategy (T2.14)").
