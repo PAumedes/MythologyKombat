@@ -206,18 +206,18 @@ The T2.6 result is user-reported. No agent checked it. See `docs/SETUP.md` (T2.6
 | # | Question | Notes |
 |---|----------|-------|
 | 115 | Where does the Sony logo come from, and why was it not seen? | The user did not see the Sony logo, but saw the Midway logo. Hypothesis, not verified: the Sony boot logo comes from the retail BIOS, and OpenBIOS has no such logo. To check: (a) whether the game itself holds any Sony logo; (b) whether a DuckStation run with its retail BIOS shows the Sony logo. The user did not say what DuckStation showed. |
-| 116 | What causes the glitchy FMV audio? | The user said the intro movie audio is "really really glitchy". Candidate causes: the XA ADPCM audio path in the recompiled runtime, OpenBIOS, or the host audio device. Not decided. Planned for T2.10 (FMV check). |
-| 117 | Is the FMV video frame rate correct? | The user was not sure whether the video was fine or only felt off because of the audio. Not measured. |
-| 118 | Does DuckStation play the same movie with clean audio and the right frame rate? | Not done. The user did not report a DuckStation comparison of this movie. |
-| 119 | Does the audio glitch change with other renderers? | Not tested. Try `--renderer software` in a windowed build. The headless build cannot test audio, because it has no audio (question 107). |
-| 120 | What do the audio buffer settings in `game.toml` and `game_options.toml` do, and what are they set to? | Not checked. |
-| 121 | Is the game locked to 60 Hz or 50 Hz? | The T2.5 headless run measured about 70 frames per second (question 108). Its renderer is not recorded (question 114). That rate may mean the frame pacing is not locked. Not verified. Check the pacing in a windowed run. |
-| 122 | Does CPU load or frame pacing cause the audio glitch? | Not measured. The user did not report the system load. |
-| 123 | Is this audio problem a known PSXRecomp issue? | Not checked. Search `psxrecomp\docs` for XA, audio and latency. This search has not been run. |
-| 124 | Which key quits the game? | The user found the key, but did not say which key it is. Record it. |
-| 125 | Which keys control the game, and what is the framework's default key map? | Not reported by the user. Find the default key map in the PSXRecomp source. |
-| 126 | Was the main menu reached? | Not reported by the user. |
-| 127 | Did the window run windowed or fullscreen? | Not reported by the user. |
+| 116 | What causes the glitchy FMV audio? | Still open. Playtest 2 (user-reported): the Midway logo movie has a first digital glitch, then stutters. The intro movie has only stuttering audio. Leading hypothesis (agent, not verified): the movies run below real time, so the audio starves. Other candidates are in `docs/SETUP.md` ("Playtest 2"). Planned for T2.10. |
+| 117 | Is the FMV video frame rate correct? | Partly answered by the user, not measured. Playtest 2 (user-reported): all movies run at about 50 fps (48 at the lowest, 54 at the highest). The investigation uses about 59.94 fps as the NTSC real-time rate. Whether 50 fps is wrong for these movies is not checked. See questions 150 and 153. |
+| 118 | Does DuckStation play the same movie with clean audio and the right frame rate? | Still open. Not done. |
+| 119 | Does the audio glitch change with other renderers? | Still open. Not run. The planned test is `--renderer software`, see question 154. The headless build cannot test audio (question 107). |
+| 120 | What do the audio buffer settings in `game.toml` and `game_options.toml` do, and what are they set to? | Partly answered. `[audio] buffer_ms` is read in `psxrecomp\recompiler\src\config_loader.cpp` (lines 1022 to 1035). It must be 30 to 500 ms. The default is 180 ms (`psxrecomp\recompiler\src\config_loader.h` line 788). `build\game.toml` has no `[audio]` block, so 180 ms is used. The same block has `spu_hq`, whose effect is not checked. Other values are not tested. `game_options.toml` is not checked. See question 156. |
+| 121 | Is the game locked to 60 Hz or 50 Hz? | Partly answered by the user, not measured. Playtest 2 (user-reported): after the first menu the game runs at 60 fps with no issue. The movies run at about 50 fps. The T2.5 headless run measured about 70 fps (question 108). No tool has measured the pacing in a windowed run yet. See question 153. |
+| 122 | Does CPU load or frame pacing cause the audio glitch? | Still open. Not measured. The user did not report CPU load, CPU model or power plan (question 151). |
+| 123 | Is this audio problem a known PSXRecomp issue? | Partly checked. `psxrecomp\docs\ENHANCEMENTS.md` reports "sluggish FMV" for Tomba 2. `psxrecomp\docs\ROLLBACK_MOTK_HOOKUP.md` reports FMV at about 43 to 55 fps with a host CPU ceiling. Neither is this game. The XA-specific search has not been run. |
+| 124 | Which key quits the game? | Still open. The user asked whether to close the game window, and was told yes. No quit key was reported. See `docs/CONTROLS.md`. |
+| 125 | Which keys control the game, and what is the framework's default key map? | Partly answered. The default map is in `psxrecomp\runtime\src\psx_keybinds.c` (lines 43 to 66) and `psxrecomp\runtime\src\host_keymap.c` (lines 90 to 120). The user reported A, S, Z, X, Enter, Right Shift, Tab and F. Arrow keys and Q, W, E, R, T, Y are the default but were not reported. See `docs/CONTROLS.md`. |
+| 126 | Was the main menu reached? | Answered yes by the user (playtest 2). The user reached the main menu, started a new game, and played a fight. See `docs/SETUP.md` ("Playtest 2"). |
+| 127 | Did the window run windowed or fullscreen? | Answered by the user: windowed, with the same command as T2.6. |
 
 ## LBA-to-file lookup (from T2.9)
 
@@ -257,3 +257,24 @@ See `docs/SETUP.md` ("Seeding symbols.toml (T2.21)") and `docs/DECISIONS.md` (D8
 | 145 | Do `callback` (`0x80097268`) and `timeout` (`0x8009928C`) need the `sdk_` prefix? | They match a broad libc list but are not in the risky list. Harmless unless a `func_XXXXXXXX` alias is used for them. Reviewer note. |
 | 146 | Which entries make up the status counts? | The recorded counts are 8 `confirmed` and 431 `guessed`. They add to 439. The seeded count is 438, and BootEntry is hand-owned. Whether BootEntry is in the 431, or one count is off, is not checked. |
 | 147 | What does `tools\seed_symbols.py --dry-run` change? | The option is listed in the usage. Its effect is not recorded in the T2.21 report. Not checked. |
+
+## Playtest 2 (from T2.10/T2.11 partial)
+
+See `docs/SETUP.md` ("Playtest 2: FMV and gameplay") and `docs/CONTROLS.md`. All items are user-reported. None is agent-verified.
+
+| # | Question | Notes |
+|---|----------|-------|
+| 148 | Which movies play, and do all of them stutter? | The user says all movies run at about 50 fps. Only the Midway logo movie and the intro are named. The other movies and their audio are not described. |
+| 149 | Which level was the fight in, and which overlay loaded it? | The user played a real fight and died. Controls responded. No crash was reported. The level or location was not stated, and the overlay id was not observed. Needs a debug-server `pc_break` observation, or an overlay log from `PSX_RUNTIME_PERF_DIAG`. This is the open part of T2.11. Do not name the level until it is observed. |
+| 150 | What is the real frame rate of each movie? | The 48 to 54 fps figures are the user's estimates. Not measured. `PSX_RUNTIME_PERF_DIAG` prints guest Hz and SPU Hz. Not run. |
+| 151 | What are the monitor refresh rate, CPU model, power plan and system load? | Not reported. The window mode is windowed (question 127). The other items are unknown. Each is a candidate cause in the investigation. |
+| 152 | Is the first digital glitch at the Midway logo a cold-start effect? | Not tested. Hypothesis 2 in `work\audio_investigation.md`. Test with a second cold start, and compare with a second run. |
+| 153 | What does `PSX_RUNTIME_PERF_DIAG=1` show for the movies? | Not run. The planned run sends stdout to `work\perf.log`. Agents then read it. See `docs/SETUP.md` ("Planned next steps"). |
+| 154 | Does `--renderer software` change the movie speed or the stutter? | Not run. Planned after question 153. See also question 119. |
+| 155 | Does `PSX_VSYNC=0` change the movie speed or the stutter? | Not run. The name appears in the runtime source. Its effect is not checked. |
+| 156 | Does `[audio] buffer_ms = 300` change the stutter? | Not run. 300 is inside the checked range (30 to 500). See question 120. |
+| 157 | Is the real XA path the cause, or only the host audio path? | The investigation judges the real XA path unlikely. The decode in `psxrecomp\runtime\src\cdrom.c` (lines 1395 to 1430) reads stereo, 37800 Hz, 4-bit sectors. A code comment at lines 2628 to 2640 says a stream freeze that starved XA was removed on 2026-07-10. Read from code, not run. OpenBIOS: no evidence. |
+| 158 | Does interpreting overlay code slow the movies? | Open. The overlay toolchain is not staged (question 99). The investigation says overlay gaps run in the interpreter. The time spent there is not measured. The `PSX_RUNTIME_PERF_DIAG` output prints overlay native and interpreter counts. |
+| 159 | Where does the FMV decode run, in the EXE or in an overlay? | Not known. The debug build's TCP commands `fmv_state`, `cdrom_state` and `mdec_state` may show it. Not run. The names are in `psxrecomp\docs\TCP_COMMANDS.md`. |
+| 160 | Does the host audio device or format cause the stutter? | Not checked. The investigation lists it as a cause. Not run. |
+| 161 | Would a PGO or LTO build help the movies? | The investigation says the PGO profile is empty. Not built or tested. Not decided. |

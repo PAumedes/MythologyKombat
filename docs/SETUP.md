@@ -962,6 +962,86 @@ Not reported by the user:
 - The FMV audio problem is handed to T2.10 (the FMV check). T2.9 and T2.12 run in parallel with it. See `docs/OPEN_QUESTIONS.md`, questions 116 to 127.
 - The headless smoke test (T2.5) has no audio. So it cannot show the audio problem. See question 107.
 
+## Playtest 2: FMV and gameplay (T2.10/T2.11 partial)
+
+This is the user's second play test. It is user-reported. No agent ran it, and no artifact was saved. No agent checked the picture or the sound. The frame rates are the user's estimates, not measured values. T2.10 and T2.11 stay as they are in `docs/TASKS.md`. This section does not change their status.
+
+### Run
+
+| Item | Value |
+|------|-------|
+| Exe | `build\MythologyKombat.exe` (Release build) |
+| SHA-256 | Not given in the report. Not checked |
+| BIOS | OpenBIOS |
+| Renderer | `opengl` |
+| Window | Windowed |
+| Command | Same as T2.6: `build\MythologyKombat.exe --disc "<REPO_ROOT>\ps1_game\Mortal Kombat Mythologies - Sub-Zero.cue" --game build\game.toml --no-launcher` |
+
+### What the user saw
+
+| Check | Result (user report) |
+|-------|----------------------|
+| Midway logo movie | A first digital glitch. Then it stutters, as in the first play test |
+| Intro movie | Only stuttering audio reported. The picture was not described |
+| Movie frame rate | About 50 fps. The user's estimate is 48 at the lowest and 54 at the highest |
+| Game after the first menu | Runs at 60 fps with no issue |
+| Main menu | Reached |
+| New game | Started |
+| Fight | Played. The user died in it. Controls responded. Play time not stated |
+| Level or location | Not stated. Not named here |
+| Gameplay audio | "Apparently ok" |
+| Crash | None reported |
+| Keys | See `docs\CONTROLS.md` |
+| Quit | The user asked whether to close the window. The answer was yes. The quit key was not recorded |
+
+### Not reported by the user
+
+- Which movies play, apart from the Midway logo and the intro.
+- Which level or location the fight was in.
+- Monitor refresh rate.
+- CPU model, system load and power plan.
+- Whether `PSX_RUNTIME_PERF_DIAG` was run. It was not.
+
+### Reading (agent hypothesis, not verified)
+
+The reading below comes from `work\audio_investigation.md`. It is not a finding.
+
+- Hypothesis 1: the movies run below real time. The NTSC real-time rate used there is about 59.94 fps. At 48 to 54 fps the audio starves and stutters. Gameplay holds 60 fps, so it does not starve.
+- Hypothesis 2: the first glitch is a cold-start or cache warm-up effect. Not tested.
+- Other candidates in that file: the host audio device or format, other CPU load, the power plan, a monitor that is not 60 Hz, and overlay code that runs in the interpreter. The overlay toolchain is not staged (see `docs/OPEN_QUESTIONS.md`, question 99). The PGO profile is empty.
+- Real XA bug: judged unlikely. The XA decode in `psxrecomp\runtime\src\cdrom.c` (lines 1395 to 1430) reads stereo, 37800 Hz, 4-bit sectors. The comment at lines 2628 to 2640 says a stream freeze that starved XA was removed on 2026-07-10. The read of these lines was done by reading code. It was not run.
+- Upstream notes: `psxrecomp\docs\ENHANCEMENTS.md` reports a "sluggish FMV" for another title. The investigation cites this as context. It is not about this game.
+- OpenBIOS: no evidence of a cause.
+
+### Flags and settings to try
+
+None of these has been run yet. Names come from the investigation. The names were found in the runtime source.
+
+| Flag or setting | What the investigation says it does | Status |
+|-----------------|-------------------------------------|--------|
+| `PSX_RUNTIME_PERF_DIAG=1` and `PSX_RUNTIME_PERF_DIAG_MS=1000` | Prints guest Hz, SPU Hz, audio fill, underruns, and overlay native and interpreter counts | Not run |
+| `F` key, or `PSX_FPS_TELEMETRY=1` | Shows the fps counter | `F` was reported working |
+| `PSX_VSYNC=0`, or `video_vsync` in `settings.toml` | Vsync setting | Not run |
+| `--renderer software` | Software renderer | Not run |
+| `PSXRECOMP_AUDIO_LEGACY=1` | Older audio path | Not run |
+| `[audio] buffer_ms` in `game.toml` | Audio buffer. Range 30 to 500. Default 180 | Range and default checked in code. `build\game.toml` has no `[audio]` block, so 180 is used. Not changed yet |
+| `PSX_LOAD_DELAY=0` | Diagnostic only. Upstream says FMV is much faster with it. Do not keep | Not run |
+| Debug build (`work\build-dbg`) TCP commands: `audio_stats`, `audio_wav`, `audio_events`, `fmv_state`, `cdrom_state`, `cdrom_sector_history`, `mdec_state`, `frame_perf`, `pace_state` | Inspect audio, FMV and pacing state | Not run. The names are in `psxrecomp\docs\TCP_COMMANDS.md` |
+
+### Planned next steps
+
+1. The user runs once with the diagnostic flag. In PowerShell: `$env:PSX_RUNTIME_PERF_DIAG = '1'`. Then run the exe with the T2.6 arguments, with stdout sent to `work\perf.log` (for example `> work\perf.log`). The user presses `F` during the intro.
+2. Then try `--renderer software` and `PSX_VSYNC=0`, one at a time.
+3. Agents read `work\perf.log`.
+
+Candidate engineering fixes, not decided:
+
+- Stage the overlay toolchain (the tcc tier), so overlay gaps are not interpreted.
+- A PGO or LTO build.
+- Find where the FMV decode runs, in the EXE or in an overlay.
+
+See `docs/OPEN_QUESTIONS.md`, questions 116 to 127 and 148 to 161.
+
 ## LBA-to-file lookup (T2.9)
 
 The script `tools\lba_lookup.py` shows which disc file holds a given sector. Run it from the repo root:
