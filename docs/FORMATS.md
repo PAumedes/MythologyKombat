@@ -219,7 +219,7 @@ Each note records what the tools measured. Meanings are not claimed unless state
 - Rule: score at least 0.80, and at least one prologue, and at least one `jr ra`, and at least 256 non-zero words.
 - `EARTH`, `FORTRESS`, `PRISON` and `TEMPLE` begin directly with instructions.
 - `BRIDGE`, `FIRE`, `WATER` and `WIND` begin with a table of words that look like RAM addresses near `0x8013xxxx`.
-- The RAM address each overlay loads to is not known. The values here are estimates only. See `docs/OPEN_QUESTIONS.md`.
+- The RAM address each overlay loads to is in `docs/EXE_OVERLAYS.md` (T1.4). All eight load at `0x80130FF8`. The check is static. The runtime check is pending. See `docs/OPEN_QUESTIONS.md`, questions 35 and 44.
 
 ### Magic container
 

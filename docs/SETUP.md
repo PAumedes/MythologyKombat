@@ -235,6 +235,23 @@ Use the explicit targets above instead. No upstream source was changed. It is no
 
 `.gitmodules` and the `psxrecomp` gitlink were committed in the "T0.7: ..." commit (`beee35b`). They were staged in that commit by accident of staging order.
 
+## EXE header and overlay load addresses (T1.4)
+
+The script `tools\exe_overlays.py` reads the boot EXE and the overlay files. It gives the EXE header, the start-up constants, and the load address and size of each `.OVR` file. Run it from the repo root after `tools\disc_classify.py`, because it reads `work\extracted\` and `work\disc_classes.json`:
+
+```
+<RETRO_TOOLS_DIR>\python\python.exe -I tools\exe_overlays.py [--root PATH]
+```
+
+- It needs `work\extracted\SLUS_004.76` and `work\extracted\OVERLAYS\*.OVR` from T1.3.
+- It needs `work\disc_classes.json` from T1.3.
+- It reads `ps1_game\*.bin` for the independent header parse. It only reads the disc. It does not change anything in `ps1_game\`. If the disc image is missing, the header is still written, and the independent parse is marked "not run".
+- It writes `work\exe_header.json` and `work\overlay_candidates.json`. Both folders and files are git-ignored.
+- It uses only the Python standard library.
+- It is deterministic. Running it again gives the same output.
+- The usage line also lists `--root PATH`, the repo root. It defaults to the folder above `tools\`.
+- The results are in `docs/EXE_OVERLAYS.md`. That page holds addresses and sizes only.
+
 ## Game project scaffold (T0.6)
 
 The game project was made with the upstream setup script, `setup_project.ps1`. The script was run in a temp folder. Its output was then copied into the repo root. See `docs\DECISIONS.md` (D3).

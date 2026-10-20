@@ -68,7 +68,7 @@
 | 32 | What do the 28 u16-id-table containers (`.LSD`) hold, and how are the ids used? | Each is a u16 count, that many u16 ids, then a zero u16. Use not checked. |
 | 33 | Why does `/LCDS/SZL2SFX2.LCD` have no paired id table, when the other 27 SZL `.LCD` files do? | `/LCDS/FIGHTSFX.LCD` also has no tag. Cause not checked. |
 | 34 | What are the 37 unknown files? | 14 `.TXD` and 14 `.TSQ` in `/LEVELS/`, 8 `.BIN` files, and `/LSDS/FIGHTSFX.LSD`. Their contents are not analysed. |
-| 35 | What load address does each overlay candidate use in RAM? | The 8 `.OVR` files have no known load address. Estimates only, for T1.4. |
+| 35 | What load address does each overlay candidate use in RAM? | Static answer in `docs/EXE_OVERLAYS.md` (T1.4): all eight load at `0x80130FF8`. Runtime check pending (question 44). |
 | 36 | Is the overlay rule sound? | The rule uses a score, a prologue, a `jr ra` and a word count. Reviewer note: the signals are weak. |
 | 37 | Are `/OVERLAYS/BRDGDEMO.BIN` and `/OVERLAYS/WINDDEMO.BIN` code? | Both pass the score test. They are rejected only by the prologue and `jr ra` rule. Reviewer note: both are 2048-byte halfword data. Meaning not known. |
 | 38 | Why does `/LEVELS/WIND/WIND.TSQ` score 0.999 on the code test, yet tag as unknown? | Reviewer note. Not checked. |
@@ -77,3 +77,17 @@
 | 41 | Is there any TIM, VAB, VAG, SEQ or SEP data on this disc? | None is tagged. 233 TIM-like byte patterns were found, and all failed the block-size check. |
 | 42 | Do later tools handle the `.raw2352` suffix on STR files? | Reviewer note. Not checked. |
 | 43 | Does `tools\disc_classify.py` handle a wrong-region disc, a multi-track cue, or a missing file? | These paths are untested. Reviewer note. What `/NOXCUSES.BIN` (filler) and `/DOZER.BIN` (text, ends with `0x1A`) are for is also not known. |
+
+## EXE header and overlays (from T1.4)
+
+| # | Question | Notes |
+|---|----------|-------|
+| 44 | Do the EXE header, the crt0 values and the overlay load addresses match a debugger or Ghidra? | All checks so far are static. The header matches a second parser of the raw sectors. The comparison with Ghidra or an emulator is pending task T1.5. DuckStation cannot be queried automatically. See `docs/EXE_OVERLAYS.md`. |
+| 45 | Where does the scratch read buffer come from, and does the memcpy into `0x80130FF8` overlap it? | The scratch allocator is at `0x800865C0`. crt0 starts the BIOS heap at `0x80130FFC`, inside the overlay window. The buffer may start near `0x80131000`, so the move may overlap. Not proven. The return value of the malloc(4) call at `0x8008652C` is unknown. |
+| 46 | Which level is the second FIRE site at `0x8002E130`? | The level function at `0x8002E130` also reads id 137 (`/OVERLAYS/FIRE.OVR`). The level it belongs to is not known. |
+| 47 | What do `/OVERLAYS/BRDGDEMO.BIN` and `/OVERLAYS/WINDDEMO.BIN` hold? | They are 2048-byte files. The BRIDGE and WIND level functions read them. They are not copied to the window. Their contents were not analysed. |
+| 48 | What do the leading address tables in BRIDGE, FIRE, WATER and WIND mean? | The tables hold 32, 27, 83 and 102 words. The words point at data inside the file, not at function starts. Their use is not known. |
+| 49 | What is the part of the text range from `0x800D7B40` to `0x800D8000`? | The crt0 BSS start (`0x800D7B40`) lies inside the file-backed text range. All file bytes in that part are 0. Their meaning is not established. |
+| 50 | Do any other functions load overlays? | Two `read_file` calls use a variable id, at `0x80085CF8` and `0x80085D74`. The script does not resolve them. So the claim that only the nine level functions load overlays has a small gap. |
+| 51 | Do FORTRESS and PRISON load at `0x80130FF8` for sure? | Both are confirmed by the address-constant check only. FORTRESS has no jal targets in the window. PRISON's jal result was not decisive. |
+| 52 | Should `tools\exe_overlays.py` be fixed? | Two things in the script's text need fixing. (a) The docstring lines 13 to 17 describe function starts as "the word after `jr ra` plus delay slot". The script also treats the first word after a leading address table as a start. (b) The InitHeap note in the `unresolved` list says "per review". It should state the plain fact that the word at `0x800BF358` is `0x8000`. The tool is not changed by T1.4. |

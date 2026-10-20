@@ -15,7 +15,7 @@ The orchestrator updates the Status column; nobody else edits this table.
 | T1.1 | List every file on the disc | T0.4 | agents | done |
 | T1.2 | Hunt for leftover debug symbols | T1.1 | agents | in-progress |
 | T1.3 | Classify every file by format | T1.1 | agents | done |
-| T1.4 | Main EXE header and overlay candidates | T1.3 | agents | in-progress |
+| T1.4 | Main EXE header and overlay candidates | T1.3 | agents | done |
 | T1.5 | Ghidra + PS1 loader + REA setup | T0.3 | USER + agents | todo |
 | T1.6 | Identify PsyQ SDK functions | T1.4, T1.5 | agents | todo |
 | T1.7 | Phase 1 gate review | T1.2, T1.3, T1.6 | agents | todo |
