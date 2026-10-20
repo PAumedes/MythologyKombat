@@ -129,6 +129,19 @@ The script `tools\disc_identify.py` reads the disc in `ps1_game\` and prints its
 - If a `.cue` or `.bin` file is missing or misnamed, it stops with a clear message.
 - The results are in `docs/DISC.md`. The file holds hashes and the serial only.
 
+## Disc file list (T1.1)
+
+The script `tools\disc_list.py` walks the disc's ISO 9660 tree and writes every file's name, path, start LBA, size, sector count and XA flags. Run it from the repo root:
+
+```
+<RETRO_TOOLS_DIR>\python\python.exe -I tools\disc_list.py
+```
+
+- It writes `work\disc_files.json`. The `work\` folder is git-ignored.
+- It uses only the Python standard library.
+- It does not change anything in `ps1_game\`.
+- The results are in `docs/DISC_MAP.md`. That page holds names, paths, sizes, LBAs and flags only. It holds no file contents.
+
 ## PSXRecomp framework (T0.5)
 
 PSXRecomp is added as a git submodule at `psxrecomp\`. It is pinned to one commit.
