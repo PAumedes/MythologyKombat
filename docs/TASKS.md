@@ -5,8 +5,8 @@ The orchestrator updates the Status column; nobody else edits this table.
 
 | ID | Title | Depends on | Owner | Status |
 | --- | --- | --- | --- | --- |
-| T0.1 | Initialise the repo safely | — | agents | in-progress |
-| T0.2 | Prerequisite check script | T0.1 | agents | todo |
+| T0.1 | Initialise the repo safely | — | agents | done |
+| T0.2 | Prerequisite check script | T0.1 | agents | in-progress |
 | T0.3 | Install missing prerequisites | T0.2 | USER | todo |
 | T0.4 | Identify and fingerprint the disc | T0.1 | agents | todo |
 | T0.5 | Add PSXRecomp and build the framework | T0.3 | agents | todo |
