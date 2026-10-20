@@ -235,6 +235,21 @@ Use the explicit targets above instead. No upstream source was changed. It is no
 
 `.gitmodules` and the `psxrecomp` gitlink were committed in the "T0.7: ..." commit (`beee35b`). They were staged in that commit by accident of staging order.
 
+## Leftover debug symbol hunt (T1.2)
+
+The script `tools\symbol_hunt.py` scans every sector of the disc for debug symbols, linker map text, source paths and function-name-like strings. Run it from the repo root:
+
+```
+<RETRO_TOOLS_DIR>\python\python.exe -I tools\symbol_hunt.py
+```
+
+- It takes about 5.5 minutes.
+- It writes `work\symbol_hunt.txt`. The `work\` folder is git-ignored.
+- It uses only the Python standard library.
+- It does not change anything in `ps1_game\`.
+- `--selftest` runs the built-in tests. They pass 12 of 12.
+- The results are in `docs/SYMBOLS.md`. That page holds offsets and short context only. It holds no disc bytes.
+
 ## EXE header and overlay load addresses (T1.4)
 
 The script `tools\exe_overlays.py` reads the boot EXE and the overlay files. It gives the EXE header, the start-up constants, and the load address and size of each `.OVR` file. Run it from the repo root after `tools\disc_classify.py`, because it reads `work\extracted\` and `work\disc_classes.json`:

@@ -91,3 +91,14 @@
 | 50 | Do any other functions load overlays? | Two `read_file` calls use a variable id, at `0x80085CF8` and `0x80085D74`. The script does not resolve them. So the claim that only the nine level functions load overlays has a small gap. |
 | 51 | Do FORTRESS and PRISON load at `0x80130FF8` for sure? | Both are confirmed by the address-constant check only. FORTRESS has no jal targets in the window. PRISON's jal result was not decisive. |
 | 52 | Should `tools\exe_overlays.py` be fixed? | Two things in the script's text need fixing. (a) The docstring lines 13 to 17 describe function starts as "the word after `jr ra` plus delay slot". The script also treats the first word after a leading address table as a start. (b) The InitHeap note in the `unresolved` list says "per review". It should state the plain fact that the word at `0x800BF358` is `0x8000`. The tool is not changed by T1.4. |
+
+## Symbol hunt (from T1.2)
+
+| # | Question | Notes |
+|---|----------|-------|
+| 53 | Are there other regional releases (PAL, demo discs) worth checking for symbols? | Task T1.2 asks for this. Only the NTSC-U disc (SLUS-00476) has been scanned. Not decided which other discs to get or check. |
+| 54 | Should `tools\symbol_hunt.py` match the form `Ver n`? | The version patterns miss the form `Ver n`. The reviewer found `PS-X Control TAP Driver Ver 3.0` in the EXE by hand. The tool is not changed by T1.2. Reviewer note. |
+| 55 | What PsyQ library version is on the disc? | The Sony strings give revision dates from about Dec 1996 to Mar 1997. No single version evidence list exists yet. Needed for T1.6. See `docs/SYMBOLS.md`. |
+| 56 | Is the symbol hunt output byte-for-byte repeatable? | The tool was run once in full. Repeat output is judged from the code only. A second full run is not done. Reviewer note. |
+| 57 | Why are the `PS-X Run-time Library`, `Library Release`, `Revision`, `$Header` and compile-date strings absent? | Their absence is not explained. Not checked. |
+| 58 | What do the three gap regions hold? | The gaps are at LBA 424, LBA 163342 to 163349, and LBA 228841 to 228990. They were scanned and had no symbol hits. Their contents are not described. |
