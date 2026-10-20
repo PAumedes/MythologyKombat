@@ -616,3 +616,78 @@ Two commands check the seed list and count what the analyzer covers. The counts 
 - It writes `work\ghidra_funcs_all.txt`. The file has 1730 entries: 1552 CODE, 153 GTEMAC and 25 RAM.
 - It leaves `work\symbols_sdk.json` untouched.
 - It saves the Ghidra project again. See `docs/OPEN_QUESTIONS.md`, question 89.
+
+## First Generate (T2.3)
+
+This step runs the upstream generator on the boot EXE. It writes C code to `generated\`. Run it from the repo root:
+
+```
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\run_psxrecomp.ps1 generate --config game.toml --project-root . --disc "ps1_game\Mortal Kombat Mythologies - Sub-Zero.cue"
+```
+
+- No `--bios` and no `--force-prepare` were passed.
+- Logs are in `work\generate_run1.txt`, `work\generate_run2.txt` and `work\generate_run3.txt`. The `work\` folder is git-ignored.
+- `prepare_disc` was skipped, because `work\disc\SLUS_004.76` already exists.
+- The OpenBIOS backends were reused. They were not regenerated.
+
+### Runs
+
+| Run | Kind | Result |
+|-----|------|--------|
+| 1 | First run | Exit 0, 76 s. About 60 s was a one-time rebuild of the emitters in `psxrecomp\recompiler\build` |
+| 2 | Incremental | No-op, 9 s. Log shows 58 shards, 0 updated. Dispatch unchanged |
+| 3 | From scratch (`generated\` deleted first) | Output SHA-256 list is byte-identical to run 1 |
+
+- The from-scratch comparison (run 3 against run 1) is the real determinism test. Run 2 only checks that a second run changes nothing.
+
+### Output
+
+`generated\` holds 61 files. The folder is git-ignored. `git check-ignore` matches `.gitignore` line 4.
+
+| File | Content |
+|------|---------|
+| `SLUS_004.76_decls.h` | Declarations |
+| `SLUS_004.76_dispatch.c` | Dispatch table |
+| `SLUS_004.76_full.ranges` | Ranges |
+| `SLUS_004.76_full_00.c` to `SLUS_004.76_full_57.c` | 58 C shards |
+
+| Item | Value |
+|------|-------|
+| Functions emitted | 7262 |
+| Lines of C | 2,157,405 in the 58 shards |
+| Dispatch table entries | 2890. All lie in `0x80015EC0` to `0x800D7F8C`. No BIOS functions |
+| Analysis | 2589 functions, 59796 basic blocks, 2713 loops |
+
+### Discovery
+
+- 2203 entries came from the `jr ra` scan.
+- 2319 entries came after the JAL targets were added.
+- 1175 seeds were added.
+- 6 forced entries were added: `0x8001F208`, `0x80031BC8`, `0x80031CF8`, `0x80031E98`, `0x80032080` and `0x8003213C`.
+- The pre-pass reports 4673 new entry points and 7262 functions.
+
+### Warnings
+
+| Warning | Count | Notes |
+|---------|-------|-------|
+| Reserved opcode (data read as code) | 141 | The tool hides these. Set `PSXRECOMP_VERBOSE_RI_WARNINGS=1` to see them |
+| "out-of-function branch/jump, emitting fallthrough" | 562 (508 branch, 54 jump) | Saved in `work\generate_run1_oof_warnings.txt`. Clustered at `0x800D5B08` to `0x800D5E54`, `0x800D6610` to `0x800D6638`, `0x800D7290` and `0x800D7824` |
+| `/* TODO: opcode=0x.. */` in generated C | 5201 (reviewer count) | Mostly `0x800BA3F4` to `0x800D7A84` |
+
+- The reviewer found that the bytes at `0x800D5B08`, `0x800D7290` and `0x800D7824` are data tables. The emitter decodes them as code. They are probably unreachable. This is not verified.
+- The reviewer judged `0x800D6610` ambiguous.
+- See `docs/OPEN_QUESTIONS.md`, questions 91 to 95.
+
+### Strict mode
+
+- `game.toml` sets `[recompiler] strict = true`.
+- `config_loader.h` line 942 says the value is "currently always true". The log prints no strict banner and no skip count.
+- "No skipped-function failures" means that no skip lines appear in the log.
+- The generated C has no `interpret`, `SKIPPED`, `unsupported` or `halt` markers.
+
+### Checks after the run
+
+- The submodule `psxrecomp\` is unchanged. Only the known CRLF noise shows (`docs/OPEN_QUESTIONS.md`, question 13).
+- `ps1_game\` is unchanged.
+- The boot EXE SHA-256 is unchanged.
+- `generated\` is not committed.
