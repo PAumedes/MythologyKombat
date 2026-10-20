@@ -14,8 +14,9 @@ Status words used here:
 - **confirmed by independent parse**: a second parser read the raw disc sectors and got the same value.
 - **confirmed by Ghidra headless**: Ghidra 12.1.4 with the PS1 loader, run through `analyzeHeadless`, gave the same value (T1.5). Used for the entry point, text address and size, BSS range and heap values only. The Ghidra GUI has not been opened. See `docs/SETUP.md`.
 - **pending Ghidra/emulator**: not yet compared with a debugger, and not checked in Ghidra. The emulator check is still pending.
-- **confirmed** (overlays): the overlay's own code fits the load address that the EXE's loader uses. This is a static check only. Ghidra has not checked the overlays yet. A runtime check is still pending.
-- **static check (T2.12)**: a check on the EXE code and the overlay bytes, done by `tools\overlay_facts.py`. It is strong consistency evidence, not proof. The runtime check (T2.13) still owns the final confirmation.
+- **confirmed** (overlays): the overlay's own code fits the load address that the EXE's loader uses. This is a static check only. Ghidra has not checked the overlays yet. TEMPLE has a runtime check (T2.13, see "Runtime proof (T2.13)"). The other seven are still runtime-pending.
+- **static check (T2.12)**: a check on the EXE code and the overlay bytes, done by `tools\overlay_facts.py`. It is strong consistency evidence, not proof. The runtime check (T2.13) confirmed it for TEMPLE. FORTRESS and PRISON are still runtime-pending (T2.17).
+- **runtime (T2.13)**: seen in a running debug build, by a script that reads the guest RAM. It is agent-observed. It is not a user observation.
 
 ## EXE header
 
@@ -71,9 +72,9 @@ All eight `.OVR` files load at `0x80130FF8`. The table gives the size, the disc 
 | 135 | `/OVERLAYS/BRIDGE.OVR` | 23,164 | 210251 | `0x80130FF8` | `0x80136A74` | address table, then code | confirmed (T1.4). T2.12 joint check not unique (question 130) |
 | 136 | `/OVERLAYS/EARTH.OVR` | 37,516 | 210263 | `0x80130FF8` | `0x8013A284` | code from offset 0 | confirmed (T1.4). T2.12 static check gives one base |
 | 137 | `/OVERLAYS/FIRE.OVR` | 20,800 | 210282 | `0x80130FF8` | `0x80136138` | address table, then code | confirmed (T1.4). T2.12 joint check not unique (question 130) |
-| 138 | `/OVERLAYS/FORTRESS.OVR` | 19,874 | 210293 | `0x80130FF8` | `0x80135D9A` | code from offset 0 | confirmed (T1.4). Two static checks in T2.12. Runtime pending (T2.13) |
-| 139 | `/OVERLAYS/PRISON.OVR` | 23,256 | 210303 | `0x80130FF8` | `0x80136AD0` | code from offset 0 | confirmed (T1.4). Two static checks in T2.12. Runtime pending (T2.13) |
-| 140 | `/OVERLAYS/TEMPLE.OVR` | 19,100 | 210315 | `0x80130FF8` | `0x80135A94` | code from offset 0 | confirmed (T1.4). T2.12 static check gives one base |
+| 138 | `/OVERLAYS/FORTRESS.OVR` | 19,874 | 210293 | `0x80130FF8` | `0x80135D9A` | code from offset 0 | confirmed (T1.4). Two static checks in T2.12. Runtime pending (T2.17) |
+| 139 | `/OVERLAYS/PRISON.OVR` | 23,256 | 210303 | `0x80130FF8` | `0x80136AD0` | code from offset 0 | confirmed (T1.4). Two static checks in T2.12. Runtime pending (T2.17) |
+| 140 | `/OVERLAYS/TEMPLE.OVR` | 19,100 | 210315 | `0x80130FF8` | `0x80135A94` | code from offset 0 | confirmed (T1.4). T2.12 static check gives one base. Runtime confirmed at `0x80130FF8` (T2.13) |
 | 141 | `/OVERLAYS/WATER.OVR` | 28,052 | 210325 | `0x80130FF8` | `0x80137D8C` | address table, then code | confirmed (T1.4). T2.12 joint check not unique (question 130) |
 | 142 | `/OVERLAYS/WIND.OVR` | 46,888 | 210339 | `0x80130FF8` | `0x8013C720` | address table, then code | confirmed (T1.4). T2.12 joint check not unique (question 130) |
 
@@ -100,7 +101,7 @@ The table index is the file id. The ids are 134 to 143, from `/OVERLAYS/BRDGDEMO
 | read_file(id, buf) | `0x800861D4` | Seeks with CdlSetloc, then reads with CdRead. It reads ceil(size / 2048) sectors |
 | Scratch allocator | `0x800865C0` | Gives the temporary read buffer. Not traced in full |
 | memcpy (BIOS A(0x2A)) wrapper | `0x8009F31C` | Copies the read buffer into the window |
-| Destination pointer | word at `0x80015134` | Holds `0x80130FF8`. No store to it in the EXE text (static scan, T2.12). See the limits in the T2.12 section |
+| Destination pointer | word at `0x80015134` | Holds `0x80130FF8`. No store to it in the EXE text (static scan, T2.12). Holds `0x80130FF8` at runtime (T2.13). See the limits in the T2.12 section |
 
 Each level function does this:
 
@@ -218,7 +219,7 @@ The tool runs two static checks. It tests 2048 candidate bases, from `0x80130000
 
 - **FORTRESS.** The EXE has 3 call sites into the window, all from the FORTRESS level function `0x8002EFBC`: `0x8002F2E4` to `0x80133380`, `0x8002F9D4` to `0x801333FC`, and `0x8002FA14` to `0x80133274`. All three land on function starts at `0x80130FF8`. The same three sites land 0 times in the other seven images at the same base.
 - **PRISON.** The EXE has 2 call sites into the window, from the PRISON level function `0x8002D198`: `0x8002D49C` to `0x801316A4` and `0x8002D694` to `0x80131DC0`. Check E alone leaves 11 bases. With check C, only `0x80130FF8` remains. The control gives 1 landing in the EARTH image at this base. The others give 0.
-- **Strength.** For FORTRESS and PRISON, this is a strong consistency check, not proof. The T2.13 runtime check still owns the final confirmation.
+- **Strength.** For FORTRESS and PRISON, this is a strong consistency check, not proof. Their runtime check is still pending (T2.17). TEMPLE was confirmed at runtime (T2.13), see below.
 - **Limit on check C.** The containment set includes every 4-aligned word in `[0x80130FF8, 0x80140000)`. So it can include data that is not a pointer. A pointer into BSS or the heap beyond the image would widen the interval.
 - **Earlier error.** The earlier note that FORTRESS has no jal targets in the window was a function-boundary artifact. The tool used the level function range `0x8002EFBC` to `0x8002FC84`. FORTRESS has 0 jal targets inside its own image and 54 `j` targets.
 
@@ -278,6 +279,59 @@ The level functions are reached through a jump table at `0x80013910` with 12 ent
 | FORTRESS and PRISON are confirmed by one check only | Both have two static checks (E and C). Runtime is still pending (T2.13) |
 | The function at `0x8002E130` is the second FIRE site, with its level unknown | Still true. It is also a second function that loads FIRE, selected by dispatcher index 7 (or 10). Its level is unknown (question 46) |
 
+## Runtime proof (T2.13)
+
+Source: `work\overlay_runtime.json`, written by `tools\overlay_runtime_check.py`. The run steps are in `docs/SETUP.md` ("Runtime overlay proof (T2.13)"). The method is in `docs/DECISIONS.md` (D10).
+
+Scope: one level, TEMPLE (function `0x8002B688`, id 140). Only this level's overlay load fired in the runs. The run went to guest frame 9000 with the committed route `boot_to_menu`. Two cold boots gave identical results. A reviewer re-ran one of them, and the checks held.
+
+### What was seen
+
+| Step | Guest frame | Value seen |
+|------|-------------|------------|
+| `read_file` entry (function `0x800861D4`) | 5200 | a0 = 140 (`/OVERLAYS/TEMPLE.OVR`). a1 = `0x8013100C`, the scratch buffer. ra = `0x8002B7A0`. The call is at `0x8002B798` |
+| memcpy wrapper entry (`0x8009F31C`) | 5207 | a0 = `0x80130FF8` (the window base). a1 = `0x8013100C`. a2 = `0x00004A9C`, which is 19,100, the size from `get_size(140)`. a3 = `0xFFFFFFFF`. ra = `0x8002B7E0`. The call is at `0x8002B7D8` |
+| Copy stores | 5207 to 5208 | 16,592 value-changing byte stores. Each is width 1, with strictly ascending addresses. The store is at pc `0xBFC085F8`, in the OpenBIOS memcpy byte loop (`0xBFC085D8` to `0xBFC085FC`) |
+| Pointer word `0x80015134` | at pause | `0x80130FF8` |
+
+### Hash check
+
+| Item | Value |
+|------|-------|
+| SHA-256 of the window bytes `[0x80130FF8, +19100)` after the copy, from live RAM | `291c16ccc2afa65e504a7603e4624f2d9bf5e71720ab5782cb9d1d6898e3a6eb` |
+| SHA-256 of `TEMPLE.OVR` in `work\overlay_facts.json` | Same value |
+| SHA-256 recomputed from the disc (LBA 210315, 19,100 bytes) | Same value |
+| Bytes that differ | 0 |
+| Source buffer `[0x8013100C, 0x80135AA8)` before the copy | Same SHA-256. The CD read gave the file bytes |
+
+- The window bytes were read from live RAM at the pause. They do not depend on the undo step below.
+
+### Overlap of the copy (question 45)
+
+- The source `0x8013100C` is 0x14 (20 bytes) above the destination `0x80130FF8`. It is 16 bytes above the BIOS heap start `0x80130FFC`.
+- The two ranges overlap by 19,080 bytes.
+- The destination is below the source, and the loop copies forward byte by byte. So the copy is safe for this overlap. It gives the same result as a memmove.
+- This holds under OpenBIOS as run by PSXRecomp. The retail BIOS memcpy was not examined.
+- The copy overwrites 16 bytes, `0x80130FFC` to `0x8013100B`. These were BIOS heap words before the copy, and overlay bytes after it. Their values are not recorded here. Whether the program uses them later is not known (question 180).
+
+### Method
+
+- The tool armed two things at launch. The first is a function filter with an entry dump. It records a0 to a3, ra, s0 to s3, and the frame, at each entry to `0x800861D4` (filter id 140 and buffer) and to `0x8009F31C`.
+- The second is a write-transition ring. It was armed with `PSX_WTRACE_BOOT_RANGES=0x130FF8-0x13C720`. It logs value-changing CPU stores in the overlay window. Each entry holds the address, the old and new values, pc, ra, sp and the frame. The capacity is 1 << 20 entries. The overflow guard `oldest_seq == 0` held, and 16,592 stores were logged. The ring records widths 1, 2 and 4, and it includes stores made by BIOS ROM code.
+- The tool paused the game with `host_pause` at the first memcpy. The pause landed inside the copy, at pc `0xBFC085E0` in BIOS ROM.
+- The RAM just before and just after the copy was rebuilt by undoing newer ring entries in reverse order.
+- The DMA check: a DMA or an untraced writer would show as an inconsistency in the undo. None was found. The ring holds 0 such cases.
+- The tool then resumed for one frame and paused again, at pc `0x800947A0`. That frame was 5210 or 5212, depending on the run. That second pause is not part of the invariant.
+
+### Limits
+
+- Only TEMPLE is shown. The eight other level functions and their ids were not seen. The tool is hard-coded to TEMPLE-style checks: a0 equals the window base, and a2 equals `get_size(id)`. It stops at the first overlay memcpy. Waiting for a given id would be a small change.
+- Runs beyond frame 9000 were not made.
+- FORTRESS was not run. Its size, 19,874, is not a multiple of 4. The byte loop suggests the same copy path, but this is not shown (question 139).
+- The 16 clobbered bytes were not checked for later use. The retail BIOS memcpy was not checked.
+- Earlier runs, not the committed tool, saw other reads. `read_file` calls with ids `0x55` (85) and `0x90` (144) ran at about frames 4002 and 4007. They also used buffer `0x8013100C`. Id `0x8C` (140) was also seen. What the ids 85 and 144 load, and whether they copy into the window, is not known (question 181).
+- The screen at the pause showed a mission objective and a loading message. This is an agent observation. The screenshot is not committed.
+
 ## Not yet confirmed
 
-See `docs/OPEN_QUESTIONS.md`, questions 44 to 52 and 130 to 139.
+See `docs/OPEN_QUESTIONS.md`, questions 44 to 52, 130 to 139, and 178 to 183.

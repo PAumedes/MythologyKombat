@@ -98,3 +98,14 @@ _Filled in by the doc-writer as tasks pass review._
   - Treating `PSX_VSYNC=0` as uncapped. The wall-clock pacer still runs.
 - Reason: with vsync off, the FMV phase median is 60.0 Hz, with 0 underruns. This was measured in a hidden window only.
 - Not confirmed. Do not call it a fix until the visible-window vsync-off run shows 60 Hz. Open items are in `docs/OPEN_QUESTIONS.md` (116, 155 and 162 to 170).
+
+## D10 The runtime overlay check has no pc_break. It uses fn_filter, a write ring and host_pause (T2.13)
+
+- Context: the native debug server has no `pc_break`, `pc_hit_last` or `pc_unbreak` commands. These are DuckStation-only, per `psxrecomp\docs\TCP_COMMANDS.md`. The pause, step and continue commands were removed upstream.
+- Decision: watch the overlay load with these three parts:
+  - `fn_filter` with `fn_entry_dump`. This records a0 to a3, ra, s0 to s3 and the frame at each function entry. Phase 1 filters `read_file` at `0x800861D4` (id and buffer). Phase 2 filters the memcpy wrapper at `0x8009F31C`.
+  - `host_pause` after the memcpy entry.
+  - A write-transition ring, armed at launch with `PSX_WTRACE_BOOT_RANGES=0x130FF8-0x13C720`. It logs value-changing CPU stores in the window. The window RAM is rebuilt just before and just after the copy by undoing newer entries in reverse order.
+- Reason: the native server has no `pc_break`. This method gives a before and after view of the copy. The check for untraced writers (DMA, for example) found 0 inconsistencies.
+- Limits: the ring has capacity 1 << 20. The pause lands inside the copy, so the tool resumes one frame and pauses again. See `docs/EXE_OVERLAYS.md` ("Runtime proof (T2.13)") and `docs/SETUP.md` ("Runtime overlay proof (T2.13)").
+- Open items are in `docs/OPEN_QUESTIONS.md` (178 to 183).

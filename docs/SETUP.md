@@ -1458,3 +1458,50 @@ Per D8 (`docs/DECISIONS.md`), routes and expected digests may be committed. Reco
 
 - `work\` holds the run output. It is git-ignored.
 - Open items are in `docs/OPEN_QUESTIONS.md`, questions 171 to 177.
+
+## Runtime overlay proof (T2.13)
+
+The script `tools\overlay_runtime_check.py` boots the debug build, watches one overlay load, and checks the copy against the disc. It is agent-run. The result is in `docs/EXE_OVERLAYS.md` ("Runtime proof (T2.13)").
+
+Run it from the repo root:
+
+```
+<RETRO_TOOLS_DIR>\python\python.exe -I tools\overlay_runtime_check.py [--runs N] [--shots <dir>] [--out <file>] [--route <json>]
+```
+
+| Option | Meaning |
+|--------|---------|
+| `--runs N` | Number of cold boots. Each boot is checked. The runs must agree |
+| `--shots <dir>` | Folder for screenshots. Optional |
+| `--out <file>` | Output file. The result is written to `work\overlay_runtime.json` by default |
+| `--route <json>` | Input route. The committed route is `tests\replays\routes\boot_to_menu.json` |
+
+- It uses the debug build, `work\build-dbg\MythologyKombat.exe`. See "Debug-tools build (for tests)" above.
+- It starts the game headless on port 4383.
+- It kills only its own child process, by its own PID. It does not kill by image name.
+- One cold boot takes about 85 to 90 seconds.
+- Exit code 0 means the proof holds, and the runs agree. The result is in the JSON file.
+- The runs were made with `PSX_DEBUG_FMV_QUIET=0` set.
+- The output is `work\overlay_runtime.json`. It is git-ignored. Do not commit it.
+- The method is in `docs/DECISIONS.md` (D10). The native debug server has no `pc_break`, so the tool does not use one.
+- The tool stops at the first overlay copy. It checks only TEMPLE-style loads. See `docs/EXE_OVERLAYS.md` ("Limits").
+
+### Results on this machine
+
+| Run | Result |
+|-----|--------|
+| Cold boot 1 | Proof holds. TEMPLE, id 140, at `0x80130FF8`. 0 differing bytes |
+| Cold boot 2 | Same result as boot 1 |
+| Reviewer re-run, 1 boot | Proof holds. 16 checks passed |
+
+- The pause frame is 5210 or 5212, depending on the run. It is not part of the check.
+- The screenshots are agent evidence. They are not committed.
+
+### Files
+
+| Path | Status |
+|------|--------|
+| `work\overlay_runtime.json` | Run output. Under `work\`, which is git-ignored. Not committed |
+
+- Open items are in `docs/OPEN_QUESTIONS.md`, questions 178 to 183.
+- `git status` shows `psxrecomp` as modified. This is the known CRLF noise (question 13). It is not from T2.13.
