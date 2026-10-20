@@ -1348,3 +1348,113 @@ The script `tools\seed_symbols.py` fills `symbols.toml` from `work\symbols_sdk.j
 - `psx_symbols.h` must never be included from generated C.
 - Other open items for T2.21 are in `docs/OPEN_QUESTIONS.md`, questions 140 to 147.
 - The decision to commit these derived files is in `docs/DECISIONS.md` (D8).
+
+## Boot-to-menu replay route (T2.18)
+
+The script `tools\run_boot_route.py` boots the debug build, feeds it a fixed input route, and compares the result with an expected digest file. It is an automated regression check of the boot path. It is not the user's play test.
+
+Run it from the repo root:
+
+```
+<RETRO_TOOLS_DIR>\python\python.exe -I tools\run_boot_route.py [--runs N] [--expect tests\replays\expected\boot_to_menu.json | --record-expected <file>] [--route <json>] [--out <file>]
+```
+
+- It imports `Dbg`, `kill_pid` and `pid_is_ours` from `tools\smoke_boot.py`.
+- `--runs N` repeats cold boots. It fills gaps in the checks.
+- A non-deterministic run FAILS.
+
+### Run rules
+
+| Item | Value |
+|------|-------|
+| Exe | `work\build-dbg\MythologyKombat.exe` only. `build\` is not used (D7) |
+| Mode | `--headless`, debug port 4381. The smoke test uses 4370 |
+| Boot | Cold boot each run. `work\route_saves` is recreated each time |
+| Environment | `PSX_DEBUG_FMV_QUIET=0` |
+| Time | About 70 s per run. That is 5000 guest frames, at about 70 fps in the FMV |
+| Process | Kills only its own child PID, read from `work\route\pid.txt`. Checks the port is free and that no stale PID is left |
+
+### Route
+
+The route file is `tests\replays\routes\boot_to_menu.json`. It holds button names and guest frame numbers only.
+
+| Button | Guest frame | Hold |
+|--------|-------------|------|
+| START | 3000 | 4 frames |
+| CROSS | 4000 | 4 frames |
+
+- Route buttons use the inverted 16-bit pad word. 0 means pressed. The tool translates this.
+- A route step is consumed once per vblank.
+- The input route's `at_frame` is ignored if it is at or before the current frame. The tool connects at about frame 35 to 40. It checks `start_frame` in the reply.
+
+### Checkpoints and digests
+
+The checkpoints are guest frames 600, 1800, 3000, 3600, 3900, 4300 and 5000.
+
+| Digest | Source |
+|--------|--------|
+| Fingerprint columns | The server's `frame_fingerprint` ring, keyed by frame number. Columns: `ws`, `wc` (main RAM writes), `mmio`, `mc` (MMIO writes), `sp`, `sc` (scratchpad), `qc` (queue) and `cyc` (guest cycle counter). The judge columns gate the result. `wr` and `pc` are locators. They only warn |
+| RAM | SHA-256 of main RAM, 2 MB from `0x80000000` (`read_ram`) |
+| VRAM | SHA-256 of the 1024 by 512 VRAM. It is read as 32 by 16 blocks of 128 by 128 (`vram_peek`) |
+
+- RAM and VRAM are taken while paused with `host_pause`. The pause lands one frame early or late (question 172). The result records `ram_exact` for each checkpoint.
+- RAM and VRAM are compared only where `ram_exact` is set in both the result and the expected file.
+- The expected digests are tied to one exe build. A different exe SHA-256 only warns (question 173).
+
+### Gates
+
+| Gate | Pass rule |
+|------|-----------|
+| `route_sha256` | Matches the expected route |
+| `dispatch_miss_total` | 0 |
+| `segment_miss_total` | 0 |
+| Checkpoint set | Same 7 checkpoints |
+| Fingerprint judge columns | Match at every checkpoint |
+| `exe_sha256` | Mismatch only warns |
+
+### Exit codes
+
+| Code | Meaning |
+|------|---------|
+| 0 | MATCH |
+| 1 | MISMATCH, a run failure, or a setup error (`SystemExit` with a string) |
+
+- The docstring and README say a setup error exits 2. The code exits 1. See question 176.
+
+### Results on this machine
+
+| Check | Result |
+|-------|--------|
+| `--record-expected`, 3 cold boots | Bit-identical at all 7 checkpoints |
+| `--runs 3 --expect` | MATCH, exit 0 |
+| Reviewer, `--runs 1 --expect` | MATCH at 7 checkpoints, in 70.6 s. Frame 1800 was paused on frame 1801, so its RAM and VRAM hashes were skipped with a warning |
+| Negative control, START at 3001 instead of 3000 | MISMATCH with 13 differences, exit 1. `wc`, `ws` and `mmio` differed at 3600, 3900, 4300 and 5000, and `route_sha256` differed. The RAM and VRAM hashes at those frames matched |
+
+- A MATCH with `--runs 1` guarantees the fingerprint columns at all 7 checkpoints. RAM and VRAM are compared only at the exact checkpoints. The final line of the script does not yet say how many were compared (question 171).
+- No RAM ranges needed excluding.
+- The fingerprints were the sensitive digest in the negative control. The RAM and VRAM hashes did not change there.
+
+### Boot sequence seen by an agent
+
+These notes come from agent screenshots. They are evidence only. No user has checked them. The screenshots are not committed.
+
+| Frame | What the agent saw |
+|-------|--------------------|
+| No input | Intro movies. A text screen with the 'mythology' definition, near frame 2500. A logo and candle movie, near 4000. A title movie, near 5250. The main menu between 5800 and 6700. Attract gameplay, near 6500 (seen once, question 175) |
+| START at 3000 | The main menu, with START and OPTIONS and 'X - SELECT', is visible by 3600 |
+| CROSS at 4000 | START is selected. The screen goes black, then a cutscene (a domed temple under a moon, near 4600). 'MISSION OBJECTIVE: STEAL THE SACRED MAP OF ELEMENTS - LOADING' shows by about 5500 |
+
+### Committed files
+
+Per D8 (`docs/DECISIONS.md`), routes and expected digests may be committed. Recordings, screenshots, saves, game pixels, game bytes and the BIOS may not.
+
+| Path | Content |
+|------|---------|
+| `tools\run_boot_route.py` | The script |
+| `tests\replays\README.md` | Folder note |
+| `tests\replays\.gitignore` | Ignores `local\`, `*.png`, `*.jpg`, `*.bmp`, `*.wav`, save and memory card files, logs, `result*.json`, `shots\`, `scratch\` and `out\` |
+| `tests\replays\routes\boot_to_menu.json` | The route |
+| `tests\replays\expected\boot_to_menu.json` | Expected digests: frame numbers, counters, 64-bit hashes, and SHA-256 of RAM, VRAM, route and exe. No absolute paths and no timestamps |
+
+- `work\` holds the run output. It is git-ignored.
+- Open items are in `docs/OPEN_QUESTIONS.md`, questions 171 to 177.

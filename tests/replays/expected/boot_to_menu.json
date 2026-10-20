@@ -1,0 +1,145 @@
+{
+ "checkpoints": [
+  {
+   "fingerprint": {
+    "cyc": 338688000,
+    "mc": 70548,
+    "mmio": "0x5d389a64697832aa",
+    "pc": "0x88a5f3e5f424ced3",
+    "qc": 0,
+    "sc": 0,
+    "sp": "0x14650fb0739d0383",
+    "wc": 5514266,
+    "wr": "0xbc304d954d895f33",
+    "ws": "0xb9b27b2fc7ba8ffc"
+   },
+   "frame": 600,
+   "paused_frame": 600,
+   "ram_exact": true,
+   "ram_sha256": "8fe82a21a6c9395016a276788e7faf044b00a1705d9941e4545f6ecb884988f1",
+   "vram_sha256": "0685680da8a5617e2719cf9ead592d2b4f43571662263c71f4e30ca13a03ef25"
+  },
+  {
+   "fingerprint": {
+    "cyc": 1016064000,
+    "mc": 277382,
+    "mmio": "0xcfe458ce1501efe1",
+    "pc": "0x1ed71c08d93c8685",
+    "qc": 0,
+    "sc": 0,
+    "sp": "0x14650fb0739d0383",
+    "wc": 31642703,
+    "wr": "0xc616f78d63d9b46a",
+    "ws": "0x1c66b78aee7c023d"
+   },
+   "frame": 1800,
+   "paused_frame": 1800,
+   "ram_exact": true,
+   "ram_sha256": "4d0fca1199e54fddc3ce04b14011a4dd18251d81fb9d12b4da4358a5649e6ef7",
+   "vram_sha256": "e76aad7fd8b619f86bb0faa5e5f014f1cba05d85b838359bf43544a13e5376dc"
+  },
+  {
+   "fingerprint": {
+    "cyc": 1693440000,
+    "mc": 512877,
+    "mmio": "0xc346ba7e022d33ed",
+    "pc": "0xf7520c6d893ce95b",
+    "qc": 0,
+    "sc": 0,
+    "sp": "0x14650fb0739d0383",
+    "wc": 60847876,
+    "wr": "0xfbff6fb86e9d99fe",
+    "ws": "0xcfe5e94f3a37e789"
+   },
+   "frame": 3000,
+   "paused_frame": 3000,
+   "ram_exact": true,
+   "ram_sha256": "9396ea519e416ee6969f320e77bf7b129e76cb9d0a6b6e64e92d2541c964949c",
+   "vram_sha256": "5b0e6e9e04af5748304bb78fa16d1f1a0a6098b9a64e9ca53f12694b4bb8615e"
+  },
+  {
+   "fingerprint": {
+    "cyc": 2032128000,
+    "mc": 621873,
+    "mmio": "0x88d6c8272347936e",
+    "pc": "0x9b3265036c12a821",
+    "qc": 0,
+    "sc": 0,
+    "sp": "0x14650fb0739d0383",
+    "wc": 71478505,
+    "wr": "0x09f50e39bd2bc7eb",
+    "ws": "0x3507319e236dd32c"
+   },
+   "frame": 3600,
+   "paused_frame": 3600,
+   "ram_exact": true,
+   "ram_sha256": "dcef47006a275401dc666e6d3de67fd0b5554eb4b08f7dbdd2ec8fe78b0c0147",
+   "vram_sha256": "ce7e9e2b209bdf6a11254b1ecc577069bab15131fe32a4a3c86806b6de33b6c8"
+  },
+  {
+   "fingerprint": {
+    "cyc": 2201472000,
+    "mc": 634797,
+    "mmio": "0x99deacdb11ff2cac",
+    "pc": "0xc148d51c5ddf755b",
+    "qc": 0,
+    "sc": 0,
+    "sp": "0x14650fb0739d0383",
+    "wc": 74445140,
+    "wr": "0x216866fee3570688",
+    "ws": "0xe4dac346369fea46"
+   },
+   "frame": 3900,
+   "paused_frame": 3900,
+   "ram_exact": true,
+   "ram_sha256": "e78b22679d30d485b6188ed9297479d5577d3aee018694b7a27645996dbea4d4",
+   "vram_sha256": "44cfa09f8c8caa2d0785a11c59906bc307e58cb0a54f1cfef8845281b9d4e8ef"
+  },
+  {
+   "fingerprint": {
+    "cyc": 2427264000,
+    "mc": 691079,
+    "mmio": "0x92a099b67d732580",
+    "pc": "0x8284ed17a0ae3401",
+    "qc": 0,
+    "sc": 39,
+    "sp": "0x68d6c6309cd875af",
+    "wc": 81489639,
+    "wr": "0x2fe745a84fe2e521",
+    "ws": "0x0a722ca0ad4c38b0"
+   },
+   "frame": 4300,
+   "paused_frame": 4300,
+   "ram_exact": true,
+   "ram_sha256": "4b59542695ee1aa408865f99c7969635bcc8dfe65616211c614cd4093d829f84",
+   "vram_sha256": "eb2087bc1cc4fb69e5587f2df40467a16ca55f7f8a284e82909fb697095614a2"
+  },
+  {
+   "fingerprint": {
+    "cyc": 2822400000,
+    "mc": 828200,
+    "mmio": "0x10adce304d59bc1f",
+    "pc": "0xeeba9d2a4e2a317d",
+    "qc": 0,
+    "sc": 39,
+    "sp": "0x68d6c6309cd875af",
+    "wc": 98498321,
+    "wr": "0xf2bc116014e26dbb",
+    "ws": "0xa3ceeb51d3d53670"
+   },
+   "frame": 5000,
+   "paused_frame": 5000,
+   "ram_exact": true,
+   "ram_sha256": "22d9d6646a22b4841a7f26bb7779c75fafc1762d4e072c2804350945fd97fd5c",
+   "vram_sha256": "86eaee4efb32c73ac57e07a2a73637d49561475e5a652fbb282cd0ed93218a07"
+  }
+ ],
+ "dispatch_miss_total": 0,
+ "exe_sha256": "7bcb28c2693038e1f830bd10802eba2a58fb2817f41adf5b994fa546edc66a21",
+ "route_finished": true,
+ "route_name": "boot_to_menu",
+ "route_sha256": "d1d5b07bad097628909dbddc2fdad4f779b144b8eed2ba7defdf05effbd991f1",
+ "runs": 3,
+ "schema": 1,
+ "segment_miss_total": 0
+}

@@ -1,0 +1,9 @@
+{
+  "name": "boot_to_menu",
+  "description": "Cold boot with an empty memory card. START at frame 3000 skips the intro movie, the title menu is up by about frame 3600, CROSS at frame 4000 selects START (new game).",
+  "checkpoints": [600, 1800, 3000, 3600, 3900, 4300, 5000],
+  "steps": [
+    {"frame": 3000, "buttons": ["START"], "hold": 4},
+    {"frame": 4000, "buttons": ["CROSS"], "hold": 4}
+  ]
+}

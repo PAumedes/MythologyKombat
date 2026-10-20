@@ -83,6 +83,7 @@ _Filled in by the doc-writer as tasks pass review._
   - Later: `aot\overlays.json` and test routes
 - Still never committed: game data, `generated\`, extracted files, BIOS dumps, and any `work\` output. `CLAUDE.md` lists these rules.
 - Replay recordings are a separate question. See `docs/TASKS.md`, open question 3.
+- T2.18 used this decision. `tests\replays\routes\` and `tests\replays\expected\` are committed. Recordings, screenshots, saves and game bytes are not. Details are in `docs/SETUP.md` (T2.18).
 - Reason: the user's answer. Run `git status` before every commit, as `CLAUDE.md` requires.
 - Details are in `docs/SETUP.md` (T2.21). Open items are in `docs/OPEN_QUESTIONS.md` (140 to 147).
 

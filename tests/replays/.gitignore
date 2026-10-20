@@ -1,0 +1,19 @@
+# Everything here is ignored unless it is a route file, an expected-digest file, this README or this file.
+# Local recordings (T2.19/T2.20): RAM digests and personal data. Never committed without the user's decision.
+local/
+# Screenshots, audio, saves, scratch output
+*.png
+*.jpg
+*.bmp
+*.wav
+*.mcr
+*.mcd
+*.srm
+*.sav
+*.state
+*.log
+saves/
+shots/
+scratch/
+out/
+result*.json

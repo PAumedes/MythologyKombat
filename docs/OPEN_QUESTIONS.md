@@ -287,3 +287,17 @@ See `docs/SETUP.md` ("Playtest 2: FMV and gameplay") and `docs/CONTROLS.md`. All
 | 168 | Do `PSX_VSYNC=-1` (adaptive) and `PSX_VSYNC=2` (VRR) change the FMV rate? | Not run. Their code paths are in `psxrecomp\runtime\src\main.cpp` (near line 18612). |
 | 169 | Do `PSX_PRESENT_THREAD=1` or `PSX_RENDER_THREAD=1` change the FMV rate? | Not tested. |
 | 170 | Where does the launcher keep the player's `settings.toml`? | The file overrides `game.toml` for the vsync setting. Its location is not verified. See `docs/SETUP.md`. |
+
+## Boot-to-menu replay route (from T2.18)
+
+See `docs/SETUP.md` ("Boot-to-menu replay route (T2.18)") and `docs/DECISIONS.md` (D8).
+
+| # | Question | Notes |
+|---|----------|-------|
+| 171 | Should the final line of `tools\run_boot_route.py` say how many RAM and VRAM checks ran? | With `--runs 1`, a MATCH says "MATCH" but compares RAM and VRAM only where they are exact. The reviewer run skipped the hash at frame 1800, with a warning. The final line should print `RAM/VRAM compared at k/7`. Not done. |
+| 172 | Can the pause land on the exact frame? | `host_pause` lands one frame early or late (+-1). Commands are served once per vblank. Upstream removed `pause`, `run_to_frame` and `step`. A framework-level "pause at frame N" would make the RAM and VRAM hashes exact at every checkpoint. Not decided. |
+| 173 | When should the expected digests be re-recorded? | The expected digests are tied to one exe build (its SHA-256 is in `tests\replays\expected\boot_to_menu.json`). The script only warns when the exe differs. The policy for re-recording after a rebuild is not decided. |
+| 174 | What caused the one earlier mid-run process death? | One earlier run died partway through. The cause is unknown. It did not come back in 8 runs. It may have been an external `taskkill`. Not checked. |
+| 175 | Does attract mode start at about frame 6500 on every run? | Seen once, in an agent screenshot. Not checked on other runs. |
+| 176 | Which exit code does a setup error give? | The docstring and README of `tools\run_boot_route.py` say exit 2. A `SystemExit` with a string exits 1. Either the docs or the code must change. Not changed. |
+| 177 | How strong is the evidence that the `mmio` and `mc` columns respond to input? | The evidence is one negative control: START at frame 3001 instead of 3000. It changed `mmio` and `wc` and `ws` at later checkpoints. One control is thin evidence. |
