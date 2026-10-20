@@ -203,3 +203,24 @@ _Filled in by the doc-writer as tasks pass review._
 - Context: a recording folder holds `card1.mcd`, `card2.mcd` (copies of the starting cards), `inputs.csv` with a RAM digest per vblank, and `telemetry.csv`.
 - Decision: copy sessions to `tests\replays\local\` and never commit them. `tests\replays\.gitignore` and the root `.gitignore` both ignore that folder. `tools\run_replays.ps1` replays them into `work\replay_out\`. Whether recordings are ever committed stays the user's decision (TASKS open question 3).
 - Derived route metadata with no game data (button names, frame numbers) may be committed under D8. Nothing of that kind was added by T2.20.
+
+## D17 User descopes T2.10 with the movies checked so far. T2.23 closes (T2.10, T2.23)
+
+- Date: 2026-10-20.
+- Context: T2.10 (FMV check) stayed `in-progress`. Only 5 of the 28 `/MOVIES` STR files were reached in any trace or report. Picture with vsync off was not reported for the two movies with a user report. T2.23 could not close until T2.10 was done or the user descoped it (`docs/TASKS.md`, gate notes).
+- Decision: Patricio, the user, decided in chat to descope T2.10. T2.10 is accepted as `done` with the movies checked so far. The user recorded this as his own decision. T2.23 (Phase 2 gate review) is closed as `done` on the same decision. The gate review had PASSED on checks before this.
+- Reason: the user's decision. It is not an agent finding.
+- What remains untested or unreported:
+
+| Item | State | Open question |
+|------|-------|---------------|
+| 23 of the 28 `/MOVIES` STR files | Never reached by any trace or report. Marked untested in the table in `docs/SETUP.md` | 238 |
+| Picture with vsync off for `MIDWAY01.STR` and `SZINTRO1.STR` | Not reported. Audio with vsync off is reported as clean | 237 |
+| Picture and audio for `LEGAL.STR`, `SZLOGO15.STR` and `OPEN.STR` | Read in traces. No picture or audio report | 148, 238 |
+| Cause of the Midway logo "digital glitch" | Unknown. No code fix was made. Stutter is handled as the vsync setting (D9) | 237 |
+| Which movie is the Sony logo | Not identified. No STR file is read before `LEGAL.STR` | 241 |
+| `WIND.OVR` read before New Game | Cause unknown | 242 |
+
+- Open questions that stay open: 148, 150, 162, 237, 238, 241 and 242. This decision closes none of them.
+- Effect: the status of T2.10 and T2.23 changes in `docs/TASKS.md`. The FMV evidence in `docs/SETUP.md` is unchanged.
+- Details are in `docs/SETUP.md` ("FMV check (T2.10) and first fight (T2.11)"). Open items are in `docs/OPEN_QUESTIONS.md`.

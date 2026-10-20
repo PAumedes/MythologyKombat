@@ -40,6 +40,7 @@
 
 - T2.10 FMV check (STR and XA): per-movie table added to `docs/SETUP.md` (28 STR files; 1 movie matched by name, 1 intro movie unidentified, 26 untested); task stays in-progress because the intro stutter cannot be named to a file and the Midway match has no LBA trace; open items 235 to 238 and 241 in `docs/OPEN_QUESTIONS.md`.
 - T2.11 Main menu and first fight: `done`. User-reported menu, new game and fight with no crash. Play time from the user's session telemetry: 399.6 s total, about 208 s after the TEMPLE.OVR read (upper bound, includes loading). Level is TEMPLE from overlay id 140 in that telemetry (inferred, not said by the user); details in `docs/SETUP.md` and questions 239, 240 and 242 in `docs/OPEN_QUESTIONS.md`.
+- T2.10 FMV check (STR and XA): descoped and marked `done` by the user on 2026-10-20 (D17) with the movies checked so far; 23 of 28 STR movies untested, open questions 148, 150, 162, 237, 238, 241 and 242 stay open; T2.23 Phase 2 gate review closed as `done` after this; status in `docs/TASKS.md`, details in `docs/SETUP.md` and `docs/DECISIONS.md`.
 
 ## Post-Phase-1 notes
 

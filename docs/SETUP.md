@@ -968,7 +968,7 @@ Not reported by the user:
 
 ## Playtest 2: FMV and gameplay (T2.10/T2.11 partial)
 
-This is the user's second play test. It is user-reported. No agent ran it, and no artifact was saved. No agent checked the picture or the sound. The frame rates are the user's estimates, not measured values. T2.10 and T2.11 stay as they are in `docs/TASKS.md`. This section does not change their status.
+This is the user's second play test. It is user-reported. No agent ran it, and no artifact was saved. No agent checked the picture or the sound. The frame rates are the user's estimates, not measured values. At the time of this playtest, T2.10 and T2.11 were left as they were in `docs/TASKS.md`. This section did not change their status.
 
 ### Run
 
@@ -1048,7 +1048,7 @@ See `docs/OPEN_QUESTIONS.md`, questions 116 to 127 and 148 to 161.
 
 ## FMV check (T2.10) and first fight (T2.11)
 
-Status: T2.11 is `done` in `docs/TASKS.md`. T2.10 stays `in-progress`. Three kinds of evidence are kept apart below: user-reported (playtests 1 and 2 above), agent-observed (debug build, headless, `tools\fmv_identify.py`), and user-session facts read from artifacts of the user's own recordings (`telemetry.csv`, the visible coverage run). Picture and audio quality are user-reported only. Disc reads, LBAs and files come from the traces.
+Status: T2.11 is `done` in `docs/TASKS.md`. T2.10 was `in-progress` until the user descoped it on 2026-10-20. It is now `done`, with the movies checked so far (`docs/DECISIONS.md`, D17). Three kinds of evidence are kept apart below: user-reported (playtests 1 and 2 above), agent-observed (debug build, headless, `tools\fmv_identify.py`), and user-session facts read from artifacts of the user's own recordings (`telemetry.csv`, the visible coverage run). Picture and audio quality are user-reported only. Disc reads, LBAs and files come from the traces.
 
 ### Movies the user reported
 
@@ -1147,7 +1147,7 @@ LBA and sector counts come from `docs/DISC_MAP.md`. Untested means no report exi
 - Count: 2 movies with a user report (`MIDWAY01.STR`, `SZINTRO1.STR`). 3 more were read in the traces but have no picture or audio report (`LEGAL.STR`, `SZLOGO15.STR`, `OPEN.STR`). 23 untested.
 - The other STR files (for example `FMV1.STR`, `BIOS.STR`) were not read in any trace. The boot route stops at the first level.
 
-### Why T2.10 stays in-progress
+### Why T2.10 was in-progress (before the D17 descope)
 
 Accept line: "each movie reached has a row (picture OK?, audio OK?, glitches); unreached movies are marked untested; failures become `docs/OPEN_QUESTIONS.md` entries naming the exact movie."
 
@@ -1165,7 +1165,7 @@ Not met:
 - Whether the Sony logo exists as a movie is not known (241). No movie file is read before `LEGAL.STR`.
 - The 23 untested movies were not reached by anyone. Whether the user can reach them is not known (238).
 
-Open items: `docs/OPEN_QUESTIONS.md` (148, 150, 162, 237, 238, 241).
+Open items: `docs/OPEN_QUESTIONS.md` (148, 150, 162, 237, 238, 241). The user's descope on 2026-10-20 (D17) does not close them. Question 242 (`WIND.OVR`) also stays open.
 
 ### First fight (T2.11)
 
