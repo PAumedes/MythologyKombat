@@ -142,6 +142,22 @@ The script `tools\disc_list.py` walks the disc's ISO 9660 tree and writes every 
 - It does not change anything in `ps1_game\`.
 - The results are in `docs/DISC_MAP.md`. That page holds names, paths, sizes, LBAs and flags only. It holds no file contents.
 
+## Disc format classification (T1.3)
+
+The script `tools\disc_classify.py` gives each disc file a format tag. It also extracts the files. Run it from the repo root after `tools\disc_list.py`, because it reads `work\disc_files.json`:
+
+```
+<RETRO_TOOLS_DIR>\python\python.exe -I tools\disc_classify.py [--no-extract]
+```
+
+- It writes `work\disc_classes.json`. The `work\` folder is git-ignored.
+- It extracts files to `work\extracted\`. Extraction takes about 530 MB.
+- STR video files are extracted as raw 2352-byte sectors. Their names end in `.raw2352`.
+- All other files are extracted as their Form 1 user data, cut to the ISO size.
+- `--no-extract` skips the extraction step and writes the JSON only.
+- The usage line also lists `--files PATH` and `--out PATH`.
+- The results are in `docs/FORMATS.md`. That page holds tags and evidence kinds only. It holds no file contents.
+
 ## PSXRecomp framework (T0.5)
 
 PSXRecomp is added as a git submodule at `psxrecomp\`. It is pinned to one commit.
