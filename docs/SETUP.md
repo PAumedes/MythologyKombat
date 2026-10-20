@@ -1035,3 +1035,18 @@ The script `tools\lba_lookup.py` shows which disc file holds a given sector. Run
 - Every LBA from 0 to 228990 maps to a file, a structure or a gap. The tool found no unmapped LBA on this disc.
 - The missing-JSON exit path was checked by reading the code. It was not run. See `docs/OPEN_QUESTIONS.md`, question 129.
 - The tool output is not committed. `work\` is git-ignored.
+
+## Static overlay facts (T2.12)
+
+The script `tools\overlay_facts.py` reads the boot EXE and the eight `.OVR` files, and the two demo files. It checks the loader tables, the destination pointer, the call sites into the overlay window, and the read_file callers. Run it from the repo root:
+
+```
+<RETRO_TOOLS_DIR>\python\python.exe -I tools\overlay_facts.py
+```
+
+- It takes about 2.5 s.
+- It reads the boot EXE and the overlays from the disc `.bin`, through the ISO helpers. It does not read `work\extracted\`. So it does not need `tools\disc_classify.py` to run first.
+- It writes `work\overlay_facts.json`. The `work\` folder is git-ignored.
+- It is deterministic. Running it again gives the same output.
+- The results are in `docs/EXE_OVERLAYS.md`, under "Static overlay facts (T2.12)". That page holds addresses, sizes and 16-hex hash prefixes only.
+- The checks are static. They are strong consistency evidence, not proof. The runtime check is T2.13. See `docs/OPEN_QUESTIONS.md`, questions 130 to 139.

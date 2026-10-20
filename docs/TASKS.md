@@ -35,7 +35,7 @@ The orchestrator updates the Status column; nobody else edits this table.
 | T2.9 | LBA-to-file lookup tool | T1.1 | agents | done |
 | T2.10 | FMV check (STR and XA) | T2.6, T2.9 | USER + agents | todo |
 | T2.11 | Main menu and first fight | T2.10 | USER + agents | todo |
-| T2.12 | Overlay facts from the EXE and disc | T1.4 | agents | in-progress |
+| T2.12 | Overlay facts from the EXE and disc | T1.4 | agents | done |
 | T2.13 | Runtime proof: overlay RAM equals file bytes | T2.11, T2.12 | USER + agents | todo |
 | T2.14 | Overlay strategy decision | T2.13 | agents | todo |
 | T2.15 | Write aot/overlays.json | T2.14 | agents | todo |
@@ -44,7 +44,7 @@ The orchestrator updates the Status column; nobody else edits this table.
 | T2.18 | Replay infrastructure: scaffold and boot-to-menu route | T2.5 | agents | todo |
 | T2.19 | Playtest diagnostics package (recorder) | T2.4 | agents | todo |
 | T2.20 | Record a session and strict replay | T2.19, T2.11 | USER + agents | todo |
-| T2.21 | Seed symbols.toml from the SDK names | T1.6 | agents | todo |
+| T2.21 | Seed symbols.toml from the SDK names | T1.6 | agents | in-progress |
 | T2.22 | Name the overlay loader and level functions | T2.12, T2.21 | agents | todo |
 | T2.23 | Phase 2 gate review | all above | agents | todo |
 

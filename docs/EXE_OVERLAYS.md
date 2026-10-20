@@ -2,7 +2,12 @@
 
 This page covers the boot EXE header, the start-up code (crt0), the memory map, and the eight `.OVR` overlay files. It holds addresses and sizes only. It holds no file contents.
 
-Source: `work\exe_header.json` and `work\overlay_candidates.json`, written by `tools\exe_overlays.py` (T1.4). Both files are git-ignored. How to rerun the script is in `docs/SETUP.md`.
+Sources:
+
+- `work\exe_header.json` and `work\overlay_candidates.json`, written by `tools\exe_overlays.py` (T1.4).
+- `work\overlay_facts.json`, written by `tools\overlay_facts.py` (T2.12). The section "Static overlay facts (T2.12)" below comes from this file.
+
+All three files are git-ignored. How to rerun the scripts is in `docs/SETUP.md`.
 
 Status words used here:
 
@@ -10,6 +15,7 @@ Status words used here:
 - **confirmed by Ghidra headless**: Ghidra 12.1.4 with the PS1 loader, run through `analyzeHeadless`, gave the same value (T1.5). Used for the entry point, text address and size, BSS range and heap values only. The Ghidra GUI has not been opened. See `docs/SETUP.md`.
 - **pending Ghidra/emulator**: not yet compared with a debugger, and not checked in Ghidra. The emulator check is still pending.
 - **confirmed** (overlays): the overlay's own code fits the load address that the EXE's loader uses. This is a static check only. Ghidra has not checked the overlays yet. A runtime check is still pending.
+- **static check (T2.12)**: a check on the EXE code and the overlay bytes, done by `tools\overlay_facts.py`. It is strong consistency evidence, not proof. The runtime check (T2.13) still owns the final confirmation.
 
 ## EXE header
 
@@ -58,22 +64,23 @@ In Ghidra's PS1 loader, the RAM block at `0x800D8000` to `0x801FFFFF` is uniniti
 
 ## Overlay table
 
-All eight `.OVR` files load at `0x80130FF8`. The table gives the size, the disc start LBA, and the end address (exclusive) of each file in RAM.
+All eight `.OVR` files load at `0x80130FF8`. The table gives the size, the disc start LBA, and the end address (exclusive) of each file in RAM. The BRDGDEMO and WINDDEMO files (ids 134 and 143) are not in this table. See the T2.12 section.
 
 | Id | File | Size (bytes) | Start LBA | Load address | End (exclusive) | Layout | Status |
 |----|------|--------------|-----------|--------------|-----------------|--------|--------|
-| 135 | `/OVERLAYS/BRIDGE.OVR` | 23,164 | 210251 | `0x80130FF8` | `0x80136A74` | address table, then code | confirmed |
-| 136 | `/OVERLAYS/EARTH.OVR` | 37,516 | 210263 | `0x80130FF8` | `0x8013A284` | code from offset 0 | confirmed |
-| 137 | `/OVERLAYS/FIRE.OVR` | 20,800 | 210282 | `0x80130FF8` | `0x80136138` | address table, then code | confirmed |
-| 138 | `/OVERLAYS/FORTRESS.OVR` | 19,874 | 210293 | `0x80130FF8` | `0x80135D9A` | code from offset 0 | confirmed (rests on one check only) |
-| 139 | `/OVERLAYS/PRISON.OVR` | 23,256 | 210303 | `0x80130FF8` | `0x80136AD0` | code from offset 0 | confirmed (rests on one check only) |
-| 140 | `/OVERLAYS/TEMPLE.OVR` | 19,100 | 210315 | `0x80130FF8` | `0x80135A94` | code from offset 0 | confirmed |
-| 141 | `/OVERLAYS/WATER.OVR` | 28,052 | 210325 | `0x80130FF8` | `0x80137D8C` | address table, then code | confirmed |
-| 142 | `/OVERLAYS/WIND.OVR` | 46,888 | 210339 | `0x80130FF8` | `0x8013C720` | address table, then code | confirmed |
+| 135 | `/OVERLAYS/BRIDGE.OVR` | 23,164 | 210251 | `0x80130FF8` | `0x80136A74` | address table, then code | confirmed (T1.4). T2.12 joint check not unique (question 130) |
+| 136 | `/OVERLAYS/EARTH.OVR` | 37,516 | 210263 | `0x80130FF8` | `0x8013A284` | code from offset 0 | confirmed (T1.4). T2.12 static check gives one base |
+| 137 | `/OVERLAYS/FIRE.OVR` | 20,800 | 210282 | `0x80130FF8` | `0x80136138` | address table, then code | confirmed (T1.4). T2.12 joint check not unique (question 130) |
+| 138 | `/OVERLAYS/FORTRESS.OVR` | 19,874 | 210293 | `0x80130FF8` | `0x80135D9A` | code from offset 0 | confirmed (T1.4). Two static checks in T2.12. Runtime pending (T2.13) |
+| 139 | `/OVERLAYS/PRISON.OVR` | 23,256 | 210303 | `0x80130FF8` | `0x80136AD0` | code from offset 0 | confirmed (T1.4). Two static checks in T2.12. Runtime pending (T2.13) |
+| 140 | `/OVERLAYS/TEMPLE.OVR` | 19,100 | 210315 | `0x80130FF8` | `0x80135A94` | code from offset 0 | confirmed (T1.4). T2.12 static check gives one base |
+| 141 | `/OVERLAYS/WATER.OVR` | 28,052 | 210325 | `0x80130FF8` | `0x80137D8C` | address table, then code | confirmed (T1.4). T2.12 joint check not unique (question 130) |
+| 142 | `/OVERLAYS/WIND.OVR` | 46,888 | 210339 | `0x80130FF8` | `0x8013C720` | address table, then code | confirmed (T1.4). T2.12 joint check not unique (question 130) |
 
 - BRIDGE, FIRE, WATER and WIND start with a table of address words. The table has 32, 27, 83 and 102 words. The words point at data, not at function starts.
+- FIRE, WATER and WIND each hold exactly one null word inside their table.
 - The other four start with code.
-- FORTRESS and PRISON are confirmed by the address-constant check only. FORTRESS has no jal targets in the window. PRISON's jal targets did not give a decisive result.
+- Earlier text said FORTRESS and PRISON were confirmed by one check only, and that FORTRESS had no jal targets in the window. Both statements are corrected by the T2.12 section.
 - Ids 134 (`/OVERLAYS/BRDGDEMO.BIN`) and 143 (`/OVERLAYS/WINDDEMO.BIN`) are 2048-byte files. The loader does not copy them to the window. See `docs/FORMATS.md`.
 
 ## How overlays are loaded
@@ -93,7 +100,7 @@ The table index is the file id. The ids are 134 to 143, from `/OVERLAYS/BRDGDEMO
 | read_file(id, buf) | `0x800861D4` | Seeks with CdlSetloc, then reads with CdRead. It reads ceil(size / 2048) sectors |
 | Scratch allocator | `0x800865C0` | Gives the temporary read buffer. Not traced in full |
 | memcpy (BIOS A(0x2A)) wrapper | `0x8009F31C` | Copies the read buffer into the window |
-| Destination pointer | word at `0x80015134` | Holds `0x80130FF8`. The EXE never stores to it |
+| Destination pointer | word at `0x80015134` | Holds `0x80130FF8`. No store to it in the EXE text (static scan, T2.12). See the limits in the T2.12 section |
 
 Each level function does this:
 
@@ -111,11 +118,12 @@ Each level function does this:
 | `0x8002CB34` | 141 (WATER) | `0x8002CC2C` | `0x8002CC6C` |
 | `0x8002D198` | 139 (PRISON) | `0x8002D324` | `0x8002D364` |
 | `0x8002DA94` | 137 (FIRE) | `0x8002DB88` | `0x8002DBC8` |
-| `0x8002E130` | 137 (FIRE), second site | `0x8002E214` | `0x8002E254` |
+| `0x8002E130` | 137 (FIRE), second function. See the T2.12 section | `0x8002E214` | `0x8002E254` |
 | `0x8002E7F0` | 135 (BRIDGE), and 134 (BRDGDEMO, read only) | `0x8002E924`, `0x8002EB30` | `0x8002E964` |
 | `0x8002EFBC` | 138 (FORTRESS) | `0x8002F1CC` | `0x8002F20C` |
 
-The memcpy column is the BIOS memcpy call that follows each read. The WINDDEMO and BRDGDEMO rows have a read call only.
+- The memcpy column is the BIOS memcpy call that follows each read. The WINDDEMO and BRDGDEMO rows have a read call only.
+- The names in brackets are the overlay file names that the tool reports for each function. They are labels for the overlay, not names of levels.
 
 ## Method notes
 
@@ -123,6 +131,153 @@ The memcpy column is the BIOS memcpy call that follows each read. The WINDDEMO a
 - Function starts are taken as the word after `jr ra` and its delay slot. For the overlays that begin with an address table, the first word after the table also counts as a start.
 - The common check "a jal target is an `addiu sp,sp,-N` prologue" does not work for this code. Many functions start with `lui` or `lw` before the stack change. That check picks the wrong base, so the script does not use it.
 
+## Static overlay facts (T2.12)
+
+Source: `work\overlay_facts.json`, written by `tools\overlay_facts.py`. The script reads the boot EXE and the overlays from the disc `.bin` through the ISO helpers. It does not read `work\extracted\`. Run steps are in `docs/SETUP.md`.
+
+### Loader tables
+
+- The CdlLOC entry is 4 bytes: BCD minute, second, frame, then 0. The base is `0x80012F28`, indexed by id × 4.
+- The size entry is a little-endian u32. The base is `0x80013264`, indexed by id × 4.
+- LBA = (min × 60 + sec) × 75 + frame − 150.
+- Sectors = ceil(size / 2048).
+
+All ten ids agree with the disc file list (`work\disc_files.json`). The ids are contiguous: each file starts at the LBA after the previous file ends.
+
+| Id | File | MSF (BCD) | LBA | Size (bytes) | Sectors |
+|----|------|-----------|-----|--------------|---------|
+| 134 | `/OVERLAYS/BRDGDEMO.BIN` | 46:45:25 | 210250 | 2,048 | 1 |
+| 135 | `/OVERLAYS/BRIDGE.OVR` | 46:45:26 | 210251 | 23,164 | 12 |
+| 136 | `/OVERLAYS/EARTH.OVR` | 46:45:38 | 210263 | 37,516 | 19 |
+| 137 | `/OVERLAYS/FIRE.OVR` | 46:45:57 | 210282 | 20,800 | 11 |
+| 138 | `/OVERLAYS/FORTRESS.OVR` | 46:45:68 | 210293 | 19,874 | 10 |
+| 139 | `/OVERLAYS/PRISON.OVR` | 46:46:03 | 210303 | 23,256 | 12 |
+| 140 | `/OVERLAYS/TEMPLE.OVR` | 46:46:15 | 210315 | 19,100 | 10 |
+| 141 | `/OVERLAYS/WATER.OVR` | 46:46:25 | 210325 | 28,052 | 14 |
+| 142 | `/OVERLAYS/WIND.OVR` | 46:46:39 | 210339 | 46,888 | 23 |
+| 143 | `/OVERLAYS/WINDDEMO.BIN` | 46:46:62 | 210362 | 2,048 | 1 |
+
+### File ends and leading tables
+
+No `.OVR` file ends on a sector boundary. The tail is the number of bytes from the end of the file to the next 2048-byte boundary. The two demo files are exactly one sector, so their tail is 0.
+
+| Id | File | Tail to next sector (bytes) | Leading address-table words | SHA-256 (first 16 hex) |
+|----|------|------------------------------|-----------------------------|------------------------|
+| 134 | `BRDGDEMO.BIN` | 0 | not applicable | `17a8beb8d4b3f8e2` |
+| 135 | `BRIDGE.OVR` | 1,412 | 32 | `c23488d03a45d87f` |
+| 136 | `EARTH.OVR` | 1,396 | 0 | `c612daa9585cc471` |
+| 137 | `FIRE.OVR` | 1,728 | 27 | `97542431c98528e4` |
+| 138 | `FORTRESS.OVR` | 606 | 0 | `358c301b724ac342` |
+| 139 | `PRISON.OVR` | 1,320 | 0 | `2270420ecfa226ec` |
+| 140 | `TEMPLE.OVR` | 1,380 | 0 | `291c16ccc2afa65e` |
+| 141 | `WATER.OVR` | 620 | 83 | `7b076e6a7649f815` |
+| 142 | `WIND.OVR` | 216 | 102 | `530cd442a219cd44` |
+| 143 | `WINDDEMO.BIN` | 0 | not applicable | `11731a35bb1dbd04` |
+
+- The leading-table count is the longest run of words from the start of the file whose value is 0 or a multiple of 4. The count matches the table in `tools\exe_overlays.py`.
+- FORTRESS's size (19,874) is not a multiple of 4. The tool's word scan drops the last 2 bytes. The tool flags this as `size_multiple_of_4: false`. The loader's memcpy uses get_size(id). See question 139.
+- Full SHA-256 values are in `work\overlay_facts.json`.
+
+### Destination pointer
+
+- The word at `0x80015134` (file offset `0x5934`) is `0x80130FF8`.
+- Nine functions read it. Each reads it with `lw s0,20788(s0)` after `lui s0,0x8001`, then calls memcpy at `0x8009F31C` with a0 = s0.
+
+| Reader pc | Level function |
+|-----------|----------------|
+| `0x8002B7C4` | `0x8002B688` (TEMPLE) |
+| `0x8002BE60` | `0x8002BD10` (EARTH) |
+| `0x8002C59C` | `0x8002C420` (WIND) |
+| `0x8002CC58` | `0x8002CB34` (WATER) |
+| `0x8002D350` | `0x8002D198` (PRISON) |
+| `0x8002DBB4` | `0x8002DA94` (FIRE) |
+| `0x8002E240` | `0x8002E130` (second FIRE function) |
+| `0x8002E950` | `0x8002E7F0` (BRIDGE) |
+| `0x8002F1F8` | `0x8002EFBC` (FORTRESS) |
+
+- No store to `0x80015134` was found in the EXE text.
+- Limit: a write through a pointer computed from other data, a DMA transfer, or a BIOS call cannot be excluded by a static scan. See question 137.
+
+### Two checks for the window base
+
+The tool runs two static checks. It tests 2048 candidate bases, from `0x80130000` to `0x80131FFC`.
+
+- **Check E (EXE call sites).** The EXE has 34 call sites into the window, with 26 unique targets. Each call site is grouped by the level function that loads the overlay. A base passes if every call from that group lands on a function start in the overlay. A function start is word 0, the word after `jr ra` and its delay slot, or an `addiu sp,sp,-N` within 10 words.
+- **Check C (containment).** Every address the image uses at or above `0x80130FF8` must lie inside `[base, base + size)`. The lower bound `0x80130FF8` is the end of the crt0 BSS clear. It does not depend on the pointer word.
+
+| Overlay | Check E: bases where all sites land | Check C: base interval | Result after both checks |
+|---------|-------------------------------------|------------------------|--------------------------|
+| EARTH | 3 | `0x801306A8` to `0x80130FF8` | one base |
+| TEMPLE | 1 | not listed here (see the JSON) | one base |
+| FORTRESS | 1 | `0x80130FA0` to `0x80130FF8` | one base: `0x80130FF8` |
+| PRISON | 11 | `0x80130FF4` to `0x80130FF8` | one base: `0x80130FF8` |
+| BRIDGE | 52 | `0x80130FE0` to `0x80131078` | not one base (question 130) |
+| FIRE | 41 | not listed here (see the JSON) | not one base (question 130) |
+| WATER | 8 | not listed here (see the JSON) | not one base (question 130) |
+| WIND | 61 | not listed here (see the JSON) | not one base (question 130) |
+
+- **FORTRESS.** The EXE has 3 call sites into the window, all from the FORTRESS level function `0x8002EFBC`: `0x8002F2E4` to `0x80133380`, `0x8002F9D4` to `0x801333FC`, and `0x8002FA14` to `0x80133274`. All three land on function starts at `0x80130FF8`. The same three sites land 0 times in the other seven images at the same base.
+- **PRISON.** The EXE has 2 call sites into the window, from the PRISON level function `0x8002D198`: `0x8002D49C` to `0x801316A4` and `0x8002D694` to `0x80131DC0`. Check E alone leaves 11 bases. With check C, only `0x80130FF8` remains. The control gives 1 landing in the EARTH image at this base. The others give 0.
+- **Strength.** For FORTRESS and PRISON, this is a strong consistency check, not proof. The T2.13 runtime check still owns the final confirmation.
+- **Limit on check C.** The containment set includes every 4-aligned word in `[0x80130FF8, 0x80140000)`. So it can include data that is not a pointer. A pointer into BSS or the heap beyond the image would widen the interval.
+- **Earlier error.** The earlier note that FORTRESS has no jal targets in the window was a function-boundary artifact. The tool used the level function range `0x8002EFBC` to `0x8002FC84`. FORTRESS has 0 jal targets inside its own image and 54 `j` targets.
+
+### Dispatcher
+
+The level functions are reached through a jump table at `0x80013910` with 12 entries. The index is the word at `0x800D76A8` (gp+252). It is checked by `sltiu` against 12 at `0x80032EC4`. Each entry points to a thunk that loads the target function.
+
+| Index | Target function | Overlay id (tool) | Index that the function stores in gp+252 |
+|-------|-----------------|-------------------|-------------------------------------------|
+| 0 | `0x8002B688` | 140 | not resolved. The store at `0x8002B740` is at a block boundary |
+| 1 | `0x8002C420` | 142 | 1 |
+| 2 | `0x8002CB34` | 141 | 2 |
+| 3 | `0x8002BD10` | 136 | 3 |
+| 4 | `0x8002D198` | 139 | 4 |
+| 5 | `0x8002DA94` | 137 | 5 |
+| 6 | none. The thunk loads -1 | none | not applicable |
+| 7 | `0x8002E130` | 137 (second function) | 7 |
+| 8 | `0x8002E7F0` | 135 | 8 |
+| 9 | `0x8002EFBC` | 138 | 9 |
+| 10 | `0x8002E130` if `[0x800D7E48] >= 0`, otherwise `0x8002AC74` | 137 or none | not applicable |
+| 11 | `0x8002B594` | none reported by the tool | not applicable |
+
+- The index order follows the overlay ids. The docs do not give level names for these indices.
+- The jump table values and the thunks were checked by the reviewer. The matching of each function to its overlay name comes from the tool.
+- `0x8002AC74` and `0x8002B594` are in the table. The tool finds no overlay load in either.
+
+### Second FIRE function at 0x8002E130
+
+- It loads id 137, the same as `0x8002DA94`. It uses the same pointer and the same memcpy.
+- It is reached from dispatcher index 7, and from index 10 when `[0x800D7E48] >= 0`.
+- Its constant ids are 58, 60, 61, 62, 63, 137 and 144. The id set of `0x8002DA94` is 54, 55, 56, 58, 60, 61, 62, 63, 137 and 144. The comparison is tool output, not checked by the reviewer (question 133).
+- It also calls the arena-record loader at `0x80085AF8` and five library functions.
+- It has no jal, j or jalr into the window, and no address constant into it. `0x8002DA94` has `jal 0x80131064` at `0x8002DFDC`.
+- It stores 2 into gp+256 twice.
+- Which level or mode it serves is not known (question 46).
+
+### read_file callers
+
+- There are 128 jal sites to read_file at `0x800861D4`.
+- 125 of them use a constant id.
+- The 11 constant ids from 134 to 143 are exactly the sites of the nine level functions above.
+- Three sites use a variable id:
+  - `0x80085CF8` and `0x80085D74`, in function `0x80085AF8`. Its only caller is at `0x8002E6F8`, inside `0x8002E130`. The ids come from the records at `0x800AC440` (field 0, stride 28) and `0x800AC448` (field 2). The index `i` is the word at `0x800D7E48` (gp+2204). It is stored at `0x8002A6DC` (value -1) and at `0x8002AB70` (clamped: negative becomes 24, 25 or more becomes 0). So `i` is -1 or 0 to 24. When `i < 0`, the tool uses constant id 59. This path was not checked by the reviewer.
+  - Reachable ids at `0x80085CF8` are 28, 29, 31, 32, 33, 34, 35, 40, 144 to 156, 158, 159, 161 and 162. Reachable ids at `0x80085D74` are 34, 146, 149, 151 and 160. None is in 134 to 143.
+  - `0x8008635C`, in the wrapper at `0x80086324`. The wrapper takes the id in a0, stores it, gets the size, allocates, reads, and returns the id. Its direct callers are `0x80083A2C` (in `0x800839F4`) and `0x80083E18` (in `0x80083DE0`). Four id-table functions call it: `0x80083B8C`, `0x80083BEC` (table at `0x800AF5E4`, stride 296), `0x80083F60` and `0x80083FC0` (table at `0x800B1D34`, stride 1008). Each has 29 entries. The ids are 163 to 176 and 192 to 206 in one table, and 118, 121 to 133 and 177 to 191 in the other. None is in 134 to 143. These id tables were not checked by the reviewer.
+- The wrapper's address is also stored at `0x80082DF4`, in a callback table built on the stack in `0x80082D78` and passed to `0x800A3F8C`. The ids used by these indirect calls are not known (question 132).
+- The window pointer is read only by the nine level functions. So for direct call paths, only those nine functions load overlays into the window.
+- The T2.12 report also notes that the generic callers `0x80061690` and `0x80061960` call `0x801310C0`, which is code in the window, from outside the level functions (question 134). This is from the report. It is not in the JSON file.
+
+### Corrections to earlier text
+
+| Earlier statement | Correction |
+|-------------------|------------|
+| Two read_file calls use a variable id | There are three (see above) |
+| FORTRESS has no jal targets in the window | Wrong. The EXE calls 3 window addresses from the FORTRESS function. The earlier result was a function-boundary artifact |
+| PRISON's jal targets did not give a decisive result | PRISON has 2 EXE call sites. With both checks, one base remains: `0x80130FF8` |
+| FORTRESS and PRISON are confirmed by one check only | Both have two static checks (E and C). Runtime is still pending (T2.13) |
+| The function at `0x8002E130` is the second FIRE site, with its level unknown | Still true. It is also a second function that loads FIRE, selected by dispatcher index 7 (or 10). Its level is unknown (question 46) |
+
 ## Not yet confirmed
 
-See `docs/OPEN_QUESTIONS.md`, questions 44 to 52.
+See `docs/OPEN_QUESTIONS.md`, questions 44 to 52 and 130 to 139.
