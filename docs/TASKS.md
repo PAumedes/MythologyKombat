@@ -28,8 +28,8 @@ The orchestrator updates the Status column; nobody else edits this table.
 | T2.2 | Seed sanity and static coverage baseline | T2.1 | agents | done |
 | T2.3 | First Generate (boot EXE, OpenBIOS only) | T2.1, T2.2 | agents | done |
 | T2.4 | Configure and build the game executable | T2.3 | agents | done |
-| T2.5 | Headless smoke-test harness | T2.4 | agents | in-progress |
-| T2.6 | Visual first boot: logos | T2.5 | USER | todo |
+| T2.5 | Headless smoke-test harness | T2.4 | agents | done |
+| T2.6 | Visual first boot: logos | T2.5 | USER | in-progress |
 | T2.7 | Provide a retail BIOS (conditional) | T2.6 | USER | todo |
 | T2.8 | Seed growth from dispatch misses | T2.5 | agents | todo |
 | T2.9 | LBA-to-file lookup tool | T1.1 | agents | todo |

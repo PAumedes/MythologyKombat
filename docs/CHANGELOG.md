@@ -19,6 +19,7 @@
 - T2.1 CLI wrapper and disc re-verification: `tools\run_psxrecomp.ps1` runs the upstream `psxrecomp_cli.py` with the unmodified retro-tools Python (private fallback `work\py-psxrecomp`, D5); `verify-disc` exits 0 on the disc and 3 on zeroed digests; `tools\check_boot_exe.py` checks the boot EXE digests; `ps1_game\` unchanged; steps in `docs/SETUP.md`.
 - T2.3 First Generate: upstream `generate` runs on the boot EXE with `game.toml`; 7262 functions in 58 shards (61 files in git-ignored `generated\`); a from-scratch rerun is byte-identical to run 1; 562 out-of-function warnings and 5201 TODO markers at the EXE tail are open; steps in `docs/SETUP.md`, open items 91 to 97 in `docs/OPEN_QUESTIONS.md`.
 - T2.4 Build the game executable: `psx-runtime` builds `build\MythologyKombat.exe` (SHA-256 66fdb5be...); a duplicate upstream manifest is worked around in `CMakeLists.txt` (D6); steps in `docs/SETUP.md`, open items 98 to 102 in `docs/OPEN_QUESTIONS.md`.
+- T2.5 Headless smoke test: `tools\smoke_boot.py` runs the game headless and PASSes when the process stays alive, frames rise and no `psx_crash.txt` appears; `build\` has the debug server off, so tests use `work\build-dbg` (D7); steps in `docs/SETUP.md`, open items 103 to 114 in `docs/OPEN_QUESTIONS.md`.
 
 ## Post-Phase-1 notes
 

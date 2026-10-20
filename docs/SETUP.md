@@ -789,5 +789,135 @@ cmake --build build --target psx-runtime
 | `--audit-mod-plugins` | Mod plugin audit |
 | `--netplay`, `--net-*`, `--netplay-query` | Netplay options |
 
-- Debug tools are compiled in.
+- Debug tools are NOT compiled in. `PSX_DEBUG_TOOLS` is OFF in this build, so no TCP debug server runs on port 4370. An earlier line here said the opposite. That line was wrong. See the headless smoke test below (T2.5) and `docs/DECISIONS.md` (D7).
 - Startup log: `tcc tier active but no bundled toolchain at build\overlay_toolchain (overlay gaps -> interpreter)`. No overlay toolchain is staged. See `docs/OPEN_QUESTIONS.md`.
+
+## Headless smoke test (T2.5)
+
+The script `tools\smoke_boot.py` starts the game exe with no window. It checks that the game keeps running and keeps drawing frames. It is an automated check. It is not the user's play test, which is T2.6.
+
+Run it from the repo root:
+
+```
+<RETRO_TOOLS_DIR>\python\python.exe -I tools\smoke_boot.py [--seconds 60] [--exe X] [--disc cue] [--port 4370] [--renderer software|opengl|vulkan] [--startup-wait 30] [--kill] [--self-test-kill]
+```
+
+- The defaults of `--seconds`, `--renderer` and `--startup-wait` are not recorded here. See `docs/OPEN_QUESTIONS.md`.
+- `--self-test-kill` kills the child at 5 s. It tests the kill switch. The run then exits 1.
+- `--kill` clears a stale instance before the run. It was tested on a stale instance on port 4377.
+
+### Which exe is tested
+
+The script uses the first of these that applies:
+
+| Order | Source |
+|-------|--------|
+| 1 | `--exe PATH` |
+| 2 | Environment variable `SMOKE_EXE` |
+| 3 | `work\build-dbg\MythologyKombat.exe`, if it exists |
+| 4 | `build\MythologyKombat.exe` |
+
+The script prints the exe path and its SHA-256 at the start. The debug build from this step has SHA-256 `7bcb28c2693038e1f830bd10802eba2a58fb2817f41adf5b994fa546edc66a21`.
+
+### Launch
+
+The script starts the exe with the working folder set to the exe folder:
+
+```
+<exe> --disc "<cue>" --game <exedir>\game.toml --no-launcher --headless --debug-port 4370 --memcard-dir work\smoke_saves
+```
+
+The script talks to the game over TCP. The server binds 127.0.0.1 only. `netstat` was used to check this.
+
+### PASS rules
+
+The run passes only if all three hold:
+
+- The game process stays alive for the whole run.
+- The frame counter goes up on each check.
+- No `psx_crash.txt` appears. The script watches the working folder, the exe folder, the memory card folder and the repo root. The file location is inferred from the upstream code (relative `fopen` in `runtime/src/memory.c` and `traps.c`). No crash was seen, so the file was never written in a test.
+
+### Outputs
+
+| Path | Content |
+|------|---------|
+| `work\smoke\run.log` | Run log |
+| `work\smoke\pid.txt` | PID of the game process |
+| `work\shots\smoke_t00.png` | Screenshot at the start |
+| `work\shots\smoke_t10.png` | Screenshot at 10 s |
+| `work\shots\smoke_t30.png` | Screenshot at 30 s |
+| `work\shots\smoke_end.png` | Screenshot at the end |
+
+- Screenshots are 320 by 240 PNG files.
+- A screenshot that fails, for example with `display disabled`, is retried until 8 s after its mark.
+- All files are under `work\`, which is git-ignored.
+
+### Stopping and safety
+
+- A `try/finally` block sends `quit` over TCP. It waits 10 s. If the game is still running, it terminates the process. It then runs `taskkill /F /T` on the child PID only. It never kills by image name.
+- Before killing, the script checks the PID in `work\smoke\pid.txt` with `tasklist`. The PID must be `MythologyKombat.exe`.
+- The script refuses to start if a stale instance runs or the port is in use.
+- The script handles `KeyboardInterrupt`.
+
+### Exit codes seen in tests
+
+| Case | Result |
+|------|--------|
+| Wrong disc path | Exit 2. `FAIL(setup): disc image not found` |
+| Invalid cue file | The game prints `Disc Could Not Be Mounted`. Exit 1 |
+| `--self-test-kill` | Exit 1 |
+| Release exe (see below) | Exit 1, with an explanation |
+
+### Why the Release exe does not work
+
+`build\MythologyKombat.exe` is built with `PSX_DEBUG_TOOLS=OFF`. The upstream `BUILDING.md` says Release turns the TCP debug server off. So port 4370 never opens.
+
+- The harness fails after about 9 s. It does this when the `CMakeCache.txt` next to the exe says `PSX_DEBUG_TOOLS` is not ON.
+- `build\` stays the shipping exe. The T2.6 user run uses it, and it needs no debug server.
+- The harness uses a separate debug-tools build. See `docs/DECISIONS.md` (D7).
+
+### Debug-tools build (for tests)
+
+Run this in PowerShell from the repo root. `<Git>` is Git's install folder.
+
+```
+$env:PSXRECOMP_TOOLCHAIN_DIR = '<RETRO_TOOLS_DIR>\cmake-clang'
+$env:PATH = '<RETRO_TOOLS_DIR>\cmake-clang\bin;<Git>\bin;<RETRO_TOOLS_DIR>\python;' + $env:PATH
+cmake -S . -B work\build-dbg -G Ninja -DCMAKE_BUILD_TYPE=Release -DPSX_DEBUG_TOOLS=ON -DPSXRECOMP_REQUIRE_GAME_C=ON
+cmake --build work\build-dbg --target psx-runtime
+```
+
+- The build takes about 5 minutes with ccache. It exits 0.
+- The log shows `BIOS backends linked: OpenBIOS` and `linking generated game C (full runtime)`.
+- It uses the same `generated\` inputs as `build\`.
+- The root `CMakeLists.txt` manifest workaround (D6) applies.
+- The debug build is not committed. `work\` is git-ignored.
+- The debug build SHA-256 is listed above.
+- An alternative is to turn on `PSX_DEBUG_TOOLS` in `build\` itself. That was not done. See `docs/OPEN_QUESTIONS.md` (103).
+
+### Test results
+
+| Run | Result |
+|-----|--------|
+| 60 s run, debug build | PASS. Frames 40 to 4319, about 70 frames per second. No `psx_crash.txt` |
+| 20 s run, reviewer | PASS |
+| 20 s run, final script | PASS. Frames 38 to 1788. Screenshots `t0`, `t10` and `end` written |
+
+- The screenshots checked in the tests are all 230723 bytes. This is judged harmless. See `docs/OPEN_QUESTIONS.md`.
+- Agent reports describe the screenshots. These descriptions are not checked by a user. They are not the T2.6 gate. See `docs/OPEN_QUESTIONS.md`.
+
+### Side effects
+
+- A run of the Release exe writes `psx_freeze_heartbeat.json` at the repo root and in `build\`. Both are git-ignored.
+- The same run writes `build\overlay_captures.json`. This path existed before this step. It is git-ignored. Never commit it.
+- No orphan processes were left after the tests. `tasklist` was checked.
+
+### Not tested
+
+- The `opengl` and `vulkan` renderers.
+- `--hidden-window` and `--headless-opengl`.
+- A real Ctrl-C.
+- Audio. Headless mode has no audio.
+- Timing against real hardware.
+
+See `docs/OPEN_QUESTIONS.md` (104 to 114).

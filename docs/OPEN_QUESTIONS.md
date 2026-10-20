@@ -181,3 +181,20 @@
 | 100 | Is a retail BIOS backend needed? | The SCPH1001 backend was skipped at configure. Only OpenBIOS is linked. A retail BIOS backend would be needed only if T2.7 requires it. Not decided. |
 | 101 | Why is the `psxrecomp` submodule shown as modified after T2.4? | The `psxrecomp` submodule shows ` m`. The cause is CRLF noise from the T0.5 regen. It is not from T2.4. It is the same issue as question 13. Do not commit inside the submodule. |
 | 102 | Is the embedded manifest valid XML? | The exe has one embedded manifest (`<assembly` appears once). It was not checked with an XML validator. |
+
+## Headless smoke test (from T2.5)
+
+| # | Question | Notes |
+|---|----------|-------|
+| 103 | Should `PSX_DEBUG_TOOLS` also be ON in `build\`? | The shipping exe has the debug server off. The smoke test uses `work\build-dbg` instead (D7, `docs/DECISIONS.md`). Turning it on in `build\` is the alternative. Not decided. |
+| 104 | Do the `opengl` and `vulkan` renderers pass the smoke test? | Not tested. The Vulkan renderer is a software stub (question 14). |
+| 105 | Do `--hidden-window` and `--headless-opengl` work with the harness? | Not tested. `--headless-opengl` needs real OpenGL. |
+| 106 | Does a real Ctrl-C stop the harness cleanly? | Only `KeyboardInterrupt` handling is in the code. Not tested with a real Ctrl-C. |
+| 107 | Does audio work in the test runs? | Headless mode has no audio. Not tested. |
+| 108 | Does the game run at the same speed as hardware? | The 60 s run measured about 70 frames per second. Not compared with hardware. |
+| 109 | Do the screenshots show what the agent reports describe? | The descriptions come from agent reports and were not checked by a user. The reviewer saw a black frame at the 20 s mark in one run. The user check is at the T2.6 gate. |
+| 110 | Why are the checked screenshots the same size, 230723 bytes? | Judged harmless. Not checked. |
+| 111 | Is `psx_crash.txt` written where the harness watches? | The location is inferred from upstream code. No crash was seen, so the watch was never tested with a real file. |
+| 112 | Does the 60 s run have 3 or 4 screenshots? | The T2.5 report says 3 for the 60 s run. The harness names 4 files (`t00`, `t10`, `t30`, `end`). Not checked. |
+| 113 | What exit code does a PASS run give? | The T2.5 report does not record it. |
+| 114 | What are the defaults of `--seconds`, `--renderer` and `--startup-wait`? | The usage line lists the options. The defaults are not recorded in the T2.5 report. |

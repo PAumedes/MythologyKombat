@@ -60,3 +60,12 @@ _Filled in by the doc-writer as tasks pass review._
 - Reason: the two manifests say the same things, so dropping recomp-ui's loses nothing. The link works.
 - Risks: the workaround depends on recomp-ui's generated file name. Under MSVC, psxrecomp adds a `.manifest` source that the guard matches, so there is no duplicate there. The workaround is not used under MSVC.
 - Revisit when upstream fixes the guard. See `docs/OPEN_QUESTIONS.md` (98) and `docs/SETUP.md` (T2.4).
+
+## D7 Keep build\ as the shipping exe. Test with work\build-dbg (T2.5)
+
+- Context: the T2.4 Release exe, `build\MythologyKombat.exe`, is built with `PSX_DEBUG_TOOLS=OFF`. Its TCP debug server is off, so port 4370 never opens. The headless smoke test needs that server.
+- Decision: keep `build\MythologyKombat.exe` as the shipping exe. The T2.6 user run uses it. Build a second, debug-tools exe in `work\build-dbg\` (git-ignored). The smoke test uses it by default.
+- Not chosen, and why:
+  - Turn on `PSX_DEBUG_TOOLS` in `build\`. Not done. It would change the shipping exe. Open as question 103.
+- Reason: the user run needs no debug server. The automated test does.
+- Details are in `docs/SETUP.md` (T2.5). Open items are in `docs/OPEN_QUESTIONS.md` (103).
