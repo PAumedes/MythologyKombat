@@ -354,3 +354,20 @@ See `docs/SYMBOLS.md` ("Overlay loader and level-function names (T2.22)") and `d
 | 200 | What does each `level_load_*` function do in play? | The names come from the file each loads, not from a gameplay role. Only `level_load_TEMPLE` is seen at runtime (question 178). |
 | 201 | Is `0x8002B688` the real entry of `level_load_TEMPLE`? | The start comes from the dispatcher table in `docs/EXE_OVERLAYS.md`. The two return addresses seen at T2.13 lie inside the function. No entry was observed at `0x8002B688`. |
 | 202 | Is the hand-edit of `sdk_memcpy` kept on every seed run? | `sdk_memcpy` lost its seed marker by hand, so the script keeps it. Only two runs of `tools\seed_symbols.py` were recorded, and both reported `unchanged`. The T2.22 report records no test of a hand-edited block. |
+
+## Playtest diagnostics recorder (from T2.19)
+
+See `docs\SETUP.md` ("Playtest diagnostics recorder (T2.19)") and `docs\DECISIONS.md` (D14).
+
+| # | Question | Notes |
+|---|----------|-------|
+| 203 | What do fields 4 and 9 of each `inputs.csv` row hold? | They are the first field of each pad's stick block. They are 0 in the idle sample. Likely analog-mode flags. Not verified. |
+| 204 | Is a session folder safe to share? | The folder holds copies of the starting memory cards and a trace of the inputs. The upstream doc says to zip the complete session folder, and that includes the cards. The repo gives no safe sharing step. Not decided. |
+| 205 | When is the `%TEMP%` fallback folder used? | `docs\SETUP.md` gives the fallback path. The condition is not recorded. Not checked. |
+| 206 | What is lost if the game crashes or is killed, instead of quitting normally? | The writer drains its data on a normal quit. What is lost on a crash or a kill is not checked. |
+| 207 | What does a `PSX_PUBLIC_RELEASE=ON` build ship with? | The defaults script fails a public build unless the source says false, and the source says false. A configure with the option ON was not run. The public output is not checked. |
+| 208 | Does the Release exe replay its own recording? | Strict replay is T2.20. Not run. The same-exe rule comes from the build id. Not tested. |
+| 209 | Does the CMake no-op rebuild check pass after the diagnostics package was added? | The reviewer did not run it. Not checked. |
+| 210 | What does the sample number `N` in the first field of each row count? | The field holds `N` and a sequence number. The report does not say what `N` counts. Not checked. |
+| 211 | Are the fields of `session.json`, `telemetry.csv` and `mods-state.toml` documented? | The T2.19 report does not describe them. Not checked. |
+| 212 | Does the on-screen input display show the right buttons? | The `osd` feature was staged on, but the display was not checked on screen. Not checked. |

@@ -59,6 +59,17 @@ psxrecomp_add_game_runtime(psx-runtime
     CODEGEN_SETUP_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/codegen_setup.c"
 )
 
+# T2.19: shared playtest diagnostics (input recorder + input display). Must
+# come AFTER psxrecomp_add_game_runtime (it needs the target and the staged
+# catalog) and is a separate call, so it cannot be swallowed by the multi-value
+# GEN_FULL_GLOB / CODEGEN_SETUP_SOURCES lists above. MOD_ID is the package
+# under mods/preloaded/packages. PSX_PUBLIC_RELEASE is NOT set here: it stays
+# the framework default (OFF); only a release packager sets it ON.
+include("${PSXRECOMP_ROOT}/runtime/playtest_diagnostics.cmake")
+psxrecomp_add_playtest_diagnostics(psx-runtime
+    GAME_ID "SLUS-00476"
+    MOD_ID "mythologykombat.diagnostics")
+
 # T2.4 workaround (upstream bug, see docs/OPEN_QUESTIONS.md): recomp-ui's
 # _recomp_ui_utf8_manifest() guard misses psxrecomp's manifest, which is added
 # as $<TARGET_OBJECTS:psx-runtime_manifest> (no ".manifest"/"manifest.rc"

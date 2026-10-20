@@ -168,3 +168,14 @@ _Filled in by the doc-writer as tasks pass review._
 - Reason: the static step passed with the private copy. Run 1 printed `Verified 8 images / 8 recipes`.
 - Risk: the check reads only the first argument. A global option placed before `generate` defeats it, so option (a) runs first. Reviewer minor. See `docs/OPEN_QUESTIONS.md` (196).
 - Details are in `docs/SETUP.md` (T2.16). Open items are in `docs/OPEN_QUESTIONS.md` (190 to 196).
+
+## D14 Recording is on by default in non-public builds. Public release is unchanged (T2.19)
+
+- Context: playtests need a record of the inputs and a per-frame RAM digest. The upstream recorder is off by default in the source. The defaults script fails a public build unless the source says false.
+- Decision: the diagnostics package ships with `recording` and `osd` on, in every build where `PSX_PUBLIC_RELEASE` is OFF. The switch is made in the staged copy of the manifest at build time. The source manifest keeps `default_enabled = false`. A public build (`PSX_PUBLIC_RELEASE=ON`) keeps both off.
+- Not chosen, and why:
+  - Setting `default_enabled = true` in the source. The defaults script would then fail a public build.
+- Reason: the user plays non-public builds. The public release is unchanged: both features stay off.
+- Rule for the user's recordings: the Release exe, `build\MythologyKombat.exe`, is the one the user plays on. Any further rebuild (for example T2.8 seed growth) must happen before the user records. A relink changes the exe SHA-256 and breaks strict replay (T2.20).
+- Recordings are private. Never share or commit a session folder. See `docs/SETUP.md` (T2.19) and `docs/OPEN_QUESTIONS.md` (204).
+- Open items are in `docs/OPEN_QUESTIONS.md` (203 to 212). Details are in `docs/SETUP.md` (T2.19).

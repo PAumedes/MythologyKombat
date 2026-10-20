@@ -1748,3 +1748,134 @@ Task T2.22 adds names for the overlay loader and the level functions. It also ma
 
 - The names `get_size`, `read_file` and `scratch_alloc` have no prefix. Their `func_XXXXXXXX` aliases could clash with a future host file. See `docs/OPEN_QUESTIONS.md` (question 197).
 - The `confirmed` status of `read_file` and `level_load_TEMPLE` rests on the T2.13 observation. See `docs/SYMBOLS.md`.
+
+## Playtest diagnostics recorder (T2.19)
+
+Task T2.19 adds a recorder for playtests. It writes the inputs and a per-frame RAM digest to a session folder. It also adds an input display. Both come from the upstream `psxrecomp\runtime\playtest_diagnostics.cmake` helper, through a package in this repo. The package is config only. It holds no game data.
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `CMakeLists.txt` | 11 lines added. It includes `psxrecomp\runtime\playtest_diagnostics.cmake` and calls `psxrecomp_add_playtest_diagnostics` with game id `SLUS-00476` and mod id `mythologykombat.diagnostics`. The call sits after `psxrecomp_add_game_runtime` and before the manifest workaround (D6) |
+| `mods\preloaded\packages\mythologykombat.diagnostics\1.0.0\manifest.toml` | New package. Format version 5. Target game `SLUS-00476`. Two features, `recording` and `osd`. Two plugins, `mythologykombat.diagnostics` and `mythologykombat.diagnostics.osd`. No channel is set, so it is a developer package |
+
+- In the source file, both features are `default_enabled = false`.
+- The package must be in `mods\preloaded\packages\`. The defaults step fails if it is not.
+
+### Default by build
+
+The upstream defaults script, `psx_playtest_diagnostics_defaults.cmake`, runs after the build. It edits the staged copy of the manifest, not the source.
+
+| Build | Recording and input display | Evidence |
+|-------|-----------------------------|----------|
+| Non-public (the default, `PSX_PUBLIC_RELEASE` OFF) | On. The staged `default_enabled` is set to true | `build\mods\bundled` and `work\build-dbg\mods\bundled` show true at lines 21 and 28. Build log line: `psx-runtime non-public build; mythologykombat.diagnostics recording/osd default on` |
+| Public (`-DPSX_PUBLIC_RELEASE=ON`) | Off. The build fails unless the source says false | Not run. Read from the script. The option is in `psxrecomp\runtime\runtime.cmake` (line 129), default OFF |
+
+- `PSX_PUBLIC_RELEASE` is OFF in the CMake cache of both build folders. The repo never sets it.
+- Build log line: `staged mod catalog OK: 7 package(s) = 1 game-owned + 6 framework-owned, all under mods/bundled, no mods/packages`.
+- `replay-diagnostics.py` is staged beside both exes.
+
+### Where sessions go
+
+| Build | Session folder |
+|-------|----------------|
+| `build\MythologyKombat.exe` | `build\saves\diagnostics\session-<timestamp>\` |
+| `work\build-dbg\MythologyKombat.exe` | `work\build-dbg\saves\diagnostics\session-<timestamp>\` |
+| Fallback | `%TEMP%\psxrecomp-diagnostics\SLUS-00476\session-<timestamp>\` |
+
+- `build\saves\` and `work\build-dbg\saves\` are git-ignored.
+- `work\build-dbg\diagnostics-location.txt` holds the path of the latest session.
+- The condition for the fallback is not recorded here. See `docs/OPEN_QUESTIONS.md` (question 205).
+
+### Files in a session
+
+| File | Content |
+|------|---------|
+| `inputs.csv` | One row per sample. See the format below |
+| `session.json` | Session record. Field names are not described here |
+| `telemetry.csv` | Telemetry. Columns are not described here |
+| `mods-state.toml` | Mod state for the session |
+| `card1.mcd`, `card2.mcd` | Copies of the starting memory cards |
+
+**Privacy:** the cards are copies of the starting saves, and the inputs are traced. Never share or commit a session folder. The upstream doc says to zip the complete session folder, and that zip includes the cards. See `docs/OPEN_QUESTIONS.md` (question 204). `*.mcd` and `/saves/` are git-ignored.
+
+### inputs.csv format
+
+- Four comment lines come first:
+  - `# psxrecomp-input-v2`
+  - `# execution <hash>`
+  - `# plan <hash>`
+  - `# build SLUS-00476/0.1.0+01068a3-dirty/psxrecomp-nightly-805-g449c31e5-dirty/sha256-<exe sha>`
+- There is no column-name header.
+- Each data row has 16 fields. The column constants are in `playtest_diagnostics.cpp`.
+
+| Field | Meaning |
+|-------|---------|
+| 1 | Sample number `N` and sequence number `seq`, separated by a space |
+| 2 | Pad 0 buttons |
+| 3 | Pad 1 buttons |
+| 4 | Pad 0 block, first field. Meaning not stated |
+| 5 to 8 | Pad 0, four stick bytes |
+| 9 | Pad 1 block, first field. Meaning not stated |
+| 10 to 13 | Pad 1, four stick bytes |
+| 14 | RAM digest for the sample |
+| 15 | Pad 0 connected (1 or 0) |
+| 16 | Pad 1 connected (1 or 0) |
+
+- Idle sample: `N 0,65535,65535,0,128,128,128,128,0,128,128,128,128,2136692531,1,0`. Pad 0 is connected and pad 1 is not.
+- See `docs/OPEN_QUESTIONS.md` (question 203) for fields 4 and 9.
+
+### Turning it on or off
+
+- Recording and the input display are on by default in every non-public build.
+- In the launcher, open the Mods list. The group is `Diagnostics`, with `Playtest Recording` and `Input Display`.
+- Player choices in `mods\state.toml` override the default.
+- Recording starts at the first guest VBlank.
+- Quit the game normally. The writer drains its data on a normal quit. See `docs/OPEN_QUESTIONS.md` (question 206).
+- Pressing L3 and R3 together marks an incident in the recording.
+
+### Analyze a session
+
+The analyzer needs no game launch.
+
+```
+<RETRO_TOOLS_DIR>\python\python.exe build\replay-diagnostics.py <session-dir> --analyze
+```
+
+| Run | Samples | Sequence discontinuities |
+|-----|---------|--------------------------|
+| Headless smoke run, 25 s | 2007 | 0 |
+| Reviewer run, 15 s | 1406 | 0 |
+
+### Replay (T2.20, not run)
+
+```
+<RETRO_TOOLS_DIR>\python\python.exe build\replay-diagnostics.py <session-dir> --exe <original exe> --disc "ps1_game\Mortal Kombat Mythologies - Sub-Zero.cue" --game game.toml --output <NEW private dir>
+```
+
+- `--input-only` is for dev builds only.
+- Strict replay needs the same exe binary. The build id embeds the exe SHA-256, and it ends in `-dirty`. The game repo and the psxrecomp submodule are both dirty (question 13).
+- Record with the exe that T2.20 will replay. Do not relink or rebuild between recording and replay.
+- A recording made with the debug exe cannot be replayed on the Release exe.
+
+| Exe | SHA-256 (changes on every relink) |
+|-----|-----------------------------------|
+| `build\MythologyKombat.exe` (Release) | `3e7de066840cd99c9f3ec26ef5b76734f22e917c7d3e8944f664ee65c24b1460` |
+| `work\build-dbg\MythologyKombat.exe` (debug) | `49fb311adbf2b75e1a23a73634b5ad4fa39aae0ca0be089f221433b8dd5d3fc7` |
+
+### Checks in T2.19
+
+| Check | Result |
+|-------|--------|
+| `tools\smoke_boot.py --exe work\build-dbg\MythologyKombat.exe --port 4385 --seconds 25` | PASS. Frames 1 to 2006 |
+| Reviewer 15 s run | PASS. Frames 23 to 1406 |
+| Session folder from the smoke run | `inputs.csv`, `session.json`, `telemetry.csv`, `mods-state.toml`, `card1.mcd`, `card2.mcd` present |
+| `replay-diagnostics.py --analyze` | See the table above |
+
+### Not run
+
+- Strict replay (T2.20).
+- A `PSX_PUBLIC_RELEASE=ON` configure. The public-build result is read from the script only.
+- The reviewer's CMake no-op rebuild check.
+- The on-screen input display was not checked on screen (question 212).

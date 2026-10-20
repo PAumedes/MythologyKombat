@@ -1,0 +1,36 @@
+format_version = 5
+id = "mythologykombat.diagnostics"
+version = "1.0.0"
+name = "MythologyKombat Playtest Diagnostics"
+author = "MythologyKombat"
+description = "Input recording and input display for playtests. Contains no game data and no title-specific addresses; the recorder is the shared psxrecomp playtest diagnostics engine."
+resolver = "declarative"
+save_compatibility = "shared"
+
+[[target]]
+game_id = "SLUS-00476"
+
+# Source manifest carries the PUBLIC-RELEASE default (off). Non-public builds
+# (PSX_PUBLIC_RELEASE=OFF, the default) flip the STAGED copy to on at build
+# time (psxrecomp runtime/psx_playtest_diagnostics_defaults.cmake).
+[[feature]]
+id = "recording"
+name = "Playtest Recording"
+description = "Records controller input and a sampled RAM digest to a session folder under saves/diagnostics so a playtest can be replayed and checked."
+group = "Diagnostics"
+default_enabled = false
+
+[[feature]]
+id = "osd"
+name = "Input Display"
+description = "Shows the controller state latched at each frame on screen. Works without Recording."
+group = "Diagnostics"
+default_enabled = false
+
+[[plugin]]
+feature = "recording"
+id = "mythologykombat.diagnostics"
+
+[[plugin]]
+feature = "osd"
+id = "mythologykombat.diagnostics.osd"
