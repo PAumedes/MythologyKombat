@@ -341,3 +341,16 @@ See `docs/EXE_OVERLAYS.md` ("Static overlay build (T2.16)"), `docs/SETUP.md` ("S
 | 194 | Is static coverage complete? | No. The audit says `full_static_coverage_proven` is false. Not proven. |
 | 195 | Should `AOT_STATIC_AUDIT.json` be byte-reproducible? | Its `recipe_input_sha256` changes on each run that does not reuse. The shard hashes and `generation_inputs_sha256` are the compare keys. Whether upstream intends this is not checked. |
 | 196 | Should the wrapper detect the subcommand after global options? | `tools\run_psxrecomp.ps1` reads only `$args[0]`. A global option placed before `generate` defeats the `generate` check, so option (a) runs first. Reviewer minor. Not changed. See D13 in `docs/DECISIONS.md`. |
+
+## Overlay loader and level names (from T2.22)
+
+See `docs/SYMBOLS.md` ("Overlay loader and level-function names (T2.22)") and `docs/SETUP.md` ("Hand-owned symbols and seeding rules (T2.22)").
+
+| # | Question | Notes |
+|---|----------|-------|
+| 197 | Should `get_size`, `read_file` and `scratch_alloc` get a prefix? | The names have no prefix. Their `func_XXXXXXXX` aliases could clash with a future host file that includes `psx_symbols.h`. No clash today. Nothing includes the header yet. `psxrecomp\runtime\src\mod_packages.cpp` has its own `read_file` but does not include the header. Reviewer suggestion: prefix later. |
+| 198 | Is `get_size` at `0x800861BC` right? | Only the value was checked. No entry was observed at runtime. |
+| 199 | Do `scratch_alloc`, `load_arena_record` and `read_file_alloc` do what their names say? | The roles come from static reading. `scratch_alloc` was not traced in full. `load_arena_record` owns the variable-id read sites, but its ids are not in 134 to 143. Its only caller is inside `level_load_FIRE_alt`. |
+| 200 | What does each `level_load_*` function do in play? | The names come from the file each loads, not from a gameplay role. Only `level_load_TEMPLE` is seen at runtime (question 178). |
+| 201 | Is `0x8002B688` the real entry of `level_load_TEMPLE`? | The start comes from the dispatcher table in `docs/EXE_OVERLAYS.md`. The two return addresses seen at T2.13 lie inside the function. No entry was observed at `0x8002B688`. |
+| 202 | Is the hand-edit of `sdk_memcpy` kept on every seed run? | `sdk_memcpy` lost its seed marker by hand, so the script keeps it. Only two runs of `tools\seed_symbols.py` were recorded, and both reported `unchanged`. The T2.22 report records no test of a hand-edited block. |

@@ -4,6 +4,62 @@
  */
 #pragma once
 
+/* confirmed: loads id 140 (/OVERLAYS/TEMPLE.OVR); read_file call 0x8002B798, memcpy call 0x8002B7D8; dispatcher index 0 (EXE_OVERLAYS.md Level functions that load overlays); return addresses 0x8002B7A0 and 0x8002B7E0 observed inside this function (T2.13); the function boundary 0x8002B688 comes from the dispatcher table in docs/EXE_OVERLAYS.md; no entry observation of 0x8002B688 itself; named by file, not by gameplay role */
+#define PSX_FN_level_load_TEMPLE 0x8002B688u
+#define func_8002B688 level_load_TEMPLE  /* alias */
+
+/* guessed: loads id 136 (/OVERLAYS/EARTH.OVR); read_file call 0x8002BE34, memcpy call 0x8002BE74; dispatcher index 3 (EXE_OVERLAYS.md Level functions that load overlays); named by file, not by gameplay role; static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17 */
+#define PSX_FN_level_load_EARTH 0x8002BD10u
+#define func_8002BD10 level_load_EARTH  /* alias */
+
+/* guessed: loads id 142 (/OVERLAYS/WIND.OVR); read_file call 0x8002C570, memcpy call 0x8002C5B0; dispatcher index 1; also reads id 143 WINDDEMO.BIN (read only) (EXE_OVERLAYS.md Level functions that load overlays); named by file, not by gameplay role; static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17 */
+#define PSX_FN_level_load_WIND 0x8002C420u
+#define func_8002C420 level_load_WIND  /* alias */
+
+/* guessed: loads id 141 (/OVERLAYS/WATER.OVR); read_file call 0x8002CC2C, memcpy call 0x8002CC6C; dispatcher index 2 (EXE_OVERLAYS.md Level functions that load overlays); named by file, not by gameplay role; static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17 */
+#define PSX_FN_level_load_WATER 0x8002CB34u
+#define func_8002CB34 level_load_WATER  /* alias */
+
+/* guessed: loads id 139 (/OVERLAYS/PRISON.OVR); read_file call 0x8002D324, memcpy call 0x8002D364; dispatcher index 4 (EXE_OVERLAYS.md Level functions that load overlays); named by file, not by gameplay role; static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17 */
+#define PSX_FN_level_load_PRISON 0x8002D198u
+#define func_8002D198 level_load_PRISON  /* alias */
+
+/* guessed: loads id 137 (/OVERLAYS/FIRE.OVR); read_file call 0x8002DB88, memcpy call 0x8002DBC8; dispatcher index 5 (EXE_OVERLAYS.md Level functions that load overlays); named by file, not by gameplay role; static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17 */
+#define PSX_FN_level_load_FIRE 0x8002DA94u
+#define func_8002DA94 level_load_FIRE  /* alias */
+
+/* guessed: loads id 137 (/OVERLAYS/FIRE.OVR); read_file call 0x8002E214, memcpy call 0x8002E254; second function loading id 137; dispatcher index 7, and 10 if [0x800D7E48] >= 0; level/mode unknown (question 46) (EXE_OVERLAYS.md Level functions that load overlays); named by file, not by gameplay role; static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17 */
+#define PSX_FN_level_load_FIRE_alt 0x8002E130u
+#define func_8002E130 level_load_FIRE_alt  /* alias */
+
+/* guessed: loads id 135 (/OVERLAYS/BRIDGE.OVR); read_file call 0x8002E924, memcpy call 0x8002E964; dispatcher index 8; also reads id 134 BRDGDEMO.BIN (read only) (EXE_OVERLAYS.md Level functions that load overlays); named by file, not by gameplay role; static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17 */
+#define PSX_FN_level_load_BRIDGE 0x8002E7F0u
+#define func_8002E7F0 level_load_BRIDGE  /* alias */
+
+/* guessed: loads id 138 (/OVERLAYS/FORTRESS.OVR); read_file call 0x8002F1CC, memcpy call 0x8002F20C; dispatcher index 9 (EXE_OVERLAYS.md Level functions that load overlays); named by file, not by gameplay role; static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17 */
+#define PSX_FN_level_load_FORTRESS 0x8002EFBCu
+#define func_8002EFBC level_load_FORTRESS  /* alias */
+
+/* guessed: owner of the two variable-id read_file sites 0x80085CF8 and 0x80085D74; ids come from records at 0x800AC440/0x800AC448; only caller 0x8002E6F8 inside level_load_FIRE_alt (EXE_OVERLAYS.md Static overlay facts (T2.12), read_file callers); name by role, ids not in 134-143; static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17 */
+#define PSX_FN_load_arena_record 0x80085AF8u
+#define func_80085AF8 load_arena_record  /* alias */
+
+/* guessed: get_size(id): returns the file size for an overlay/file id (EXE_OVERLAYS.md How overlays are loaded); static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17 */
+#define PSX_FN_get_size 0x800861BCu
+#define func_800861BC get_size  /* alias */
+
+/* confirmed: read_file(id, buf): CdlSetloc then CdRead of ceil(size/2048) sectors (EXE_OVERLAYS.md How overlays are loaded); runtime-observed T2.13: entry at frame 5200 with a0=140, a1=0x8013100C, ra=0x8002B7A0 */
+#define PSX_FN_read_file 0x800861D4u
+#define func_800861D4 read_file  /* alias */
+
+/* guessed: wrapper(id in a0): stores id at gp+1652, get_size, rounds up to 2048, scratch_alloc, read_file, returns id (EXE_OVERLAYS.md Static overlay facts (T2.12), read_file callers); ids used by callers are not in 134-143; static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17 */
+#define PSX_FN_read_file_alloc 0x80086324u
+#define func_80086324 read_file_alloc  /* alias */
+
+/* guessed: scratch allocator giving the temporary read buffer; not traced in full (EXE_OVERLAYS.md How overlays are loaded; wrapper 0x80086324 passes the size rounded up to 2048); static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17 */
+#define PSX_FN_scratch_alloc 0x800865C0u
+#define func_800865C0 scratch_alloc  /* alias */
+
 /* guessed: PsyQ SDK name '__main' (psyq_sig), 8 bytes; seeded from T1.6 symbols_sdk.json */
 #define PSX_FN_sdk___main 0x80090E68u
 #define func_80090E68 sdk___main  /* alias */
@@ -1228,7 +1284,7 @@
 #define PSX_FN_sdk_bzero 0x8009F30Cu
 #define func_8009F30C sdk_bzero  /* alias */
 
-/* confirmed: PsyQ SDK name 'memcpy' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json; evidence: BIOS trampoline A(0x2a) (docs/SYMBOLS.md, T1.6) */
+/* confirmed: PsyQ SDK name 'memcpy' (psyq_sig), 12 bytes; BIOS trampoline A(0x2a) (docs/SYMBOLS.md, T1.6). Overlay-copy role: the level functions call it to copy the read buffer into the overlay window (EXE_OVERLAYS.md How overlays are loaded); runtime-observed T2.13: entry at frame 5207 with a0=0x80130FF8, a1=0x8013100C, a2=19100, ra=0x8002B7E0 */
 #define PSX_FN_sdk_memcpy 0x8009F31Cu
 #define func_8009F31C sdk_memcpy  /* alias */
 

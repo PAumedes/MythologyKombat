@@ -42,10 +42,10 @@ The orchestrator updates the Status column; nobody else edits this table.
 | T2.16 | Static overlay build, link and audit | T2.15, T2.4 | agents | done |
 | T2.17 | Overlay coverage across all nine level functions | T2.16 | USER + agents | todo |
 | T2.18 | Replay infrastructure: scaffold and boot-to-menu route | T2.5 | agents | done |
-| T2.19 | Playtest diagnostics package (recorder) | T2.4 | agents | todo |
+| T2.19 | Playtest diagnostics package (recorder) | T2.4 | agents | in-progress |
 | T2.20 | Record a session and strict replay | T2.19, T2.11 | USER + agents | todo |
 | T2.21 | Seed symbols.toml from the SDK names | T1.6 | agents | done |
-| T2.22 | Name the overlay loader and level functions | T2.12, T2.21 | agents | todo |
+| T2.22 | Name the overlay loader and level functions | T2.12, T2.21 | agents | done |
 | T2.23 | Phase 2 gate review | all above | agents | todo |
 
 Phase 2 notes: T2.9, T2.12, T2.21 and T2.19 do not need the game to boot. They can run in parallel with the main chain once their dependencies are done. All outputs go under `work\` (git-ignored) unless noted. Python scripts are stdlib-only. Every disc claim comes from a `tools\` script. Run the upstream CLI WITHOUT `python -I` (see T2.1).

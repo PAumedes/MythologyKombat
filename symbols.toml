@@ -2450,13 +2450,12 @@ emit = false
 status = "guessed"
 note = "PsyQ SDK name 'bzero' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
 
-# seed_symbols:b9072fe1a784
 [[func]]
 pc = 0x8009F31C
 name = "sdk_memcpy"
 emit = false
 status = "confirmed"
-note = "PsyQ SDK name 'memcpy' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json; evidence: BIOS trampoline A(0x2a) (docs/SYMBOLS.md, T1.6)"
+note = "PsyQ SDK name 'memcpy' (psyq_sig), 12 bytes; BIOS trampoline A(0x2a) (docs/SYMBOLS.md, T1.6). Overlay-copy role: the level functions call it to copy the read buffer into the overlay window (EXE_OVERLAYS.md How overlays are loaded); runtime-observed T2.13: entry at frame 5207 with a0=0x80130FF8, a1=0x8013100C, a2=19100, ra=0x8002B7E0"
 
 # seed_symbols:536cc7f8a829
 [[func]]
@@ -3513,3 +3512,101 @@ name = "SpuSetCommonAttr"
 emit = false
 status = "guessed"
 note = "PsyQ SDK name 'SpuSetCommonAttr' (psyq_sig), 92 bytes; seeded from T1.6 symbols_sdk.json"
+
+[[func]]
+pc = 0x800861BC
+name = "get_size"
+emit = false
+status = "guessed"
+note = "get_size(id): returns the file size for an overlay/file id (EXE_OVERLAYS.md How overlays are loaded); static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17"
+
+[[func]]
+pc = 0x800861D4
+name = "read_file"
+emit = false
+status = "confirmed"
+note = "read_file(id, buf): CdlSetloc then CdRead of ceil(size/2048) sectors (EXE_OVERLAYS.md How overlays are loaded); runtime-observed T2.13: entry at frame 5200 with a0=140, a1=0x8013100C, ra=0x8002B7A0"
+
+[[func]]
+pc = 0x800865C0
+name = "scratch_alloc"
+emit = false
+status = "guessed"
+note = "scratch allocator giving the temporary read buffer; not traced in full (EXE_OVERLAYS.md How overlays are loaded; wrapper 0x80086324 passes the size rounded up to 2048); static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17"
+
+[[func]]
+pc = 0x80085AF8
+name = "load_arena_record"
+emit = false
+status = "guessed"
+note = "owner of the two variable-id read_file sites 0x80085CF8 and 0x80085D74; ids come from records at 0x800AC440/0x800AC448; only caller 0x8002E6F8 inside level_load_FIRE_alt (EXE_OVERLAYS.md Static overlay facts (T2.12), read_file callers); name by role, ids not in 134-143; static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17"
+
+[[func]]
+pc = 0x80086324
+name = "read_file_alloc"
+emit = false
+status = "guessed"
+note = "wrapper(id in a0): stores id at gp+1652, get_size, rounds up to 2048, scratch_alloc, read_file, returns id (EXE_OVERLAYS.md Static overlay facts (T2.12), read_file callers); ids used by callers are not in 134-143; static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17"
+
+[[func]]
+pc = 0x8002B688
+name = "level_load_TEMPLE"
+emit = false
+status = "confirmed"
+note = "loads id 140 (/OVERLAYS/TEMPLE.OVR); read_file call 0x8002B798, memcpy call 0x8002B7D8; dispatcher index 0 (EXE_OVERLAYS.md Level functions that load overlays); return addresses 0x8002B7A0 and 0x8002B7E0 observed inside this function (T2.13); the function boundary 0x8002B688 comes from the dispatcher table in docs/EXE_OVERLAYS.md; no entry observation of 0x8002B688 itself; named by file, not by gameplay role"
+
+[[func]]
+pc = 0x8002BD10
+name = "level_load_EARTH"
+emit = false
+status = "guessed"
+note = "loads id 136 (/OVERLAYS/EARTH.OVR); read_file call 0x8002BE34, memcpy call 0x8002BE74; dispatcher index 3 (EXE_OVERLAYS.md Level functions that load overlays); named by file, not by gameplay role; static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17"
+
+[[func]]
+pc = 0x8002C420
+name = "level_load_WIND"
+emit = false
+status = "guessed"
+note = "loads id 142 (/OVERLAYS/WIND.OVR); read_file call 0x8002C570, memcpy call 0x8002C5B0; dispatcher index 1; also reads id 143 WINDDEMO.BIN (read only) (EXE_OVERLAYS.md Level functions that load overlays); named by file, not by gameplay role; static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17"
+
+[[func]]
+pc = 0x8002CB34
+name = "level_load_WATER"
+emit = false
+status = "guessed"
+note = "loads id 141 (/OVERLAYS/WATER.OVR); read_file call 0x8002CC2C, memcpy call 0x8002CC6C; dispatcher index 2 (EXE_OVERLAYS.md Level functions that load overlays); named by file, not by gameplay role; static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17"
+
+[[func]]
+pc = 0x8002D198
+name = "level_load_PRISON"
+emit = false
+status = "guessed"
+note = "loads id 139 (/OVERLAYS/PRISON.OVR); read_file call 0x8002D324, memcpy call 0x8002D364; dispatcher index 4 (EXE_OVERLAYS.md Level functions that load overlays); named by file, not by gameplay role; static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17"
+
+[[func]]
+pc = 0x8002DA94
+name = "level_load_FIRE"
+emit = false
+status = "guessed"
+note = "loads id 137 (/OVERLAYS/FIRE.OVR); read_file call 0x8002DB88, memcpy call 0x8002DBC8; dispatcher index 5 (EXE_OVERLAYS.md Level functions that load overlays); named by file, not by gameplay role; static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17"
+
+[[func]]
+pc = 0x8002E130
+name = "level_load_FIRE_alt"
+emit = false
+status = "guessed"
+note = "loads id 137 (/OVERLAYS/FIRE.OVR); read_file call 0x8002E214, memcpy call 0x8002E254; second function loading id 137; dispatcher index 7, and 10 if [0x800D7E48] >= 0; level/mode unknown (question 46) (EXE_OVERLAYS.md Level functions that load overlays); named by file, not by gameplay role; static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17"
+
+[[func]]
+pc = 0x8002E7F0
+name = "level_load_BRIDGE"
+emit = false
+status = "guessed"
+note = "loads id 135 (/OVERLAYS/BRIDGE.OVR); read_file call 0x8002E924, memcpy call 0x8002E964; dispatcher index 8; also reads id 134 BRDGDEMO.BIN (read only) (EXE_OVERLAYS.md Level functions that load overlays); named by file, not by gameplay role; static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17"
+
+[[func]]
+pc = 0x8002EFBC
+name = "level_load_FORTRESS"
+emit = false
+status = "guessed"
+note = "loads id 138 (/OVERLAYS/FORTRESS.OVR); read_file call 0x8002F1CC, memcpy call 0x8002F20C; dispatcher index 9 (EXE_OVERLAYS.md Level functions that load overlays); named by file, not by gameplay role; static analysis (docs/EXE_OVERLAYS.md; T2.12) — runtime pending T2.17"
