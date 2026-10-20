@@ -29,9 +29,10 @@ function Invoke-Capture([string]$exe, [string]$argLine) {
     } catch { return '' }
 }
 
-# Portable (unzipped, not on PATH) tools live under C:\retro-tools\<tool>\.
+# Portable (unzipped, not on PATH) tools live under %USERPROFILE%\retro-tools\<tool>\
+# (e.g. C:\Users\<you>\retro-tools; the C:\ root is not writable for a normal user).
 # RETRO_TOOLS_DIR, if set, replaces that default root.
-$script:retroRoot = 'C:\retro-tools'
+$script:retroRoot = "$env:USERPROFILE\retro-tools"
 if ($env:RETRO_TOOLS_DIR) { $script:retroRoot = $env:RETRO_TOOLS_DIR }
 
 # Search the retro-tools root recursively for files matching a filter (e.g. 'python.exe').
@@ -276,7 +277,7 @@ if (Test-Path -LiteralPath $cmc -PathType Container) {
     if ($binDirs.Count -eq 0) { $binDirs = @("$cmc\bin") }
     $pathAdd = ($binDirs -join ';')
     Write-Host ''
-    Write-Host 'Hint: to use the toolchain in this PowerShell session, run:'
+    Write-Host "Hint: portable toolchain found under $script:retroRoot. To use it in this PowerShell session, run:"
     Write-Host "  `$env:PSXRECOMP_TOOLCHAIN_DIR = '$cmc'; `$env:PATH = '$pathAdd;' + `$env:PATH"
 }
 exit 0
