@@ -49,3 +49,14 @@ _Filled in by the doc-writer as tasks pass review._
   - A full Python install. It is not needed, as stated above.
 - Open items are in `docs/OPEN_QUESTIONS.md` (78 to 80). Question 26 is resolved by this decision.
 - Details are in `docs/SETUP.md` (T2.1).
+
+## D6 Work around the duplicate manifest in the game exe build (T2.4)
+
+- Context: the `psx-runtime` link fails with `duplicate resource: type MANIFEST`. psxrecomp and recomp-ui both add a manifest to the same target. This is an upstream bug. No upstream option turns off the recomp-ui manifest.
+- Decision: in the root `CMakeLists.txt`, after `psxrecomp_add_game_runtime`, on Windows with a non-MSVC compiler, remove `psx-runtime_recomp_utf8_manifest.rc` from the `psx-runtime` sources.
+- Not chosen, and why:
+  - Editing the recomp-ui or psxrecomp submodule. Upstream source is not modified (see D1).
+  - Turning off the manifest with an upstream option. No such option exists.
+- Reason: the two manifests say the same things, so dropping recomp-ui's loses nothing. The link works.
+- Risks: the workaround depends on recomp-ui's generated file name. Under MSVC, psxrecomp adds a `.manifest` source that the guard matches, so there is no duplicate there. The workaround is not used under MSVC.
+- Revisit when upstream fixes the guard. See `docs/OPEN_QUESTIONS.md` (98) and `docs/SETUP.md` (T2.4).

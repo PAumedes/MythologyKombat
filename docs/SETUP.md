@@ -691,3 +691,103 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\run_psxrecomp.ps1 gene
 - `ps1_game\` is unchanged.
 - The boot EXE SHA-256 is unchanged.
 - `generated\` is not committed.
+
+## Game executable build (T2.4)
+
+This step builds the game exe, `build\MythologyKombat.exe`, from the repo root.
+
+### Environment
+
+Run this in each new PowerShell session. `<Git>` is Git's install folder.
+
+```
+$env:PSXRECOMP_TOOLCHAIN_DIR = '<RETRO_TOOLS_DIR>\cmake-clang'
+$env:PATH = '<RETRO_TOOLS_DIR>\cmake-clang\bin;<Git>\bin;<RETRO_TOOLS_DIR>\python;' + $env:PATH
+```
+
+### Commands
+
+```
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DPSXRECOMP_REQUIRE_GAME_C=ON
+cmake --build build --target psx-runtime
+```
+
+- The existing `build\` cache was Ninja and Release, with `PSXRECOMP_REQUIRE_GAME_C` OFF. The configure step changed it to ON.
+- The build uses Ninja's default job count on 4 logical CPUs, with 31.9 GB RAM. It did not run out of memory.
+
+### Steps on this machine
+
+| Step | Result |
+|------|--------|
+| Configure | 8.8 s. Log: `psxrecomp: linking generated game C (full runtime) — generated/SLUS_004.76_dispatch.c`. Log: `BIOS backends linked: OpenBIOS`. The SCPH1001 backend was skipped. This is expected |
+| First build of `psx-runtime` | 428 steps, about 2 min 36 s. The link failed at step 427 of 428. See the link failure below |
+| Rebuild after the fix | Relink took 1.7 s. Built |
+
+### Link failure and workaround
+
+- Error: `ld.lld: error: duplicate resource: type MANIFEST (ID 24)/name ID 1/language 1033`. It names `psx-runtime_manifest.rc.obj` and `psx-runtime_recomp_utf8_manifest.rc.obj`.
+- Cause: an upstream bug. Both psxrecomp and recomp-ui add an application manifest to the same target.
+  - `psxrecomp\cmake\psx_windows_manifest.cmake` adds the manifest object.
+  - `recomp-ui\recomp_ui.cmake` adds a second manifest resource. Its guard does not see the object, so it adds a second `.rc` file.
+- Both manifests say `asInvoker`, with the same `supportedOS` GUIDs and UTF-8 code page. Neither has DPI or common-controls settings. So dropping the recomp-ui one loses nothing.
+- Workaround: the root `CMakeLists.txt` removes `psx-runtime_recomp_utf8_manifest.rc` from the target on Windows with a non-MSVC compiler. See `docs/DECISIONS.md` (D6).
+- No upstream option turns this off. The check was run on psxrecomp `449c31e5` and recomp-ui `7c635c6`.
+
+### Result
+
+| Item | Value |
+|------|-------|
+| File | `build\MythologyKombat.exe` |
+| Size | 46,905,344 bytes |
+| SHA-256 | `66fdb5be60c2b023465cadeb1b6a79f889f2d8553f1709ca1535224590052af5` |
+| Built | 2026-10-20 10:23 |
+| Linking | Static. SDL 3.4.10 is built in. No DLLs sit beside the exe |
+| Compiler | clang 22.1.8. Release, `-O3 -DNDEBUG` |
+| Execution profile | ENHANCED. Identity `a45799857ef4be4851e3bd2957092a1955434f1c8942f65093da26ad875ad1e9` |
+| Manifest | One embedded manifest (`<assembly` appears once). It is not XML-validated |
+
+- Any rebuild changes the SHA-256. Record the SHA of the build that is tested.
+
+### Warnings
+
+- First build: 58 warnings. All come from upstream code, not from generated code.
+  - `-Wcomment` at `pgxp.h` line 206 and `gpu_sw_renderer.c` line 1944.
+  - `-Wformat-truncation` at `traps.c` line 1441.
+  - `-Wswitch` at `launcher_imgui.cpp` line 14199.
+- Rebuild: 0 warnings.
+
+### Files staged beside the exe
+
+| Path under `build\` | Note |
+|---------------------|------|
+| `bios\openbios.bin` | OpenBIOS |
+| `bios\OpenBIOS.LICENSE` | OpenBIOS licence |
+| `game.toml`, `game_options.toml` | Game config copies |
+| `mods\README.md` | Mods folder note |
+| `mods\bundled\` | 6 framework packages |
+| `assets\psxrecomp.png` | Image |
+| `MythologyKombat.execution.json` | Execution profile |
+
+### Command line
+
+`MythologyKombat.exe --help` and `--version` are not supported. The exe starts the launcher and the SDL path instead. Flags, from `psxrecomp\runtime\src\main.cpp`:
+
+| Flag | Meaning |
+|------|---------|
+| `--disc <path>` | Disc image |
+| `--game <toml>` | Game config |
+| `--bios <path>` | BIOS file |
+| `--no-launcher` / `--launcher` | Skip or show the launcher |
+| `--headless` | No window and no audio. TCP screenshots and state still work |
+| `--hidden-window` | Full presenter in a window that is never shown |
+| `--headless-opengl` | Hidden GL context. Needs real OpenGL |
+| `--debug-port <n>` | Debug port. Default 4370 |
+| `--memcard-dir <path>` | Memory card folder |
+| `--renderer software\|opengl\|vulkan` | Renderer choice |
+| `--game-mode` / `--no-game-mode` | Game mode on or off |
+| `--window-title` | Window title |
+| `--audit-mod-plugins` | Mod plugin audit |
+| `--netplay`, `--net-*`, `--netplay-query` | Netplay options |
+
+- Debug tools are compiled in.
+- Startup log: `tcc tier active but no bundled toolchain at build\overlay_toolchain (overlay gaps -> interpreter)`. No overlay toolchain is staged. See `docs/OPEN_QUESTIONS.md`.

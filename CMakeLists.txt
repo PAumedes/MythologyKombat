@@ -53,6 +53,17 @@ psxrecomp_add_game_runtime(psx-runtime
     CODEGEN_SETUP_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/codegen_setup.c"
 )
 
+# T2.4 workaround (upstream bug, see docs/OPEN_QUESTIONS.md): recomp-ui's
+# _recomp_ui_utf8_manifest() guard misses psxrecomp's manifest, which is added
+# as $<TARGET_OBJECTS:psx-runtime_manifest> (no ".manifest"/"manifest.rc"
+# suffix), so both link in and lld reports "duplicate resource: MANIFEST".
+# Both manifests carry activeCodePage=UTF-8; keep psxrecomp's, drop recomp-ui's.
+if(WIN32 AND NOT MSVC)
+    get_target_property(_psx_rt_srcs psx-runtime SOURCES)
+    list(FILTER _psx_rt_srcs EXCLUDE REGEX "psx-runtime_recomp_utf8_manifest\\.rc$")
+    set_property(TARGET psx-runtime PROPERTY SOURCES "${_psx_rt_srcs}")
+endif()
+
 # Stage runtime configs next to the exe for direct build/ launches. Only copy
 # files that exist — never fail POST_BUILD when game_options.toml is absent.
 foreach(_PSX_RUNTIME_CONFIG game.toml game_options.toml)
