@@ -14,6 +14,7 @@
 - T1.4 Main EXE header and overlay candidates: `tools\exe_overlays.py` writes `work\exe_header.json` and `work\overlay_candidates.json`; EXE header and crt0 constants checked by a second parser of the raw sectors; all 8 `.OVR` files static-confirmed at load address `0x80130FF8`; table in `docs/EXE_OVERLAYS.md`, open items in `docs/OPEN_QUESTIONS.md` (44 to 52).
 - T1.5 Ghidra + PS1 loader + REA setup: Ghidra 12.1.4 headless (`analyzeHeadless`) opens the boot EXE with the PS1 loader (CODE 0x80010000, 1730 functions; the Ghidra GUI has not been opened) and matches the T1.4 entry, text, BSS and heap values; REA 6.7.0 fails on the EXE (unsupported binary format, no MIPS), so it is not registered (D4); setup and steps in `docs/SETUP.md`, open items 59 to 67 in `docs/OPEN_QUESTIONS.md`.
 - T1.6 Identify PsyQ SDK functions: `tools\ghidra_sdk_names.py` writes `work\symbols_sdk.json` with 443 SDK-named functions and 335 unresolved placeholders; PsyQ 4.0 signature set is a best fit, not an exact SDK identity; summary in `docs/SYMBOLS.md`, steps in `docs/SETUP.md`, open items 55 and 64 to 72 in `docs/OPEN_QUESTIONS.md`.
+- Phase 2 plan added to TASKS.md
 
 ## Post-Phase-1 notes
 
