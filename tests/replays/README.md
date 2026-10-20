@@ -73,3 +73,7 @@ field in one `N` row of `inputs.csv`, and run with `-Session`; it must report FA
 `tools\session_fps.py <session>...` prints guest vblank rates from `telemetry.csv`.
 
 `tests\replays\local\`, `session-*\`, `*.mcd` are git-ignored. Recordings hold memory-card copies and RAM digests; never commit them.
+
+## Effect of the vsync-off default (D9)
+
+`game.toml` now sets `[video] vsync = "off"`. The boot route does not depend on host pacing: `run_boot_route.py --runs 1 --expect` gave MATCH after the change. Recordings in `local\` were made with another exe and, user-reported, vsync on; they are tied to that exe (`docs/OPEN_QUESTIONS.md`, question 225). Strict replay of them was not re-run.

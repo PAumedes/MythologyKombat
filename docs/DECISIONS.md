@@ -89,15 +89,18 @@ _Filled in by the doc-writer as tasks pass review._
 
 ## D9 FMV pacing fix is a vsync setting, not a code change (T2.10)
 
-- Status: pending. The user's visible-window test has not been run.
+- Status: approved by the user. Default is now `[video] vsync = "off"` in `game.toml` (set in the T2.10 follow-up). User-reported: with vsync off the movie audio was clean. Telemetry (`tools\session_fps.py`, `cd_xa` not 0): 59.9 Hz mean with vsync off, 51.9 Hz with vsync on.
+- Implementation: `[video] vsync = "off"` added to `game.toml`, and staged to `build\game.toml` (and `work\build-dbg\game.toml`). Config only: the value is read at run time by `config_loader.cpp`, so no relink or regeneration. `game.toml` is copied beside the exe by a POST_BUILD `copy_if_different`, so the next build keeps it. The player's `build\settings.toml` (written by the launcher) overrides `game.toml` and held `vsync = "on"`; it was changed to `"off"` (backup: `work\settings.toml.bak_vsync_on`). A player whose own `settings.toml` says `"on"` still gets vsync on. `build\game.toml` also has `multitap_analog = true` under `[controller]`, which the repo `game.toml` lacks. The user reports that the launcher adds it. `build\` is git-ignored.
+- Honored (agent, hidden window, Release exe, no `PSX_VSYNC`, `tools\perf_run.ps1 -Name V0`): the log prints `present cadence: wall-clock pacer (16.6639 ms/frame)`, not `driver vsync`. FMV phase guest rate min/median/max 58.8/60.0/61.0 Hz, 0 underruns. Pre-FMV median 60.0, max 60.1 Hz. The "0 underruns" figure applies to the FMV window only. `work\perf\run_V0.log` pre-FMV sample 5 shows guest 29.68 Hz with underruns +12735 (see question 166 for a similar dip in run G).
+- Speed: not running fast. With vsync off the wall-clock pacer is deadline-based and still caps the guest at about 60 Hz (see the comment above `present_effective_swap_interval` in `psxrecomp\runtime\src\main.cpp`). The 69.6 Hz mean in question 223 is the mean of per-interval host rates over bursty intervals, which is biased upward; it is not a sustained rate. Not checked: sustained gameplay speed in a visible window (the user reported no speed problem). Adaptive was not needed.
 - Context: hidden-window Release runs show the FMV at about 50 Hz with vsync on, and 60.0 Hz with vsync off. Per-frame guest cost is about 13 ms. Details are in `docs/SETUP.md` ("FMV speed measurement (Release, hidden window)").
-- Decision: treat the FMV pacing problem as a vsync setting. Do not change game code for it yet. The test is `PSX_VSYNC=0` in one visible-window run. If the user agrees, the setting becomes `[video] vsync = "off"` in `game.toml`.
+- Decision: treat the FMV pacing problem as a vsync setting. Do not change game code for it yet. ~~The test is `PSX_VSYNC=0` in one visible-window run. If the user agrees, the setting becomes `[video] vsync = "off"` in `game.toml`.~~ Superseded: the user approved, and `[video] vsync = "off"` is now in `game.toml` (see Status).
 - Not chosen, and why:
   - Changing the FMV decode or the overlay path. The FMV decode runs in the exe's AOT code, not in interpreted overlays. Staging the overlay toolchain would not fix the FMV rate.
   - A PGO or LTO build first. Headroom is thin, and the build was not tested.
   - Treating `PSX_VSYNC=0` as uncapped. The wall-clock pacer still runs.
-- Reason: with vsync off, the FMV phase median is 60.0 Hz, with 0 underruns. This was measured in a hidden window only.
-- Not confirmed. Do not call it a fix until the visible-window vsync-off run shows 60 Hz. Open items are in `docs/OPEN_QUESTIONS.md` (116, 155 and 162 to 170).
+- Reason: with vsync off, the FMV phase median is 60.0 Hz, with 0 underruns. ~~This was measured in a hidden window only.~~ Superseded: the user has since reported clean audio in a visible window (see the paragraph below).
+- The hidden-window run confirms 60 Hz; the user reports clean audio in a visible window. Tearing was not reported. Fallback if tearing appears: `"adaptive"`. Open items are in `docs/OPEN_QUESTIONS.md` (116, 155 and 162 to 170).
 
 ## D10 The runtime overlay check has no pc_break. It uses fn_filter, a write ring and host_pause (T2.13)
 

@@ -1163,7 +1163,7 @@ $env:PSX_VSYNC = '0'
 
    The user reports the fps, the audio and any tearing.
 2. Then try `PSX_VSYNC=-1` (adaptive).
-3. If vsync off is acceptable, set `[video] vsync = "off"` (or adaptive) in `game.toml`. Do this only with the user's agreement.
+3. Done: the user approved, and `[video] vsync = "off"` is now in `game.toml` (D9). Check with `tools\perf_run.ps1 -Name X` (run it with `powershell -ExecutionPolicy Bypass -File`): the log must print `present cadence: wall-clock pacer`. The player's `build\settings.toml` overrides `game.toml`; it must also say `vsync = "off"`.
 4. Later: PGO or LTO. Headroom is thin. Updating the Intel driver, or forcing the MX150, is untested.
 5. Staging the overlay toolchain is low priority. It affects only the Midway logo dip and overlay interpretation.
 
