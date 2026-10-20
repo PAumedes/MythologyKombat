@@ -34,7 +34,7 @@ The orchestrator updates the Status column; nobody else edits this table.
 | T2.8 | Seed growth from dispatch misses | T2.5 | agents | done |
 | T2.9 | LBA-to-file lookup tool | T1.1 | agents | done |
 | T2.10 | FMV check (STR and XA) | T2.6, T2.9 | USER + agents | in-progress |
-| T2.11 | Main menu and first fight | T2.10 | USER + agents | in-progress |
+| T2.11 | Main menu and first fight | T2.10 | USER + agents | done |
 | T2.12 | Overlay facts from the EXE and disc | T1.4 | agents | done |
 | T2.13 | Runtime proof: overlay RAM equals file bytes | T2.11, T2.12 | USER + agents | done |
 | T2.14 | Overlay strategy decision | T2.13 | agents | done |
@@ -46,9 +46,13 @@ The orchestrator updates the Status column; nobody else edits this table.
 | T2.20 | Record a session and strict replay | T2.19, T2.11 | USER + agents | done |
 | T2.21 | Seed symbols.toml from the SDK names | T1.6 | agents | done |
 | T2.22 | Name the overlay loader and level functions | T2.12, T2.21 | agents | done |
-| T2.23 | Phase 2 gate review | all above | agents | todo |
+| T2.23 | Phase 2 gate review | all above | agents | in-progress |
 
 Phase 2 notes: T2.9, T2.12, T2.21 and T2.19 do not need the game to boot. They can run in parallel with the main chain once their dependencies are done. All outputs go under `work\` (git-ignored) unless noted. Python scripts are stdlib-only. Every disc claim comes from a `tools\` script. Run the upstream CLI WITHOUT `python -I` (see T2.1).
+
+Gate notes:
+- T2.10 stays `in-progress`. Its open items are in `docs/SETUP.md` ("Why T2.10 stays in-progress").
+- T2.23 gate review PASSED on checks. It cannot be closed until T2.10 is done, or the user explicitly descopes T2.10.
 
 ---
 

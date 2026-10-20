@@ -240,6 +240,10 @@ Use the explicit targets above instead. No upstream source was changed. It is no
 
 `git status` shows `psxrecomp` as modified. The cause is CRLF line endings. `core.autocrlf=true` changes the tracked generated `OpenBIOS*` files. With `--ignore-cr-at-eol` the diff is empty. The fix is not applied yet. See `docs/OPEN_QUESTIONS.md`.
 
+- The submodule shows ` m` in `git status` for this reason (CRLF only, per the diff check above).
+- Never commit it. Do not run `git add psxrecomp`, and do not run `git commit -a`. Either one stages the submodule's ` m` change.
+- Stage only the named files of this repo, then run `git status` before each commit.
+
 ### Commit note
 
 `.gitmodules` and the `psxrecomp` gitlink were committed in the "T0.7: ..." commit (`beee35b`). They were staged in that commit by accident of staging order.
@@ -1041,6 +1045,149 @@ Candidate engineering fixes, not decided:
 - Find where the FMV decode runs, in the EXE or in an overlay.
 
 See `docs/OPEN_QUESTIONS.md`, questions 116 to 127 and 148 to 161.
+
+## FMV check (T2.10) and first fight (T2.11)
+
+Status: T2.11 is `done` in `docs/TASKS.md`. T2.10 stays `in-progress`. Three kinds of evidence are kept apart below: user-reported (playtests 1 and 2 above), agent-observed (debug build, headless, `tools\fmv_identify.py`), and user-session facts read from artifacts of the user's own recordings (`telemetry.csv`, the visible coverage run). Picture and audio quality are user-reported only. Disc reads, LBAs and files come from the traces.
+
+### Movies the user reported
+
+| Movie | File | Picture | Audio | Frame rate |
+|-------|------|---------|-------|------------|
+| Midway logo | `MIDWAY01.STR` (file matched by LBA trace, see "Movies identified by LBA") | Digital glitch, then stutter (vsync on). Vsync off: not reported | Stutters (vsync on). Clean with vsync off | 48 to 54 fps, user estimate (vsync on). About 60 fps (vsync off) |
+| Intro | `SZINTRO1.STR` (matched by LBA trace and by order in the user's own session telemetry; the user did not name the file) | Not described | Stutters (vsync on). Clean with vsync off | 48 to 54 fps, user estimate (vsync on) |
+| Sony logo | Not seen by the user. No movie file is read before `LEGAL.STR` in any trace, so no STR file is a candidate. Not identified | Not seen | Not seen | Not seen |
+
+- Telemetry (`tools\session_fps.py`, D9 in `docs/DECISIONS.md`): XA mean 51.9 Hz with vsync on, 59.9 Hz with vsync off. The telemetry does not name the movie.
+- Clean audio with vsync off is the user's words for "movie audio". It is not split by movie.
+
+### Movies identified by LBA
+
+Tool: `tools\fmv_identify.py` (stdlib only). It cold-boots `work\build-dbg\MythologyKombat.exe --headless`, pulls the new entries of `cdrom_sector_history` every 0.4 s (de-duplicated by `seq`; the 8192-entry ring did not wrap in any run) and samples `fmv_state` (`mdec_decode_count`). It maps each LBA to a disc file with the same `work\disc_files.json` that `tools\lba_lookup.py` uses. `--telemetry DIR` does the same for a recorded session's `cd_lba` column. Results are saved in `work\fmv\` (git-ignored). "Other reads" are all non-XA-audio sector reads (STR picture data); the history does not mark video sectors, and an LBA can be read more than once. Frames are guest VBlanks (the debug server `frame` number). Picture and audio quality were not judged here.
+
+Agent-observed, no input at all (`--route none --until 6200`, 88 s wall; `work\fmv\identify_noinput.json`):
+
+| Order | Movie file | LBA range read | First frame | Last frame | XA-audio reads | MDEC decodes in window |
+|-------|-----------|----------------|-------------|-----------|----------------|------------------------|
+| 1 | `LEGAL.STR` | 151572-151674 | 372 | 413 | 0 | 9 |
+| 2 | `MIDWAY01.STR` | 153072-154822 | 848 | 1548 | 217 | 176 |
+| 3 | `SZINTRO1.STR` | 187024-195845 | 1554 | 5082 | 1104 | 887 |
+| 4 | `SZLOGO15.STR` | 196167-196989 | 5089 | 5418 | 103 | 82 |
+
+Agent-observed, boot route `boot_to_menu` (START at frame 3000, CROSS at frame 4000; `--until 5600`, 75 s wall; `work\fmv\identify.json`):
+
+| Order | Movie file | LBA range read | First frame | Last frame | XA-audio reads | MDEC decodes in window |
+|-------|-----------|----------------|-------------|-----------|----------------|------------------------|
+| 1 | `LEGAL.STR` | 151573-151674 | 373 | 413 | 0 | 9 |
+| 2 | `MIDWAY01.STR` | 153072-154822 | 848 | 1548 | 218 | 176 |
+| 3 | `SZINTRO1.STR` | 187024-190675 | 1554 | 3014 | 456 | 367 |
+| 4 | `SZLOGO15.STR` | 196167-196989 | 3021 | 3350 | 102 | 81 |
+| 5 | `OPEN.STR` | 164189-166989 | 4067 | 5187 | 349 | 279 |
+
+- With the route, START at frame 3000 cuts `SZINTRO1.STR` short (3637 of its 9143 sectors read). Then `SZLOGO15.STR` plays, then the title menu. CROSS at frame 4000 (New Game) starts `OPEN.STR`, which ends at frame 5187. `TEMPLE.OVR` (id 140) is read at frames 5202 to 5206.
+- The earlier boot-sequence notes (no input) list movies near frames 2500, 4000 and 5250 ("Boot sequence seen by an agent"). By the no-input trace those frames fall in `SZINTRO1.STR` (frames 1554 to 5082) for 2500 and 4000, and in `SZLOGO15.STR` (frames 5089 to 5418) for 5250. This is a match by frame number, not by comparing a screenshot with each file.
+- Not claimed: that `SZLOGO15.STR` is a Sony logo (or any particular logo), or what the picture of each movie shows. Nothing in a trace says so.
+- No movie file is read before `LEGAL.STR` (frame 372). The first reads are the disc volume sectors, `SYSTEM.CNF`, then the boot EXE.
+
+User-session facts read from artifacts (not an agent route). Session `session-1792525023167056` (`tests\replays\local\`, frozen Release exe `b5573bbe...7856b`, vsync on is user-reported). Command: `tools\fmv_identify.py --telemetry tests\replays\local\session-1792525023167056`; output in `work\fmv\telemetry_table.txt`. The `cd_lba` column is one sample per VBlank, so LBA ranges are sampled, not every sector.
+
+| Item | Value |
+|------|-------|
+| Play duration (`host_elapsed_us`, last row) | 399,627,599 us = 399.6 s = 6 min 39.6 s, 23,155 guest VBlanks |
+| `LEGAL.STR` | host 3.4 to 4.2 s, 50.2 Hz mean |
+| `MIDWAY01.STR` | host 11.5 to 24.8 s, VBlank 848 to 1548, 52.4 Hz mean, `cd_xa` set on 698 of 701 samples |
+| `SZINTRO1.STR` | host 24.9 to 92.9 s, VBlank 1553 to 5082, 52.0 Hz mean, last LBA 195846 (file ends at 196166), so it played to the end |
+| `SZLOGO15.STR` | host 93.0 to 99.8 s, VBlank 5089 to 5418, 48.2 Hz mean |
+| `WIND.OVR` (id 142) read | host 133.1 s, VBlank 7406 to 7414. Cause not known (open question 242) |
+| `OPEN.STR` | host 169.5 to 190.9 s, VBlank 9578 to 10698, 52.5 Hz mean |
+| `TEMPLE.OVR` (id 140) read | host 191.1 to 191.2 s, VBlank 10713 to 10716 |
+| `TEMPLE.LVL` / `TEMPLE.WAL` reads | host 199.0 to 316.1 s (level data is read during play) |
+| Time from the `TEMPLE.OVR` read to the end of the recording | 399.6 s minus 191.1 s = about 208 s (upper bound for the first level; includes loading) |
+| Incidents | The `incident` column is 0 in all 23,155 rows |
+
+The vsync-off session `session-1792524829517909` (`build\saves\diagnostics\`, vsync off is user-reported, 94.2 s total, ends in the intro) shows the same files in the same order at 60.1 Hz (`LEGAL.STR`), 60.0 Hz (`MIDWAY01.STR`), 59.8 Hz (`SZINTRO1.STR`) and 60.0 Hz (`SZLOGO15.STR`). This fits the user's report of about 60 fps with vsync off and 48 to 54 fps with vsync on. Which session had vsync on or off is user-reported (open question 222).
+
+Visible coverage run (a visible window, not headless, no warp, no boot route): `work\overlay_coverage\20261020_182310\summary.json` (tool `tools\overlay_coverage.py`). `warp` is null, the run log shows the OpenGL renderer (no `--headless`), and the game ended with `exit_origin sdl_window_close` in `psx_last_run_report.json` (the window was closed). The boot route was not used: the level index returns to 0 at frame 2547 and the TEMPLE level function is entered at frame 2469, before the route's first button press (frame 3000). Results: `TEMPLE` (id 140) is the only image reached, first seen at frame 3208 (t = 63.9 s); duration 113.0 s, last frame 5762; `faults` and `crash_like_log_lines` are empty. The artifacts do not say who held the pad. The run is attributed to the user. The basis is that its table (TEMPLE first at frame 3208, 17,989 static hits, 88 entries, 65 CRC misses) matches the table the user pasted in chat. Who held the pad is not in the artifacts.
+
+### Per-movie table (28 `/MOVIES` STR files)
+
+LBA and sector counts come from `docs/DISC_MAP.md`. Untested means no report exists. "Read" means the file was seen in a CD read trace (section above); that shows the disc read and MDEC activity, not that picture or audio are right. The picture and audio columns are user-reported only.
+
+| File | LBA | Sectors | Picture | Audio | Status |
+|------|-----|---------|---------|-------|--------|
+| `BIOS.STR` | 426 | 5223 | Not reported | Not reported | Untested |
+| `BRDGFL1.STR` | 5649 | 1615 | Not reported | Not reported | Untested |
+| `CREDS01.STR` | 7264 | 27567 | Not reported | Not reported | Untested |
+| `DROWN2.STR` | 34831 | 903 | Not reported | Not reported | Untested |
+| `E2WTR.STR` | 35734 | 2775 | Not reported | Not reported | Untested |
+| `FIREFL1.STR` | 38509 | 1055 | Not reported | Not reported | Untested |
+| `FMV1.STR` | 39564 | 29079 | Not reported | Not reported | Untested |
+| `FMV2.STR` | 68643 | 26087 | Not reported | Not reported | Untested |
+| `FMV3A.STR` | 94730 | 9439 | Not reported | Not reported | Untested |
+| `FMV3B.STR` | 104169 | 7287 | Not reported | Not reported | Untested |
+| `FMV4AB.STR` | 111456 | 11223 | Not reported | Not reported | Untested |
+| `FMV5.STR` | 122679 | 11647 | Not reported | Not reported | Untested |
+| `FMV6.STR` | 134326 | 4919 | Not reported | Not reported | Untested |
+| `FMV7AB.STR` | 139245 | 12327 | Not reported | Not reported | Untested |
+| `LEGAL.STR` | 151572 | 1500 | Not reported | Not reported | Read (agent trace, user session). Picture and audio not reported. No XA audio |
+| `MIDWAY01.STR` | 153072 | 1911 | See the table above | See the table above | Reached (user). File confirmed by LBA trace (agent frames 848 to 1548; user session host 11.5 to 24.8 s) |
+| `MK4A.STR` | 154983 | 8359 | Not reported | Not reported | Untested |
+| `NUFALL3.STR` | 163350 | 839 | Not reported | Not reported | Untested |
+| `OPEN.STR` | 164189 | 3111 | Not reported | Not reported | Read after New Game (agent frames 4067 to 5187; user session host 169.5 to 190.9 s). Picture and audio not reported |
+| `OUTTKES1.STR` | 167300 | 16671 | Not reported | Not reported | Untested |
+| `PRSNFAL2.STR` | 183971 | 943 | Not reported | Not reported | Untested |
+| `QUANDETH.STR` | 184914 | 911 | Not reported | Not reported | Untested |
+| `ROCKDETH.STR` | 185825 | 1199 | Not reported | Not reported | Untested |
+| `SZINTRO1.STR` | 187024 | 9143 | See the table above | See the table above | Reached (user). The intro by LBA trace and by order (agent frames 1554 to 5082 with no input; user session host 24.9 to 92.9 s). The user did not name the file |
+| `SZLOGO15.STR` | 196167 | 1135 | Not reported | Not reported | Read after the intro (agent frames 5089 to 5418; user session host 93.0 to 99.8 s). Not identified as the Sony logo; what it shows is not known |
+| `WND2E.STR` | 197302 | 2615 | Not reported | Not reported | Untested |
+| `WTR2FR.STR` | 199917 | 2791 | Not reported | Not reported | Untested |
+| `WTRDRN1.STR` | 202708 | 2287 | Not reported | Not reported | Untested |
+
+- Count: 2 movies with a user report (`MIDWAY01.STR`, `SZINTRO1.STR`). 3 more were read in the traces but have no picture or audio report (`LEGAL.STR`, `SZLOGO15.STR`, `OPEN.STR`). 23 untested.
+- The other STR files (for example `FMV1.STR`, `BIOS.STR`) were not read in any trace. The boot route stops at the first level.
+
+### Why T2.10 stays in-progress
+
+Accept line: "each movie reached has a row (picture OK?, audio OK?, glitches); unreached movies are marked untested; failures become `docs/OPEN_QUESTIONS.md` entries naming the exact movie."
+
+Met:
+
+- A row exists for each movie reached: `MIDWAY01.STR` and `SZINTRO1.STR` (user-reported), and `LEGAL.STR`, `SZLOGO15.STR`, `OPEN.STR` (read in traces).
+- The other 23 movies are marked untested.
+- The Midway and intro failures (stutter with vsync on) name exact files, `MIDWAY01.STR` and `SZINTRO1.STR`, by LBA trace (open questions 235 and 236 closed).
+
+Not met:
+
+- `LEGAL.STR`, `SZLOGO15.STR` and `OPEN.STR` were reached in the user's session, but the user gave no picture or audio report for them, so their "picture OK? audio OK?" cells are empty.
+- Picture with vsync off was not reported for `MIDWAY01.STR` or `SZINTRO1.STR`. The digital glitch with vsync off is not known (237).
+- The Midway "digital glitch" has no cause. The stutter is handled as a vsync setting (D9). No upstream code fix was made.
+- Whether the Sony logo exists as a movie is not known (241). No movie file is read before `LEGAL.STR`.
+- The 23 untested movies were not reached by anyone. Whether the user can reach them is not known (238).
+
+Open items: `docs/OPEN_QUESTIONS.md` (148, 150, 162, 237, 238, 241).
+
+### First fight (T2.11)
+
+Accept line: "Patricio confirms the menu and a fight with responsive controls; play time and whether any crash occurred are recorded; the level name comes from the observed overlay id."
+
+Status: done in `docs/TASKS.md`. Gate facts are user-reported, plus the telemetry facts below.
+
+Met:
+
+- The user reached the main menu, started a new game and played a fight with responsive controls (user report).
+- No crash was reported (user report). The artifacts agree: the coverage run's `summary.json` has empty `faults` and `crash_like_log_lines`, and the session telemetry `incident` column is 0 in every row.
+- Play time is recorded from the user's session telemetry: 399.6 s (6 min 39.6 s) in total, and about 208 s from the `TEMPLE.OVR` read to the end. The 208 s is an upper bound for the first level. It includes loading. It is read from the file, not stated by the user (see "User-session facts read from artifacts").
+- The level is TEMPLE, from overlay id 140 in the user's session telemetry (inferred; the user did not say it in words). `TEMPLE.OVR` (id 140) is read in the user's recorded session (VBlank 10713). `TEMPLE` (id 140) is also the only image loaded in the visible coverage run (frame 3208). Agents saw the same id 140 in warp-free runs (T2.13, T2.16). Question 240.
+- Screenshots and frame numbers for each boot stage were taken by an agent (table "Boot sequence seen by an agent" above).
+
+Not met (recorded, not blocking the T2.11 status):
+
+- The user has not said in their own words that the fight they played was in the TEMPLE level. The id is read from the disc-read trace and the coverage run, and it fits New Game followed by `OPEN.STR`. The length of the fight itself is also not separated from loading (open question 239 covers the session length only).
+- Who held the pad in the coverage run is not in the artifacts (see above).
+- The `WIND.OVR` read at VBlank 7406 in the user's session, before New Game, is unexplained. Its cause is not known (open question 242).
+
+Open items: `docs/OPEN_QUESTIONS.md` (149, 240 and 242).
 
 ## FMV speed measurement (Release, hidden window)
 
