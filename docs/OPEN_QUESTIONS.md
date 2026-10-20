@@ -98,7 +98,7 @@
 |---|----------|-------|
 | 53 | Are there other regional releases (PAL, demo discs) worth checking for symbols? | Task T1.2 asks for this. Only the NTSC-U disc (SLUS-00476) has been scanned. Not decided which other discs to get or check. |
 | 54 | Should `tools\symbol_hunt.py` match the form `Ver n`? | The version patterns miss the form `Ver n`. The reviewer found `PS-X Control TAP Driver Ver 3.0` in the EXE by hand. The tool is not changed by T1.2. Reviewer note. |
-| 55 | What PsyQ library version is on the disc? | The Sony strings give revision dates from about Dec 1996 to Mar 1997. No single version evidence list exists yet. Needed for T1.6. See `docs/SYMBOLS.md`. |
+| 55 | What PsyQ library version is on the disc? | Answered as a best fit in T1.6: the PsyQ 4.0 signature set (`ghidra_psx_ldr` reports `PsyQ Version` 4.0.0). This is not an exact SDK identity. The RCS dates are not mapped to a release (question 68). See `docs/SYMBOLS.md`. |
 | 56 | Is the symbol hunt output byte-for-byte repeatable? | The tool was run once in full. Repeat output is judged from the code only. A second full run is not done. Reviewer note. |
 | 57 | Why are the `PS-X Run-time Library`, `Library Release`, `Revision`, `$Header` and compile-date strings absent? | Their absence is not explained. Not checked. |
 | 58 | What do the three gap regions hold? | The gaps are at LBA 424, LBA 163342 to 163349, and LBA 228841 to 228990. They were scanned and had no symbol hits. Their contents are not described. |
@@ -112,7 +112,17 @@
 | 61 | Is REA safe to install? | REA is from one maintainer and was first published on 2026-07-12. Its prebuilt Windows native addon was not audited. Setup was not run. Not decided. |
 | 62 | Does the Ghidra GUI open the EXE with the PS1 loader? | The user reported this. It was not checked here. No GUI project was found. |
 | 63 | Is the `ghidra_psx_ldr` zip the upstream file? | Its SHA-256 is recorded in `docs/SETUP.md`. It was not compared with a published hash. |
-| 64 | Should the Ghidra check be a script in `tools\`? | The Ghidra run was done by hand with `analyzeHeadless`. No script in `tools\` runs it. `CLAUDE.md` asks that claims come from reproducible scripts. Not decided. |
+| 64 | Should the Ghidra check be a script in `tools\`? | Addressed for T1.6: `tools\ghidra_sdk_names.py` runs Ghidra for the SDK names. Whether it also covers the T1.5 import checks is not checked. See `docs/SETUP.md` (T1.6). |
 | 65 | Should the RAM block be marked initialised? | The loader leaves `0x800D8000` to `0x801FFFFF` uninitialised. This causes about 460 "Unable to read bytes" warnings. Not decided. |
 | 66 | What causes the pcode error after `trap(1)`? | The error is at `0x80090F1C`, file offset `0x8171C`. The word there is not a GTE instruction. The reviewer judged it harmless. The cause is not checked. |
 | 67 | Which Ghidra scratch projects should be kept? | `work\ghidra-test` and `work\ghidra-test2` are scratch. Delete or keep. Not decided. |
+
+## SDK function names (from T1.6)
+
+| # | Question | Notes |
+|---|----------|-------|
+| 68 | Which PsyQ release matches the RCS dates? | The RCS dates on the disc fall between Dec 1996 and Mar 1997. They are not mapped to a PsyQ release. No release list is available. See `docs/SYMBOLS.md`. |
+| 69 | Are the small-function SDK names false positives? | `SsUtReverbOn`, `SsUtReverbOff` and `_SsSndPlay` sit below the SDK block and are probably false positives. The JSON does not flag them. 157 SDK names are 32 bytes or less, and look-alike wrappers may be swapped. Key on the address, not the name. |
+| 70 | Should `tools\ghidra_sdk_names.py` and `tools\psyq_version_scan.py` be fixed? | `psyq_version_scan.py` ignores `GHIDRA_HOME`, has no existence checks, and does not close its file handles. Both scripts hard-code default paths for this machine. Both can be overridden. Not changed by T1.6. |
+| 71 | What are the 335 `obj_label` placeholders? | Names such as `TAP_OBJ_C8` and `LIBMCRD_OBJ_xx` are not real SDK names. They are not resolved. |
+| 72 | Which string hints should be applied as names? | The string hints in `docs/SYMBOLS.md` (for example `SPU:T/O [%s]` and `MDEC_rest:bad option`) are not applied as names. Not decided. The `__main` comment from Ghidra is also unreliable. |

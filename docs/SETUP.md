@@ -480,3 +480,40 @@ The inspect command returned this error:
 ### Git status
 
 `psxrecomp` still shows as modified, as in T0.5. Do not commit it. See `docs/OPEN_QUESTIONS.md`, question 13.
+
+## SDK function names (T1.6)
+
+The script `tools\ghidra_sdk_names.py` runs Ghidra on the boot EXE and names the Sony library (PsyQ) functions. It writes `work\symbols_sdk.json`. The version evidence and the name counts are in `docs/SYMBOLS.md`.
+
+Run it from the repo root:
+
+```
+<RETRO_TOOLS_DIR>\python\python.exe -I tools\ghidra_sdk_names.py [--reuse] [--ghidra PATH] [--jdk PATH] [--root PATH] [--exe PATH] [--out PATH]
+```
+
+| Option | Meaning |
+|--------|---------|
+| `--reuse` | Re-open the existing Ghidra project under `work\ghidra-sdk\` with `-process -noanalysis`. |
+| `--ghidra PATH` | Ghidra install folder. Defaults to the `GHIDRA_HOME` variable, then to `<RETRO_TOOLS_DIR>\ghidra\ghidra_12.1.4_PUBLIC`. |
+| `--jdk PATH` | JDK folder. Defaults to the `JAVA_HOME` variable, then to `<RETRO_TOOLS_DIR>\jdk`. |
+| `--root PATH` | Repo root. Defaults to the folder above `tools\`. |
+| `--exe PATH` | Boot EXE. Defaults to `work\disc\SLUS_004.76`. |
+| `--out PATH` | Output file. Defaults to `work\symbols_sdk.json`. |
+
+- Without `--reuse`, the Ghidra project is rebuilt from scratch. This takes about 2.5 minutes.
+- With `--reuse`, the run takes about 13 seconds in the test run. The script's own header says about 20 seconds.
+- The output is deterministic. Two runs give byte-identical files (checked with `cmp`).
+- It needs `work\disc\SLUS_004.76` from T1.4.
+- It does not change anything in `ps1_game\`.
+
+### Version scan
+
+The script `tools\psyq_version_scan.py` checks the EXE's library-version records against the PsyQ object-signature sets. It prints a count per set and writes `work\psyq_version_scan.json`.
+
+```
+<RETRO_TOOLS_DIR>\python\python.exe -I tools\psyq_version_scan.py [--root PATH] [--ghidra PATH]
+```
+
+- Its `--ghidra` default is the hard-coded Ghidra path above. It does not read `GHIDRA_HOME`.
+- It has no existence checks. It opens files without closing them. See `docs/OPEN_QUESTIONS.md`.
+- It needs `work\disc\SLUS_004.76` from T1.4.
