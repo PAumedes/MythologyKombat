@@ -29,10 +29,25 @@ function Invoke-Capture([string]$exe, [string]$argLine) {
     } catch { return '' }
 }
 
+# Portable (unzipped, not on PATH) tools live under C:\retro-tools\<tool>\.
+# RETRO_TOOLS_DIR, if set, replaces that default root.
+$script:retroRoot = 'C:\retro-tools'
+if ($env:RETRO_TOOLS_DIR) { $script:retroRoot = $env:RETRO_TOOLS_DIR }
+
+# Search the retro-tools root recursively for files matching a filter (e.g. 'python.exe').
+# Shallowest path first. Optional regex to further filter the full path.
+function Find-Retro([string]$filter, [string]$pathRegex) {
+    if (-not (Test-Path -LiteralPath $script:retroRoot -PathType Container)) { return $null }
+    $hits = @(Get-ChildItem -LiteralPath $script:retroRoot -Filter $filter -Recurse -Depth 5 -File -ErrorAction SilentlyContinue)
+    if ($pathRegex) { $hits = @($hits | Where-Object { $_.FullName -match $pathRegex }) }
+    if ($hits.Count -eq 0) { return $null }
+    return ($hits | Sort-Object @{Expression = { ($_.FullName -split '\\').Count }}, FullName | Select-Object -First 1).FullName
+}
+
 function Find-Exe([string]$name) {
     $c = Get-Command $name -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
     if ($c) { return $c.Source }
-    return $null
+    return (Find-Retro "$name.exe")
 }
 
 function Write-Result([string]$tool, [string]$status, [string]$detail) {
@@ -80,6 +95,8 @@ $pyExe = $null
 foreach ($c in @(Get-Command python -CommandType Application -ErrorAction SilentlyContinue)) {
     if ($c.Source -notlike '*\WindowsApps\*') { $pyExe = $c.Source; break }
 }
+if (-not $pyExe) { $pyExe = Find-Retro 'python.exe' '\\python[^\\]*\\(?:[^\\]+\\)*python\.exe$' }
+if (-not $pyExe) { $pyExe = Find-Retro 'python.exe' }
 if ($pyExe) {
     $t = Invoke-Capture $pyExe '--version'; $v = Get-VersionFromText $t
     if ($t -match 'Python\s+3' -and $v) {
@@ -161,6 +178,8 @@ if (-not $jexe) {
         if ($hit) { $jexe = $hit.FullName; break }
     }
 }
+if (-not $jexe) { $jexe = Find-Retro 'java.exe' '\\jdk[^\\]*\\(?:[^\\]+\\)*bin\\java\.exe$' }
+if (-not $jexe) { $jexe = Find-Retro 'java.exe' '\\bin\\java\.exe$' }
 if (-not $jexe) { Write-Result 'Java' 'missing' 'not found (need 21+ for Ghidra)' }
 else {
     $t = Invoke-Capture $jexe '-version'
@@ -178,8 +197,11 @@ else {
 $gh = $null
 $cands = @()
 if ($env:GHIDRA_INSTALL_DIR) { $cands += $env:GHIDRA_INSTALL_DIR }
+$rg = Find-Retro 'ghidraRun.bat'
+if ($rg) { $gh = Split-Path -Parent $rg }
 $cands += @('C:\ghidra*', 'C:\tools\ghidra*', "$home_\ghidra*", "$home_\tools\ghidra*", "$home_\Downloads\ghidra*", "$home_\Downloads\*\ghidra*", "$pf\ghidra*", "$pf86\ghidra*", "$lad\ghidra*", "$lad\Programs\ghidra*", "$home_\scoop\apps\ghidra\current*", 'C:\ProgramData\chocolatey\lib\ghidra\tools\ghidra*')
 foreach ($pat in $cands) {
+    if ($gh) { break }
     foreach ($d in @(Get-ChildItem -Path $pat -Directory -ErrorAction SilentlyContinue)) {
         $run = $null
         if (Test-Path "$($d.FullName)\ghidraRun.bat") { $run = $d.FullName }
@@ -212,8 +234,10 @@ foreach ($n in @('duckstation-qt-x64-ReleaseLTCG', 'duckstation-nogui-x64-Releas
     $e = Find-Exe $n
     if ($e) { $emu = $e; break }
 }
+if (-not $emu) { $emu = Find-Retro 'duckstation*.exe' '\\duckstation[^\\]*\.exe$' }
+if (-not $emu) { $emu = Find-Retro 'pcsx-redux*.exe' }
 if (-not $emu) {
-    $dirs = @("$pf", "$pf86", "$lad", "$lad\Programs", "$home_\Downloads", "$home_\Desktop", "$home_\scoop\apps", 'C:\', 'C:\Emulators', 'C:\emu', 'C:\tools', "$home_\Documents", "$home_\source")
+    $dirs =@("$pf", "$pf86", "$lad", "$lad\Programs", "$home_\Downloads", "$home_\Desktop", "$home_\scoop\apps", 'C:\', 'C:\Emulators', 'C:\emu', 'C:\tools', "$home_\Documents", "$home_\source")
     foreach ($d in $dirs) {
         if (-not $d -or -not (Test-Path $d)) { continue }
         foreach ($glob in @('duckstation*', 'pcsx-redux*', 'PCSX-Redux*')) {
@@ -240,4 +264,19 @@ if ($emu) {
 Write-Host '----------------------------------------------------------------'
 if ($script:missing -eq 0) { Write-Host 'All prerequisites satisfied.' }
 else { Write-Host "$($script:missing) prerequisite(s) missing or too old. Nothing was installed." }
+
+# Hint: session env for the unzipped cmake-clang toolchain (not on PATH by default).
+$cmc = Join-Path $script:retroRoot 'cmake-clang'
+if (Test-Path -LiteralPath $cmc -PathType Container) {
+    $binDirs = @()
+    foreach ($n in @('clang.exe', 'cmake.exe', 'ninja.exe')) {
+        $f = Find-Retro $n ([regex]::Escape($cmc) + '\\')
+        if ($f) { $d = Split-Path -Parent $f; if ($binDirs -notcontains $d) { $binDirs += $d } }
+    }
+    if ($binDirs.Count -eq 0) { $binDirs = @("$cmc\bin") }
+    $pathAdd = ($binDirs -join ';')
+    Write-Host ''
+    Write-Host 'Hint: to use the toolchain in this PowerShell session, run:'
+    Write-Host "  `$env:PSXRECOMP_TOOLCHAIN_DIR = '$cmc'; `$env:PATH = '$pathAdd;' + `$env:PATH"
+}
 exit 0
