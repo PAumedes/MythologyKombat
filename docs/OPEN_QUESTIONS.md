@@ -198,3 +198,23 @@
 | 112 | Does the 60 s run have 3 or 4 screenshots? | The T2.5 report says 3 for the 60 s run. The harness names 4 files (`t00`, `t10`, `t30`, `end`). Not checked. |
 | 113 | What exit code does a PASS run give? | The T2.5 report does not record it. |
 | 114 | What are the defaults of `--seconds`, `--renderer` and `--startup-wait`? | The usage line lists the options. The defaults are not recorded in the T2.5 report. |
+
+## Visual first boot (from T2.6)
+
+The T2.6 result is user-reported. No agent checked it. See `docs/SETUP.md` (T2.6).
+
+| # | Question | Notes |
+|---|----------|-------|
+| 115 | Where does the Sony logo come from, and why was it not seen? | The user did not see the Sony logo, but saw the Midway logo. Hypothesis, not verified: the Sony boot logo comes from the retail BIOS, and OpenBIOS has no such logo. To check: (a) whether the game itself holds any Sony logo; (b) whether a DuckStation run with its retail BIOS shows the Sony logo. The user did not say what DuckStation showed. |
+| 116 | What causes the glitchy FMV audio? | The user said the intro movie audio is "really really glitchy". Candidate causes: the XA ADPCM audio path in the recompiled runtime, OpenBIOS, or the host audio device. Not decided. Planned for T2.10 (FMV check). |
+| 117 | Is the FMV video frame rate correct? | The user was not sure whether the video was fine or only felt off because of the audio. Not measured. |
+| 118 | Does DuckStation play the same movie with clean audio and the right frame rate? | Not done. The user did not report a DuckStation comparison of this movie. |
+| 119 | Does the audio glitch change with other renderers? | Not tested. Try `--renderer software` in a windowed build. The headless build cannot test audio, because it has no audio (question 107). |
+| 120 | What do the audio buffer settings in `game.toml` and `game_options.toml` do, and what are they set to? | Not checked. |
+| 121 | Is the game locked to 60 Hz or 50 Hz? | The T2.5 headless run measured about 70 frames per second (question 108). Its renderer is not recorded (question 114). That rate may mean the frame pacing is not locked. Not verified. Check the pacing in a windowed run. |
+| 122 | Does CPU load or frame pacing cause the audio glitch? | Not measured. The user did not report the system load. |
+| 123 | Is this audio problem a known PSXRecomp issue? | Not checked. Search `psxrecomp\docs` for XA, audio and latency. This search has not been run. |
+| 124 | Which key quits the game? | The user found the key, but did not say which key it is. Record it. |
+| 125 | Which keys control the game, and what is the framework's default key map? | Not reported by the user. Find the default key map in the PSXRecomp source. |
+| 126 | Was the main menu reached? | Not reported by the user. |
+| 127 | Did the window run windowed or fullscreen? | Not reported by the user. |

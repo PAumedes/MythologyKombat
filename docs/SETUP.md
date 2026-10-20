@@ -921,3 +921,43 @@ cmake --build work\build-dbg --target psx-runtime
 - Timing against real hardware.
 
 See `docs/OPEN_QUESTIONS.md` (104 to 114).
+
+## Visual first boot (T2.6)
+
+This is the user's play test. It is user-reported. No agent ran it, and no artifact was saved. No agent checked the picture or the sound. The outcome is recorded as accepted: the Midway logo and the intro movie were reached, and there was no crash.
+
+### Run
+
+| Item | Value |
+|------|-------|
+| Exe | `build\MythologyKombat.exe` (Release build) |
+| SHA-256 | `66fdb5be60c2b023465cadeb1b6a79f889f2d8553f1709ca1535224590052af5` |
+| BIOS | OpenBIOS |
+| Renderer | `opengl`, the default in `game.toml` |
+| Window | Yes |
+| Command | `build\MythologyKombat.exe --disc "<REPO_ROOT>\ps1_game\Mortal Kombat Mythologies - Sub-Zero.cue" --game build\game.toml --no-launcher` |
+
+### What the user saw
+
+| Check | Result (user report) |
+|-------|----------------------|
+| Sony logo | Not seen |
+| Midway logo | Seen |
+| Intro movie (FMV) | Played |
+| FMV audio | "Really really glitchy" |
+| FMV video frame rate | Not sure. The bad audio may have made it feel off |
+| Crash or black screen | None seen |
+| Key to quit inside the game | Found. The key was not recorded |
+
+Not reported by the user:
+
+- Whether the main menu was reached.
+- The key bindings.
+- Whether the window was windowed or fullscreen.
+- The system load.
+
+### Notes
+
+- The Sony logo is probably drawn by the retail BIOS. OpenBIOS has no such logo. This is a guess, not checked. See `docs/OPEN_QUESTIONS.md`, question 115.
+- The FMV audio problem is handed to T2.10 (the FMV check). T2.9 and T2.12 run in parallel with it. See `docs/OPEN_QUESTIONS.md`, questions 116 to 127.
+- The headless smoke test (T2.5) has no audio. So it cannot show the audio problem. See question 107.
