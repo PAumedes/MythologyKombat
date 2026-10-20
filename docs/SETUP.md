@@ -961,3 +961,77 @@ Not reported by the user:
 - The Sony logo is probably drawn by the retail BIOS. OpenBIOS has no such logo. This is a guess, not checked. See `docs/OPEN_QUESTIONS.md`, question 115.
 - The FMV audio problem is handed to T2.10 (the FMV check). T2.9 and T2.12 run in parallel with it. See `docs/OPEN_QUESTIONS.md`, questions 116 to 127.
 - The headless smoke test (T2.5) has no audio. So it cannot show the audio problem. See question 107.
+
+## LBA-to-file lookup (T2.9)
+
+The script `tools\lba_lookup.py` shows which disc file holds a given sector. Run it from the repo root:
+
+```
+<RETRO_TOOLS_DIR>\python\python.exe -I tools\lba_lookup.py [--json] [--bcd] <LBA | 0xHEX | mm:ss:ff> ...
+```
+
+- It takes one or more sector values in one run.
+- It reads `work\disc_files.json` from T1.1. If that file is missing, it exits with code 2 and points to `tools\disc_list.py`.
+- It also reads `work\disc_classes.json` from T1.3, if that file exists. It uses the file to add format tags.
+- It uses only the Python standard library.
+- It does not change anything in `ps1_game\`.
+- The usage line also lists `--json`.
+
+### Input forms
+
+| Form | Example | Meaning |
+|------|---------|---------|
+| LBA, decimal | `14942` | Sector number |
+| LBA, hex | `0x17` | Sector number in hex |
+| `mm:ss:ff` text | `03:21:17` | Decimal text. LBA = (mm × 60 + ss) × 75 + ff − 150 |
+| `--bcd` fields | `--bcd 0x03:0x21:0x17` or `--bcd 46:45:26` | Raw BCD fields, as in a CdlLOC command |
+
+- With `--bcd`, each field is one raw byte read as BCD. For example, `46:45:26` reads the bytes 0x46, 0x45 and 0x26.
+- A bare `03:21:17` is decimal text, not BCD.
+- A negative number such as `-5` is read as an LBA. It is out of range.
+- Bad input exits with code 2 and prints the usage line.
+- The valid range is LBA 0 to 228990. That is all 228991 sectors of track 1.
+
+### Output
+
+| Field | Meaning |
+|-------|---------|
+| File path | The disc path, for example `/MOVIES/CREDS01.STR` |
+| Sector offset | The LBA minus the file's start LBA |
+| Byte offset | Sector offset × 2048. This uses the ISO size |
+| Tag | The format tag from `work\disc_classes.json`, if that file is present |
+
+- For XA and STR files, the byte offset is a sector index. It is not a byte position in the data stream. The tool prints a note about this.
+- LBAs that are not file sectors are reported as "no file" or as a structure:
+
+| LBA | Reported as |
+|-----|-------------|
+| 0 to 15 | System area |
+| 16, 17 | Volume descriptors |
+| 18 to 21 | Path tables. LBA 20 is `path_table_M` |
+| 22 | Directory extent of `/` |
+| 425 | Directory extent of `/MOVIES` |
+| 424, 163342 to 163349, 228841 to 228990 | Gaps. "No file" |
+
+### Examples
+
+| Input | Result |
+|-------|--------|
+| `0x17` | `/SLUS_004.76`, sector offset +0 (PS-X EXE) |
+| `03:21:17` | LBA 14942, `/MOVIES/CREDS01.STR`, sector offset +7678 |
+| `154982` | `/MOVIES/MIDWAY01.STR`, sector offset +1910 |
+| `--bcd 46:45:26` | LBA 210251, `/OVERLAYS/BRIDGE.OVR`, sector offset +0. This is the BRIDGE CdlLOC value `46 45 26 00` from the EXE's table at `0x80012F28 + 135 × 4` |
+
+### Checks on this disc
+
+| Check | Result |
+|-------|--------|
+| LBAs checked | 1298. These are the first, last and neighbour sectors of all 211 files and 22 directories, the structure and gap edges, and 500 random LBAs |
+| Mismatches against an independent ISO 9660 parse | 0 |
+| Cross-check by the implementer | 10 files |
+| Repeat run | Byte-identical (`cmp`) |
+| Absolute paths in output | None |
+
+- Every LBA from 0 to 228990 maps to a file, a structure or a gap. The tool found no unmapped LBA on this disc.
+- The missing-JSON exit path was checked by reading the code. It was not run. See `docs/OPEN_QUESTIONS.md`, question 129.
+- The tool output is not committed. `work\` is git-ignored.

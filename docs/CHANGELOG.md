@@ -21,6 +21,7 @@
 - T2.4 Build the game executable: `psx-runtime` builds `build\MythologyKombat.exe` (SHA-256 66fdb5be...); a duplicate upstream manifest is worked around in `CMakeLists.txt` (D6); steps in `docs/SETUP.md`, open items 98 to 102 in `docs/OPEN_QUESTIONS.md`.
 - T2.5 Headless smoke test: `tools\smoke_boot.py` runs the game headless and PASSes when the process stays alive, frames rise and no `psx_crash.txt` appears; `build\` has the debug server off, so tests use `work\build-dbg` (D7); steps in `docs/SETUP.md`, open items 103 to 114 in `docs/OPEN_QUESTIONS.md`.
 - T2.6 Visual first boot: user-reported play test (not agent-verified) of `build\MythologyKombat.exe` under OpenBIOS; Midway logo and intro FMV reached, no crash; Sony logo not seen; FMV audio glitchy; accepted; details in `docs/SETUP.md`, open items 115 to 127 in `docs/OPEN_QUESTIONS.md`.
+- T2.9 LBA-to-file lookup tool: `tools\lba_lookup.py` maps LBAs, `mm:ss:ff` values and BCD CdlLOC fields to disc files; 1298 LBAs checked with 0 mismatches against an independent parse; steps in `docs/SETUP.md`, open items 128 and 129 in `docs/OPEN_QUESTIONS.md`.
 
 ## Post-Phase-1 notes
 

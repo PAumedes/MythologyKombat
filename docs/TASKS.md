@@ -32,7 +32,7 @@ The orchestrator updates the Status column; nobody else edits this table.
 | T2.6 | Visual first boot: logos | T2.5 | USER | done |
 | T2.7 | Provide a retail BIOS (conditional) | T2.6 | USER | todo |
 | T2.8 | Seed growth from dispatch misses | T2.5 | agents | todo |
-| T2.9 | LBA-to-file lookup tool | T1.1 | agents | in-progress |
+| T2.9 | LBA-to-file lookup tool | T1.1 | agents | done |
 | T2.10 | FMV check (STR and XA) | T2.6, T2.9 | USER + agents | todo |
 | T2.11 | Main menu and first fight | T2.10 | USER + agents | todo |
 | T2.12 | Overlay facts from the EXE and disc | T1.4 | agents | in-progress |

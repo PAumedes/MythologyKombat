@@ -218,3 +218,10 @@ The T2.6 result is user-reported. No agent checked it. See `docs/SETUP.md` (T2.6
 | 125 | Which keys control the game, and what is the framework's default key map? | Not reported by the user. Find the default key map in the PSXRecomp source. |
 | 126 | Was the main menu reached? | Not reported by the user. |
 | 127 | Did the window run windowed or fullscreen? | Not reported by the user. |
+
+## LBA-to-file lookup (from T2.9)
+
+| # | Question | Notes |
+|---|----------|-------|
+| 128 | Should `tools\lba_lookup.py --bcd` reject single-digit fields? | `--bcd` accepts single-digit fields. So `0x3:0x4:0x5` reads as `03:04:05`. This is looser than documented. Reviewer note. See `docs/SETUP.md` (T2.9). |
+| 129 | Does `tools\lba_lookup.py` report a missing `work\disc_files.json` correctly? | Checked by code reading only. The run did not test it. The tool has no option or environment variable to point at another file. Reviewer note. |

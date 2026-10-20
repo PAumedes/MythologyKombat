@@ -4,6 +4,8 @@ This page lists every file on the disc. It has names, paths, sizes, start sector
 
 Source: `work\disc_files.json`, written by `tools\disc_list.py` (T1.1). The file is git-ignored.
 
+To find the file that holds a given sector, run `tools\lba_lookup.py` (T2.9). See `docs/SETUP.md`, "LBA-to-file lookup (T2.9)".
+
 Tag column: this page has no tag column. The format tag of each file (primary tag, secondary tags, evidence kind) is in `docs/FORMATS.md` (T1.3).
 
 Regenerate from the repo root:
