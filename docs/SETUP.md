@@ -2061,6 +2061,53 @@ Reach as many of these as you can, in any order, and say which you could not rea
 
 `tools\overlay_coverage.py -BootRoute --headless --max-seconds 100` (the same polling code as a visible run) booted by itself, entered the TEMPLE level function at frame 4063, saw the TEMPLE overlay resident from frame 5383, then 14,716 static hits in 81 entries, 65 CRC misses, a clean exit and no crash file. The other seven rows read "no". That proves the polling and the summary. It does not prove the other levels. A separate 20 s visible-window run (no input) started, polled 10 times with 0 errors, and exited cleanly; nobody played it, so Ctrl+C and window-close handling were not exercised.
 
+### Warp to a level (coverage aid, not natural play)
+
+Patricio cannot play far, so `tools\overlay_coverage.py --warp LEVEL` starts a level directly. It is for coverage testing of your own copy, on the debug build only. It changes guest RAM through the debug server (`write_ram`). It changes no file, no framework code and no generated code. Nothing from it is committed.
+
+```
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\run_overlay_coverage.ps1 --warp WIND
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\run_overlay_coverage.ps1 --warp FORTRESS --headless --max-seconds 100 --shots 8
+```
+
+- `LEVEL` is `TEMPLE`, `WIND`, `WATER`, `EARTH`, `PRISON`, `FIRE`, `FIRE2`, `BRIDGE` or `FORTRESS`, or a dispatcher index (0 to 5, 7 to 9). `--warp` implies `--boot-route`: the tool plays New Game by itself, and the warped level starts instead of TEMPLE at guest frame 4063.
+- Use `--port 4386` (or another free port) if a coverage session is already open on 4385.
+- `--shots S` saves a 320x240 PNG every S seconds to `<out>\shots\`. `--warp-no-state` skips the flag writes below (the level then plays a long movie, see below).
+- Run about 100 s headless: the level function enters at frame 4063 (about 60 s of wall time at the headless speed seen here, 55 to 65 guest frames per second), the overlay becomes resident at about frame 4310 in the nine recorded runs, but the frame varied between runs (4306 to 4315 for the eight overlays; a re-run of WIND became resident at 4439). Then you get 30 to 40 s of the level.
+- The summary says `WARPED run (not natural play)` and lists `gp+252` changes. The JSON has a `warp` block with the table before and after and the flag write. **A fault in a warped run may come from the warp, not from the level. Report it separately from natural play.** The game state is not what a played game would have: character, health, score, lives, saved progress and the story flags are those of a fresh New Game.
+
+How it works (agent-observed, from the sources below):
+
+1. The EXE function at `0x80032D60` (called from `0x800489B4`, `0x80048A48`, `0x80048ADC`, `0x80048BEC`) sets up a game, then at `0x80032EA8` reads the word at `0x800D76A8` (gp+252), applies abs(), and jumps through the 12-word table at `0x80013910` (`lw v0,14608(at)` at `0x80032ED8`, the only reader of the table in the EXE text, static scan). Each entry is a thunk at `0x80032EE8..0x80032F98` that loads a level function and calls `0x8003846C(21, function)` (it passes the function and the priority 21; the meaning of that call is not known).
+2. The tool waits until all 12 table words are in RAM (the EXE is copied there a little after the debug port opens), then copies entry N over entry 0 (index 0 = TEMPLE, the first level of New Game). It writes the four bytes with `write_ram` and reads them back. Run log line: `WARP: dispatcher entry 0 (TEMPLE) now points at index N`.
+3. Without more, most level functions never reach their overlay load. At `0x8002C434..0x8002C47C` (the WIND function; the other level functions were not read for this) the function tests gp+2760 (`0x800D8074`). When it is 0 it calls `0x8002B4E8(6)` and `0x80050548`, which play a long story movie (seen on screen in a headless run: the story FMV with Sub-Zero and the sorcerer, still playing at frame 6170 and later). TEMPLE's own function sets gp+2760 and gp+2904 (`0x800D8104`) to 1 and the word `0x800D8084` to 1 at `0x8002B6B8..0x8002B6DC`, so a game that has played TEMPLE skips the movie. The game zeroes all three at frame about 4006 (New Game init; polled: 0 at 3007, 1 after my write at 3502, 0 again at 4006). So the tool writes them to 1 inside the guest-frame window 4012 to 4060, by spinning on `frame`. If it misses the window the run log says `warp flags NOT set` and you rerun. TEMPLE needs no flags.
+4. START skips the movie but the game then goes back to the title screens (agent test: reads of ids 84, 118, 177 to 179, 163, 193 and 194 repeated at frames 4281 to 4522, the same ids as the boot at frames 551 to 797). So skipping with START is not a way to a level.
+
+Result of nine headless runs (agent, 100 s each, `--warp`, `--shots 8`, port 4386, debug build; output `work\overlay_coverage\warp_<LEVEL>\summary.json`):
+
+| Level (index, id) | Loaded id | Reached | Resident from frame | Static hits | Entries hit | Interpreter fallback (count) | Fault |
+|-------------------|-----------|---------|---------------------|-------------|-------------|------------------------------|-------|
+| TEMPLE (0, 140), control | 140 | yes | 5261 | 20,075 | 81 | yes (21,258) | none |
+| WIND (1, 142) | 142 | yes | 4310 | 295,816 | 77 | yes (34,083) | none |
+| WATER (2, 141) | 141 | yes | 4315 | 248,864 | 121 | yes (30,366) | none |
+| EARTH (3, 136) | 136 | yes | 4311 | 31,705 | 36 | yes (30,989) | none |
+| PRISON (4, 139) | 139 | yes | 4306 | 37,329 | 42 | yes (30,771) | none |
+| FIRE (5, 137) | 137 | yes | 4310 | 121,966 | 82 | yes (29,881) | none |
+| FIRE2 (7, 137) | 137 | loaded, black screen | 4310 | 20 | 4 | yes (38,618) | none |
+| BRIDGE (8, 135) | 135 | yes | 4307 | 233,124 | 67 | yes (33,783) | none |
+| FORTRESS (9, 138) | 138 | yes | 4310 | 6,884 | 19 | yes (34,527) | none |
+
+- "Reached" means the first 256 bytes of the window equal the `.OVR` head from the disc (`tools\overlay_coverage.py`) and the level function was entered (`fn_entry`: one entry at frame 4063 in each run, except EARTH 3, FORTRESS 4 and FIRE2 6 entries). In every run the matching held for every poll after the first match (0 unmatched polls after it).
+- For each run, exit code 0, no `psx_crash.txt`, no crash-like line in `run.log` (the `faults` field is empty). The counters are deltas between polls 2 s apart. See "How to read the numbers". All `segment_alias_interp` counts are 99.9 to 100 percent of the interpreter fallbacks, as in question 190. The fallback is not a fault by itself.
+- Screens (agent saw them in the screenshots, not committed, not checked by Patricio): WIND, WATER, EARTH, PRISON, FIRE, BRIDGE and FORTRESS show a 3D stage with Sub-Zero, the health bars and a lives counter. EARTH and FORTRESS show an enemy fighting him. TEMPLE showed the first fight in T2.16. The names of the stages in the table are the tool's labels for the overlay files, not confirmed level names.
+- FIRE2 (index 7, function `0x8002E130`) loads the FIRE file but the screen is black at frames 4970 and 8816 (a small moon shape at 6858), and `gp+252` goes 7, -1, 7 (at frames 6858 and 7450). Only 4 static entries ran. It is a different mode, not a playable stage as warped. Which state it needs is not known (question 232).
+- FORTRESS shows `gp+252` 9, -1, 9 (frames 8211 and 8817) and 4 level-function entries, FIRE2 shows 6. The tool did not press any pad button after the boot route. The reason for the restart is not known (question 233).
+- Dispatcher indices 6 and 11 load no overlay, and index 10 is conditional (`docs/EXE_OVERLAYS.md`). They are not options.
+
+An earlier set of nine runs without the flag writes entered each level function at frame 4063, but no overlay but TEMPLE's and FIRE2's was ever resident in 100 s (50 of 50 polls unmatched), because of the movie in step 3. That is why the flag write exists.
+
+Files used and changed: `tools\overlay_coverage.py` (new options `--warp`, `--warp-no-state`, `--shots`). The scratch probes `work\warp_probe.py` and `work\state_probe.py` are not part of the repo (git-ignored). If your copy's save or New Game flow differs, the frame numbers 4012 to 4060 may need a change (constants `WARP_STATE_FROM`, `WARP_STATE_TO`).
+
 ### Investigation script
 
 `tools\overlay_interp_probe.py` (headless, about 2 minutes) lists the interpreted PCs and their code, the FIRE and WIND entry instructions, and the shared-entry counts. Results are in `docs/OPEN_QUESTIONS.md` (190 to 193).

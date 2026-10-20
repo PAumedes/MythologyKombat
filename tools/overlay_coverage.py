@@ -8,6 +8,13 @@ Run:  <RETRO_TOOLS_DIR>\python\python.exe -I tools\overlay_coverage.py [options]
   --port N          debug port (default 4385; 4370/4380/4381/4383/4384 are used by other tools)
   --boot-route      play tests\replays\routes\boot_to_menu.json (skips the intro, selects New Game) so the
                     game reaches the first level (TEMPLE) by itself. Without it you play from the logos.
+  --warp LEVEL      coverage aid, NOT natural play: after the New Game boot route, make the game's level dispatcher
+                    (jump table 0x80013910, index word 0x800D76A8) start LEVEL instead of TEMPLE. LEVEL is one of
+                    TEMPLE WIND WATER EARTH PRISON FIRE FIRE2 BRIDGE FORTRESS, or a dispatcher index 0-5, 7-9. Implies
+                    --boot-route. It rewrites table entry 0 in guest RAM with write_ram (4 single-byte writes, read back
+                    and verified); no file, framework or generated code is touched. See docs/SETUP.md ("Warp to a level").
+  --shots S         every S seconds save a 320x240 PNG screenshot to <out>\shots\ (debug server `screenshot`; evidence of
+                    what is on screen, e.g. for warped levels). Off by default.
   --headless        no window, no audio (self-test only; a human cannot play like this)
   --max-seconds S   stop after S seconds (default: run until the window is closed or Ctrl+C)
   --fresh-saves     delete the coverage memory-card dir first (default: keep it, so saves persist between sessions)
@@ -52,6 +59,17 @@ WIN_LO, WIN_HI = "0x80130FF8", "0x8013C720"
 HEAD = 256
 LV_LO, LV_HI = 0x8002B688, 0x8002FC84
 IDS = {135: "BRIDGE", 136: "EARTH", 137: "FIRE", 138: "FORTRESS", 139: "PRISON", 140: "TEMPLE", 141: "WATER", 142: "WIND"}
+DISP_TABLE, DISP_N, IDX_ADDR = 0x80013910, 12, 0x800D76A8
+# dispatcher index -> level name (docs/EXE_OVERLAYS.md, "Dispatcher"); 6 and 11 load no overlay, 10 is conditional
+WARP = {"TEMPLE": 0, "WIND": 1, "WATER": 2, "EARTH": 3, "PRISON": 4, "FIRE": 5, "FIRE2": 7, "BRIDGE": 8, "FORTRESS": 9}
+WARP_ID = {0: 140, 1: 142, 2: 141, 3: 136, 4: 139, 5: 137, 7: 137, 8: 135, 9: 138}
+# Game flags that TEMPLE's own level function sets in its first-run branch (0x8002B6B8..0x8002B6DC: sh v1,2760(gp);
+# sh v1,2904(gp); sw v0,0x800D8084). The other level functions test gp+2760 and, when it is 0, play a long story movie
+# (0x8002B4E8 then 0x80050548) instead of going on to read their overlay. Warping sets them like a played TEMPLE would
+# have. (address, width in bytes, value, label). Written once inside the window WARP_STATE_FROM..WARP_STATE_TO: the game
+# zeroes them at frame ~4006 (New Game init, seen by polling them) and the level function enters at ~4063 on this route.
+WARP_STATE = [(0x800D8074, 2, 1, "gp+2760"), (0x800D8104, 2, 1, "gp+2904"), (0x800D8084, 4, 1, "0x800D8084")]
+WARP_STATE_FROM, WARP_STATE_TO = 4012, 4060   # New Game's init zeroes the flags at guest frame ~4006; the level function reads them at ~4063
 STATUS_KEYS = ["loads", "regions", "static_checks", "static_hits", "static_variant_misses", "static_crc_misses",
                "static_rehashes", "static_gen_fastpath", "static_address_misses", "dispatch_native",
                "dispatch_interp_fallback", "segment_alias_interp", "segment_native"]
@@ -89,6 +107,58 @@ def entry_pc(e):
     return None
 
 
+def rd_word(dbg, addr):
+    return int.from_bytes(bytes.fromhex(rb.call_ok(dbg, "read_ram", addr="0x%08X" % addr, len=4)["hex"]), "little")
+
+
+def apply_warp(dbg, idx):
+    """Copy dispatcher jump-table entry `idx` over entry 0 (TEMPLE) in guest RAM. Entry 0 is only read by the level
+    dispatcher at 0x80032ED8 (lw v0,14608(at)); the thunk it points at passes the level function to the task spawner."""
+    t_end = time.time() + 120               # the EXE is copied into RAM a little after the debug port opens
+    while True:
+        table = [rd_word(dbg, DISP_TABLE + 4 * i) for i in range(DISP_N)]
+        if all(0x80032000 <= v < 0x80033000 for v in table) or time.time() > t_end:
+            break
+        time.sleep(0.25)
+    for i, v in enumerate(table):
+        if not 0x80032000 <= v < 0x80033000:
+            raise rb.Fail("jump table entry %d = 0x%08X is not a thunk address; wrong build/disc? (table %s)" % (
+                i, v, ["0x%08X" % x for x in table]))
+    new = table[idx]
+    for k in range(4):
+        rb.call_ok(dbg, "write_ram", addr="0x%08X" % (DISP_TABLE + k), val=(new >> (8 * k)) & 0xFF)
+    got = rd_word(dbg, DISP_TABLE)
+    if got != new:
+        raise rb.Fail("warp write did not stick: wanted 0x%08X read 0x%08X" % (new, got))
+    return {"index": idx, "expected_overlay_id": WARP_ID[idx], "table_before": ["0x%08X" % x for x in table],
+            "old_entry0": table[0], "new_entry0": new}
+
+
+def write_mem(dbg, addr, val, n):
+    for k in range(n):
+        rb.call_ok(dbg, "write_ram", addr="0x%08X" % (addr + k), val=(val >> (8 * k)) & 0xFF)
+    got = int.from_bytes(bytes.fromhex(rb.call_ok(dbg, "read_ram", addr="0x%08X" % addr, len=n)["hex"]), "little")
+    if got != val:
+        raise rb.Fail("write 0x%08X <- %d read back %d" % (addr, val, got))
+
+
+def warp_state_phase(dbg):
+    """Spin on the guest frame counter and write WARP_STATE inside the window WARP_STATE_FROM..WARP_STATE_TO."""
+    t_end = time.time() + 15
+    while time.time() < t_end:
+        fr = rb.call_ok(dbg, "frame")["frame"]
+        if fr > WARP_STATE_TO:
+            raise rb.Fail("warp flags NOT set: frame %d is past %d (missed the window; rerun)" % (fr, WARP_STATE_TO))
+        if fr >= WARP_STATE_FROM:
+            before = {lab: rd_word(dbg, ad) & ((1 << (8 * n)) - 1) for ad, n, v, lab in WARP_STATE}
+            for ad, n, v, lab in WARP_STATE:
+                write_mem(dbg, ad, v, n)
+            log("[%s] WARP: game flags set at frame %d (were %s)" % (now_s(), fr, before))
+            return {"frame_written": fr, "values_before": before, "set": {lab: v for ad, n, v, lab in WARP_STATE}}
+        time.sleep(0.01 if fr >= WARP_STATE_FROM - 40 else 0.15)
+    raise rb.Fail("warp flags NOT set: frame counter never reached %d" % WARP_STATE_FROM)
+
+
 def new_stats():
     return {"first_seen_frame": None, "first_seen_t": None, "polls_resident": 0, "resident_s": 0.0,
             "delta": {k: 0 for k in DELTA_KEYS}, "range_hits": 0, "entries_hit": set(), "hits_by_entry": {}}
@@ -99,6 +169,9 @@ def main():
     ap.add_argument("--interval", type=float, default=3.0)
     ap.add_argument("--port", type=int, default=4385)
     ap.add_argument("--boot-route", action="store_true")
+    ap.add_argument("--warp", metavar="LEVEL", help="see the top of the file; implies --boot-route")
+    ap.add_argument("--warp-no-state", action="store_true", help="with --warp: do not set the TEMPLE first-run flags (the level function may then play a story movie)")
+    ap.add_argument("--shots", type=float, default=0)
     ap.add_argument("--headless", action="store_true")
     ap.add_argument("--max-seconds", type=float, default=0)
     ap.add_argument("--fresh-saves", action="store_true")
@@ -108,6 +181,16 @@ def main():
     ap.add_argument("--quiet", action="store_true")
     a = ap.parse_args()
 
+    warp_idx = None
+    if a.warp:
+        w = a.warp.strip().upper()
+        if w in WARP:
+            warp_idx = WARP[w]
+        elif w.isdigit() and int(w) in WARP_ID:
+            warp_idx = int(w)
+        else:
+            print("setup: --warp must be one of %s or an index in %s" % (" ".join(WARP), sorted(WARP_ID))); return 2
+        a.boot_route = True
     if a.port in (4370, 4371, 4380, 4381, 4383, 4384):
         print("setup: port %d is used by the Release game / other tools; pick another" % a.port); return 2
     exe, disc = os.path.abspath(a.exe), os.path.abspath(a.disc)
@@ -152,6 +235,10 @@ def main():
 
     stats = {i: new_stats() for i in IDS}
     lvl_entries = {L["name"]: [] for L in levels}      # name -> [{frame, t, ra}]
+    warp_info = None
+    last_shot = 0.0
+    warp_state_done = None
+    idx_seen = []                                       # [frame, value of 0x800D76A8] when it changes
     cur = None                                          # resident id
     sequence = []                                       # ids in order of first appearance / change
     prev_status, prev_hits = None, {}
@@ -174,6 +261,11 @@ def main():
                     reason = "debug port never opened"; raise SystemExit(0)
                 time.sleep(0.2)
         log("[%s] debug server up. %s" % (now_s(), "Playing boot route (New Game)." if route else "Play the game now; close the window or press Ctrl+C when done."))
+        warp_info = None
+        if warp_idx is not None:
+            warp_info = apply_warp(dbg, warp_idx)
+            log("[%s] WARP: dispatcher entry 0 (TEMPLE) now points at index %d (%s), word 0x%08X; %s" % (
+                now_s(), warp_idx, a.warp.upper(), warp_info["new_entry0"], "verified by read-back"))
         if route:
             rb.call_ok(dbg, "input_route_clear")
             for c in route["cmds"]:
@@ -189,16 +281,33 @@ def main():
             if a.max_seconds and time.time() - t_start >= a.max_seconds:
                 reason = "--max-seconds reached"
                 break
-            time.sleep(a.interval)
+            warp_pending = warp_info and warp_idx != 0 and not a.warp_no_state and not warp_state_done
+            time.sleep(0.4 if (warp_pending and (last_frame or 0) >= 3300) else a.interval)
             if proc.poll() is not None:
                 continue
+            if warp_pending and (last_frame or 0) >= 3300:
+                try:
+                    warp_state_done = warp_state_phase(dbg)
+                    warp_info["state_flags"] = warp_state_done
+                except rb.Fail as e:
+                    errors += 1
+                    warp_state_done = warp_info["state_flags"] = {"error": str(e)}
+                    log("[%s] WARP: %s" % (now_s(), e))
             tp = time.time()
+            if a.shots and tp - last_shot >= a.shots and (last_frame or 0) >= 300:
+                last_shot = tp
+                os.makedirs(os.path.join(out, "shots"), exist_ok=True)
+                try:
+                    rb.call_ok(dbg, "screenshot", path=os.path.join(out, "shots", "t%04d_f%d.png" % (tp - t_start, last_frame or 0)))
+                except rb.Fail:
+                    pass
             rec = {"t": round(tp - t_start, 1), "wall": datetime.datetime.now().isoformat(timespec="seconds")}
             try:
                 fr = rb.call_ok(dbg, "frame")["frame"]
                 st = rb.call_ok(dbg, "overlay_loader_status")
                 ent = rb.call_ok(dbg, "overlay_static_entries", addr_lo=WIN_LO, addr_hi=WIN_HI, limit=1024)
                 head = bytes.fromhex(rb.call_ok(dbg, "read_ram", addr=WIN_LO, len=HEAD)["hex"])
+                idx_now = rd_word(dbg, IDX_ADDR)
                 fe = rb.call_ok(dbg, "fn_entry_dump", seq_lo=seq_cursor, count=2048,
                                 addr_lo="0x%08X" % LV_LO, addr_hi="0x%08X" % LV_HI)
             except (rb.Fail, OSError, ValueError) as e:
@@ -212,6 +321,9 @@ def main():
                     break
                 continue
             polls += 1
+            if not idx_seen or idx_seen[-1][1] != idx_now:
+                idx_seen.append([fr, idx_now])
+            prev_tp = last_poll_t
             last_frame, last_poll_t = fr, tp
             status = {k: st.get(k) for k in STATUS_KEYS}
 
@@ -251,7 +363,7 @@ def main():
             if credit is not None:
                 s = stats[credit]
                 s["polls_resident"] += 1
-                s["resident_s"] += a.interval
+                s["resident_s"] += (tp - prev_tp) if prev_tp else a.interval
                 for k in DELTA_KEYS:
                     s["delta"][k] += max(0, d[k])
                 s["range_hits"] += sum(grew.values())
@@ -259,7 +371,7 @@ def main():
                     s["entries_hit"].add(ad)
                     s["hits_by_entry"][ad] = s["hits_by_entry"].get(ad, 0) + g
             prev_status, prev_hits = status, hits_now
-            rec.update({"frame": fr, "window_id": rid, "resident": cur, "level_entries": new_lv, "status": status,
+            rec.update({"frame": fr, "level_index": idx_now, "window_id": rid, "resident": cur, "level_entries": new_lv, "status": status,
                         "range_hits": ent.get("range_hits"), "range_hit_entries": ent.get("range_hit_entries"),
                         "top": ent.get("top", [])[:5]})
             jl.write(json.dumps(rec) + "\n")
@@ -268,6 +380,8 @@ def main():
                 log("[%s] t=%6.1fs frame %d resident=%s range_hits=%s hit_entries=%s fallback=%s" % (
                     now_s(), tp - t_start, fr, ("%d %s" % (cur, IDS[cur])) if cur else "none", ent.get("range_hits"),
                     ent.get("range_hit_entries"), status["dispatch_interp_fallback"]))
+    except rb.Fail as e:
+        reason = "setup failed: %s" % e
     except KeyboardInterrupt:
         reason = "Ctrl+C"
     except SystemExit:
@@ -335,11 +449,16 @@ def main():
                "polls": polls, "poll_errors": errors, "polls_with_unmatched_window": unmatched_polls,
                "last_frame": last_frame, "duration_s": round(time.time() - t0, 1), "load_sequence": sequence,
                "images": img_rows, "level_functions": level_rows, "final_loader_status": final,
+               "warp": ({"level": a.warp.upper(), "natural_play": False, **warp_info} if warp_info else None),
+               "level_index_changes": idx_seen,
                "faults": faults, "crash_like_log_lines": crashy[-20:]}
     json.dump(summary, open(os.path.join(out, "summary.json"), "w"), indent=1)
 
     lines = ["", "=== overlay coverage summary (%s) ===" % out,
              "end: %s; exit code %s; %d polls (%d errors); last frame %s; %.0f s" % (reason, exit_code, polls, errors, last_frame, summary["duration_s"]),
+             ("WARPED run (not natural play): %s -> dispatcher index %d, expected overlay id %d; faults below may come from the warp" % (
+                 a.warp.upper(), warp_info["index"], warp_info["expected_overlay_id"])) if warp_info else "natural run (no warp)",
+             "gp+252 (0x800D76A8) changes [frame, value]: %s" % idx_seen,
              "load order: %s" % (" -> ".join("%s@f%d" % (IDS[x["id"]], x["frame"]) for x in sequence) or "none"),
              "", "%-4s %-9s %-8s %-9s %-12s %-9s %-10s %-10s %s" % ("id", "name", "reached", "frame", "static hits", "entries", "interp fb", "seg alias", "crc miss"),
              ]

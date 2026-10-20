@@ -426,6 +426,16 @@ Overlay loader status at about frame 6019:
 - The steady-state fallback per frame and the interpreted instruction count are not measured. See question 191.
 - Only TEMPLE is runtime-proven for the overlay load (T2.13). The other seven are still pending.
 
+## Warped level loads (T2.17, agent-observed)
+
+Source: `tools\overlay_coverage.py --warp`, summaries in `work\overlay_coverage\warp_<LEVEL>\summary.json`. Method and the results table are in `docs/SETUP.md` ("Warp to a level"). The warp copies dispatcher table entry N over entry 0 in guest RAM and sets three game flags, so these loads are **not natural play**.
+
+- Each of the eight overlays became resident in the window at `0x80130FF8`, with the first 256 bytes equal to the disc file: BRIDGE 135, EARTH 136, FIRE 137, FORTRESS 138, PRISON 139, WATER 141 and WIND 142 (and TEMPLE 140 as a control), at guest frames 4306 to 4315 in the nine recorded runs (about 4310 typical; the frame varied between runs, and a re-run of WIND became resident at 4439). TEMPLE 5261. The match held in every later poll.
+- The level function for each entered at frame 4063. The gp+252 word then showed the dispatcher index that the function stores (1 WIND, 2 WATER, 3 EARTH, 4 PRISON, 5 FIRE, 7 FIRE2, 8 BRIDGE, 9 FORTRESS), which matches the "Index that the function stores" column above for the eight indices.
+- Static hits ran in every overlay, from 20 (FIRE2, index 7) to 295,816 (WIND); TEMPLE had 20,075. The per-level table is in `docs/SETUP.md` ("Warp to a level"). There was no crash. The memcpy and the 16 clobbered bytes were not traced again for these loads, so the T2.13 proof still covers TEMPLE only.
+- FORTRESS (size 19,874, not a multiple of 4) loaded and its window head matched. The byte-exact check of the whole image was not made (question 139).
+- Index 7 (the second FIRE function) loaded the FIRE file but gave a black screen (question 232).
+
 ## Not yet confirmed
 
 See `docs/OPEN_QUESTIONS.md`, questions 44 to 52, 130 to 139, 178 to 183, and 190 to 196.

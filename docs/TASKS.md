@@ -40,7 +40,7 @@ The orchestrator updates the Status column; nobody else edits this table.
 | T2.14 | Overlay strategy decision | T2.13 | agents | done |
 | T2.15 | Write aot/overlays.json | T2.14 | agents | done |
 | T2.16 | Static overlay build, link and audit | T2.15, T2.4 | agents | done |
-| T2.17 | Overlay coverage across all nine level functions | T2.16 | USER + agents | in-progress |
+| T2.17 | Overlay coverage across all nine level functions | T2.16 | USER + agents | done |
 | T2.18 | Replay infrastructure: scaffold and boot-to-menu route | T2.5 | agents | done |
 | T2.19 | Playtest diagnostics package (recorder) | T2.4 | agents | done |
 | T2.20 | Record a session and strict replay | T2.19, T2.11 | USER + agents | done |
@@ -176,6 +176,8 @@ Add `GAME_OVERLAY_STATIC_C "generated/overlays_static.c"` to `CMakeLists.txt`. G
 ## T2.17 Overlay coverage across all nine level functions — USER + agents
 Patricio reaches each level function listed in `docs/EXE_OVERLAYS.md` (TEMPLE, EARTH, WIND, WATER, PRISON, FIRE twice, BRIDGE, FORTRESS) as far as possible, and reports any he cannot reach. Agents read `overlay_static_entries` and `overlay_loader_status` after each.
 **Accept when:** there is a table per level function (loaded id, reached?, static hits, interpreter fallback?, visible fault); Q46 and Q51 are closed for the levels reached; unreached levels stay untested.
+
+Done note: TEMPLE user-played; the other seven overlays agent-observed via warp (not natural play); FIRE2 black screen unexplained; no natural play beyond TEMPLE.
 
 ## T2.18 Replay infrastructure: scaffold and boot-to-menu route
 Create `tests\replays\` with a README and a .gitignore. Write `tools\run_boot_route.py`. It launches the exe, queues a button route with `input_route_append` and `input_route_start at_frame=N`, and captures state at fixed frames. Compare RAM digest ranges and frame counters, NOT screenshots. Route files hold only button steps and frame numbers, so they can be committed. No game pixels are committed.
