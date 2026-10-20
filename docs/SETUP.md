@@ -128,3 +128,80 @@ The script `tools\disc_identify.py` reads the disc in `ps1_game\` and prints its
 - It does not change anything in `ps1_game\`.
 - If a `.cue` or `.bin` file is missing or misnamed, it stops with a clear message.
 - The results are in `docs/DISC.md`. The file holds hashes and the serial only.
+
+## PSXRecomp framework (T0.5)
+
+PSXRecomp is added as a git submodule at `psxrecomp\`. It is pinned to one commit.
+
+| Item | Value |
+|------|-------|
+| Source | `https://github.com/RetroPortingToolKit/psxrecomp` |
+| Path | `psxrecomp\` |
+| Pinned commit | `449c31e5029f3a3281fa15060105928d2b3b13f7` |
+| Describe | `v0.3.2-alpha-1770-g449c31e5` |
+| Nested: `lib\recomp-net` | `e53059306824edf4f0aec4aae5ae65151b18535f` (v0.1.9) |
+| Nested: `lib\retcomm-rbengine` | `2a03e73693acee0fb78076ea058642c931bef12e` |
+
+### Shell setup
+
+Run this in each new PowerShell session. Put Git's `bin` folder first on `PATH`, so `bash` is Git's bash.
+
+```
+$env:PSXRECOMP_TOOLCHAIN_DIR = '<RETRO_TOOLS_DIR>\cmake-clang'
+$env:PATH = '<RETRO_TOOLS_DIR>\cmake-clang\bin;<RETRO_TOOLS_DIR>\python;' + $env:PATH
+```
+
+The compiler is clang 22, MinGW-style.
+
+### Commands
+
+Run these from the `psxrecomp\` folder.
+
+```
+git submodule add https://github.com/RetroPortingToolKit/psxrecomp psxrecomp
+git submodule update --init --recursive
+
+cmake -S recompiler -B recompiler/build -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build recompiler/build --target psxrecomp-bios psxrecomp-game
+bash tools/regen_bios.sh --config bios/OpenBIOS.toml
+
+cmake -S runtime -B runtime/build -G Ninja -DCMAKE_BUILD_TYPE=Release -DPSX_RECOMP_UI=OFF
+cmake --build runtime/build --target psx-runtime
+```
+
+The recompiler build also makes `psxrecomp.exe`, `psxrecomp-analyze.exe` and `psxrecomp-toml.exe`.
+
+### Results on this machine
+
+| Step | Result |
+|------|--------|
+| Recompiler target `psxrecomp-bios psxrecomp-game` | Built |
+| `regen_bios.sh --config bios/OpenBIOS.toml` | `EMIT OK`, emitted=651, interpreted=0, skipped=4, instructions=17526, dispatch_entries=3990 |
+| Runtime target `psx-runtime` (about 1 min 44 s) | Built. Output is `runtime\build\PSXRecomp.exe` (30.4 MB) |
+
+The runtime target writes `PSXRecomp.exe`, not `psx-runtime.exe`.
+
+### Known deviation: default recompiler build fails
+
+The default build `cmake --build recompiler/build` exits with code 1. Two upstream unit-test targets fail to link:
+
+- `ws_cull_edge_interp_test`
+- `draw_distance_interp_test`
+
+The linker reports undefined symbols, for example `gr_backend`, `gl_renderer_texture_banks_supported` and `psx_mod_gpu_dma_resolve_address`. The build uses `-O3 -flto` with this toolchain. The reviewer reproduced the failure.
+
+Use the explicit targets above instead. No upstream source was changed. It is not known whether upstream CI builds these targets with this toolchain. See `docs/OPEN_QUESTIONS.md`.
+
+### Other notes from the build
+
+- The Vulkan SDK is not installed. The Vulkan renderer is a software stub.
+- The `psx-beetle` target was skipped. `libmednafen_psx.a` is absent.
+- The `psx-oracle` build warns about `DEFAULT_BIOS_PATH`.
+
+### Git status of the submodule
+
+`git status` shows `psxrecomp` as modified. The cause is CRLF line endings. `core.autocrlf=true` changes the tracked generated `OpenBIOS*` files. With `--ignore-cr-at-eol` the diff is empty. The fix is not applied yet. See `docs/OPEN_QUESTIONS.md`.
+
+### Commit note
+
+`.gitmodules` and the `psxrecomp` gitlink were committed in the "T0.7: ..." commit (`beee35b`). They were staged in that commit by accident of staging order.
