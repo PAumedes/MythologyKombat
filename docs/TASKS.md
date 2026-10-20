@@ -11,7 +11,7 @@ The orchestrator updates the Status column; nobody else edits this table.
 | T0.4 | Identify and fingerprint the disc | T0.1 | agents | done |
 | T0.5 | Add PSXRecomp and build the framework | T0.3 | agents | in-progress |
 | T0.6 | Decide how to scaffold the game project | T0.5 | agents | todo |
-| T0.7 | Reference emulator check (Phase 0 gate) | T0.3 | USER | todo |
+| T0.7 | Reference emulator check (Phase 0 gate) | T0.3 | USER | done |
 | T1.1 | List every file on the disc | T0.4 | agents | todo |
 | T1.2 | Hunt for leftover debug symbols | T1.1 | agents | todo |
 | T1.3 | Classify every file by format | T1.1 | agents | todo |
