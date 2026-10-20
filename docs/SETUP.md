@@ -367,3 +367,116 @@ The configure step set these options:
 ### Leftover folders
 
 `work\scaffold-test\` and `work\py-scaffold\` are scratch. They are safe to delete. They are git-ignored.
+
+## Ghidra + PS1 loader + REA (T1.5)
+
+Ghidra opens the boot EXE with the PS1 loader. The headless run matches the EXE header and crt0 values from T1.4. REA could not open the EXE, so it is not registered. See `docs/DECISIONS.md` (D4).
+
+### Tools
+
+| Item | Version | Location |
+|------|---------|----------|
+| Ghidra | 12.1.4 (zip `ghidra_12.1.4_PUBLIC_20260921.zip`) | `<RETRO_TOOLS_DIR>\ghidra\ghidra_12.1.4_PUBLIC` |
+| Java | Temurin JDK 21.0.12.1 | `<RETRO_TOOLS_DIR>\jdk` |
+| PS1 loader | `ghidra_psx_ldr` release 2026.10.03 | Installed in Ghidra, see below |
+| REA | `rea-agents` 6.7.0 (npm) | Not set up. Not registered |
+
+Headless Ghidra needs Java on the path. Run this in each new PowerShell session:
+
+```
+$env:JAVA_HOME = '<RETRO_TOOLS_DIR>\jdk'
+$env:PATH = '<RETRO_TOOLS_DIR>\jdk\bin;' + $env:PATH
+```
+
+### PS1 loader install
+
+- Source: `https://github.com/lab313ru/ghidra_psx_ldr`, release 2026.10.03.
+- Asset: `ghidra_12.1.4_PUBLIC_20261004_ghidra_psx_ldr.zip`, 9,159,228 bytes.
+- SHA-256 as downloaded: `32abacd90a5950b97a0756f67e991c3cc0f8a62edd5531890d91af68a9916255`.
+- This hash was not compared with a published hash. See `docs/OPEN_QUESTIONS.md`.
+
+Ghidra uses two folders for extensions. Put the files in the right one.
+
+| Folder | What it holds | Loaded by Ghidra? |
+|--------|---------------|-------------------|
+| `<RETRO_TOOLS_DIR>\ghidra\ghidra_12.1.4_PUBLIC\Ghidra\Extensions\ghidra_psx_ldr\` | The unpacked extension. `extension.properties` says version 12.1.4 | Yes |
+| `<RETRO_TOOLS_DIR>\ghidra\ghidra_12.1.4_PUBLIC\Extensions\Ghidra\` | The zip, kept here. The GUI's Install Extensions dialog lists it | No |
+
+A first attempt unpacked the zip into the wrong folder. Headless Ghidra then failed with "No load spec". The fix was to unpack into `Ghidra\Extensions\`.
+
+### Headless import
+
+Run `analyzeHeadless` from the `support\` folder of the Ghidra install. Pass a project folder under `work\`, then the import:
+
+```
+analyzeHeadless <project folder> <project name> -import work\disc\SLUS_004.76 -overwrite
+```
+
+- The run takes about 3 minutes. Analysis takes about 138 seconds.
+- Ghidra picks the loader `PSX Executables Loader` on its own.
+- Language: `PSX:LE:32:default`. Compiler spec: default.
+- The EXE is at `work\disc\SLUS_004.76`. That is the path set in `game.toml` (T0.6).
+- Scratch Ghidra projects are under `work\ghidra-test` and `work\ghidra-test2`. They can be deleted.
+
+### Memory blocks
+
+| Block | Start | End | Notes |
+|-------|-------|-----|-------|
+| CODE | `0x80010000` | `0x800D7FFF` | 0xC8000 bytes. Initialised |
+| RAM | `0x800D8000` | `0x801FFFFF` | Not initialised. The loader sets it this way |
+| Hardware | | | IO, DMA, timers, CDROM, GPU, MDEC, SPU and GTEMAC blocks. GTEMAC starts at `0x20000000` |
+
+### What Ghidra shows
+
+| Item | T1.4 value | Ghidra result |
+|------|-----------|---------------|
+| Entry point | `0x80090E70` | Entry at this address, named `start` |
+| Text load address | `0x80010000` | CODE block starts here |
+| Text size | `0xC8000` | CODE block ends at `0x800D7FFF` |
+| BSS clear range | `0x800D7B40` to `0x80130FF8` | Matches `start()` |
+| Heap start | `0x80130FFC` | Matches the first argument of InitHeap |
+| Heap size | `sp - [0x800BF358] - 0x130FF8` | Matches `start()` |
+
+- Ghidra found 1730 functions.
+- `start()` clears BSS, saves `ra`, calls InitHeap, calls `main()`, then calls `trap(1)`.
+- The entry is also tagged as a PsyQ `__SN_ENTRY_POINT` stub.
+- Ghidra does not check GP, initial SP, or the header's d, b and s fields in this run.
+
+### Warnings
+
+- About 460 "Unable to read bytes" warnings come from data and BSS references. The RAM block is not initialised, so these reads fail.
+- One "pcode error" is at `0x80090F1C`, after `trap(1)`. The word there is at file offset `0x8171C`. It is not a GTE instruction. The reviewer judged it harmless. The cause is not checked.
+
+### Other loader results
+
+- A raw binary import (BinaryLoader, `MIPS:LE:32:default`, base `0x80010000`, file offset `0x800`) found 1934 functions. The PS1 loader is the better path, so it is used.
+- The Ghidra GUI was reported by the user to open the EXE with the PS1 loader. This was not checked here. No GUI project was found under `%USERPROFILE%`.
+
+### REA result
+
+REA is `rea-agents` 6.7.0. It is a Node package from npm, under the MIT licence. Its source is at `https://github.com/morluto/rea`. It has one maintainer. It was first published on 2026-07-12. It has no install scripts. Its prebuilt Windows native addon was not audited.
+
+| Check | Result |
+|-------|--------|
+| `npx -y rea-agents@6.7.0 doctor --json` | Ghidra checks pass: 12.1.4, headless, JDK 21. Failures only for hopper, ida, jadx and kuna, and for client registrations |
+| `inspect work\disc\SLUS_004.76 --provider ghidra --format json` | Fails. See below |
+
+The inspect command returned this error:
+
+| Field | Value |
+|-------|-------|
+| error | Analysis failed |
+| code | target_unavailable |
+| category | unsupported_target |
+| message | Cannot open artifact: unsupported binary format. |
+| constraint | file_format_rejected |
+
+- REA's raw-binary support covers 6502, x86, x86_64, arm, arm64 and m68k. It does not cover MIPS.
+- REA's documented Windows Ghidra support is experimental. It covers native x86, x64 and ARM PE files.
+- So REA does not return pseudocode for the EXE. The T1.5 acceptance check for REA is not met. The failure is recorded here. Pseudocode came from Ghidra headless instead.
+- `rea-agents setup` was not run. It would write to user-level files: `~/.claude.json` and `~/.claude/skills`. No MCP server is registered.
+- The npm cache for the test was kept under `work\npm-cache`. Outputs are under `work\rea-out`. The reviewer checked that `~/.claude.json` is unchanged.
+
+### Git status
+
+`psxrecomp` still shows as modified, as in T0.5. Do not commit it. See `docs/OPEN_QUESTIONS.md`, question 13.

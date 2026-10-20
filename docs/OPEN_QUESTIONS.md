@@ -82,7 +82,7 @@
 
 | # | Question | Notes |
 |---|----------|-------|
-| 44 | Do the EXE header, the crt0 values and the overlay load addresses match a debugger or Ghidra? | All checks so far are static. The header matches a second parser of the raw sectors. The comparison with Ghidra or an emulator is pending task T1.5. DuckStation cannot be queried automatically. See `docs/EXE_OVERLAYS.md`. |
+| 44 | Do the EXE header, the crt0 values and the overlay load addresses match a debugger or Ghidra? | Partly answered in T1.5. Ghidra headless matches the entry point, text address and size, BSS range and heap start and size. Not yet checked in Ghidra: the overlay load addresses, GP, initial SP and the header's d, b and s fields. No emulator check is recorded. DuckStation cannot be queried automatically. See `docs/SETUP.md` (T1.5) and `docs/EXE_OVERLAYS.md`. |
 | 45 | Where does the scratch read buffer come from, and does the memcpy into `0x80130FF8` overlap it? | The scratch allocator is at `0x800865C0`. crt0 starts the BIOS heap at `0x80130FFC`, inside the overlay window. The buffer may start near `0x80131000`, so the move may overlap. Not proven. The return value of the malloc(4) call at `0x8008652C` is unknown. |
 | 46 | Which level is the second FIRE site at `0x8002E130`? | The level function at `0x8002E130` also reads id 137 (`/OVERLAYS/FIRE.OVR`). The level it belongs to is not known. |
 | 47 | What do `/OVERLAYS/BRDGDEMO.BIN` and `/OVERLAYS/WINDDEMO.BIN` hold? | They are 2048-byte files. The BRIDGE and WIND level functions read them. They are not copied to the window. Their contents were not analysed. |
@@ -102,3 +102,17 @@
 | 56 | Is the symbol hunt output byte-for-byte repeatable? | The tool was run once in full. Repeat output is judged from the code only. A second full run is not done. Reviewer note. |
 | 57 | Why are the `PS-X Run-time Library`, `Library Release`, `Revision`, `$Header` and compile-date strings absent? | Their absence is not explained. Not checked. |
 | 58 | What do the three gap regions hold? | The gaps are at LBA 424, LBA 163342 to 163349, and LBA 228841 to 228990. They were scanned and had no symbol hits. Their contents are not described. |
+
+## Ghidra, PS1 loader and REA (from T1.5)
+
+| # | Question | Notes |
+|---|----------|-------|
+| 59 | Should REA be revisited? | REA cannot open the boot EXE. Its inspect command returns `unsupported binary format` for the Ghidra provider. REA does not list MIPS. The decision is in `docs/DECISIONS.md` (D4). Revisit if REA adds MIPS. |
+| 60 | Should a community Ghidra MCP server be used instead? | Named candidates are ReVa and GhidraMCP. Neither was researched. Not decided. |
+| 61 | Is REA safe to install? | REA is from one maintainer and was first published on 2026-07-12. Its prebuilt Windows native addon was not audited. Setup was not run. Not decided. |
+| 62 | Does the Ghidra GUI open the EXE with the PS1 loader? | The user reported this. It was not checked here. No GUI project was found. |
+| 63 | Is the `ghidra_psx_ldr` zip the upstream file? | Its SHA-256 is recorded in `docs/SETUP.md`. It was not compared with a published hash. |
+| 64 | Should the Ghidra check be a script in `tools\`? | The Ghidra run was done by hand with `analyzeHeadless`. No script in `tools\` runs it. `CLAUDE.md` asks that claims come from reproducible scripts. Not decided. |
+| 65 | Should the RAM block be marked initialised? | The loader leaves `0x800D8000` to `0x801FFFFF` uninitialised. This causes about 460 "Unable to read bytes" warnings. Not decided. |
+| 66 | What causes the pcode error after `trap(1)`? | The error is at `0x80090F1C`, file offset `0x8171C`. The word there is not a GTE instruction. The reviewer judged it harmless. The cause is not checked. |
+| 67 | Which Ghidra scratch projects should be kept? | `work\ghidra-test` and `work\ghidra-test2` are scratch. Delete or keep. Not decided. |

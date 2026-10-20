@@ -7,8 +7,9 @@ Source: `work\exe_header.json` and `work\overlay_candidates.json`, written by `t
 Status words used here:
 
 - **confirmed by independent parse**: a second parser read the raw disc sectors and got the same value.
-- **pending Ghidra/emulator**: not yet compared with a debugger or Ghidra. That check is task T1.5.
-- **confirmed** (overlays): the overlay's own code fits the load address that the EXE's loader uses. This is a static check only. A runtime check is still pending.
+- **confirmed by Ghidra headless**: Ghidra 12.1.4 with the PS1 loader gave the same value (T1.5). Used for the entry point, text address and size, BSS range and heap values only. See `docs/SETUP.md`.
+- **pending Ghidra/emulator**: not yet compared with a debugger, and not checked in Ghidra. The emulator check is still pending.
+- **confirmed** (overlays): the overlay's own code fits the load address that the EXE's loader uses. This is a static check only. Ghidra has not checked the overlays yet. A runtime check is still pending.
 
 ## EXE header
 
@@ -16,21 +17,21 @@ The boot file is `/SLUS_004.76`. It is 821,248 bytes. That is the 0x800-byte hea
 
 | Field | Value | Status |
 |-------|-------|--------|
-| pc0 (entry point) | `0x80090E70` | confirmed by independent parse (pending Ghidra/emulator) |
-| gp0 (initial GP) | `0x00000000` | confirmed by independent parse (pending Ghidra/emulator) |
-| t_addr (text load address) | `0x80010000` | confirmed by independent parse (pending Ghidra/emulator) |
-| t_size (text size) | `0xC8000` (819,200 bytes) | confirmed by independent parse (pending Ghidra/emulator) |
-| d_addr / d_size | `0x00000000` / `0x00000000` | confirmed by independent parse (pending Ghidra/emulator) |
-| b_addr / b_size | `0x00000000` / `0x00000000` | confirmed by independent parse (pending Ghidra/emulator) |
-| s_addr / s_size | `0x801FFFF0` / `0x00000000` | confirmed by independent parse (pending Ghidra/emulator) |
-| Initial SP | `0x801FFFF0` | confirmed by independent parse (pending Ghidra/emulator) |
+| pc0 (entry point) | `0x80090E70` | confirmed by independent parse and Ghidra headless. Emulator check pending |
+| gp0 (initial GP) | `0x00000000` | confirmed by independent parse. Not checked in Ghidra |
+| t_addr (text load address) | `0x80010000` | confirmed by independent parse and Ghidra headless. Emulator check pending |
+| t_size (text size) | `0xC8000` (819,200 bytes) | confirmed by independent parse and Ghidra headless. Emulator check pending |
+| d_addr / d_size | `0x00000000` / `0x00000000` | confirmed by independent parse. Not checked in Ghidra |
+| b_addr / b_size | `0x00000000` / `0x00000000` | confirmed by independent parse. Not checked in Ghidra |
+| s_addr / s_size | `0x801FFFF0` / `0x00000000` | confirmed by independent parse. Not checked in Ghidra |
+| Initial SP | `0x801FFFF0` | confirmed by independent parse. Not checked in Ghidra |
 | Region string | Sony Computer Entertainment Inc. for North America area | confirmed by independent parse |
 
 The independent parse reads `.bin` sector 23 (the boot EXE start), takes the Form 1 user data at offset 24, and reads the header from there. The code is `raw_sector_header()` in `tools\exe_overlays.py`.
 
 ## Start-up code (crt0)
 
-The code at the entry point is decoded by the script. Its status is "decoded from code at pc0 (pending Ghidra/emulator)".
+The code at the entry point is decoded by the script. Ghidra headless decodes the same start-up code (T1.5). The BSS range and the heap start and size match. GP is not checked in Ghidra. The emulator check is pending.
 
 | Item | Value | Where |
 |------|-------|-------|
@@ -52,6 +53,8 @@ The word at `0x800BF358` holds `0x8000`. The header GP is 0, but crt0 sets GP in
 | Stack | below `0x801FFFF0` | | Initial SP is `0x801FFFF0`. The overlay window ends below it |
 
 No overlay overlaps the EXE text or the cleared BSS. The overlay window starts exactly where crt0's clear stops.
+
+In Ghidra's PS1 loader, the RAM block at `0x800D8000` to `0x801FFFFF` is uninitialised. The overlay window is inside this block. See `docs/SETUP.md` (T1.5).
 
 ## Overlay table
 

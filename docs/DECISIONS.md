@@ -24,3 +24,15 @@ _Filled in by the doc-writer as tasks pass review._
 - Reason: the copy gets the upstream templates and the disc-derived values, and keeps the repo history clean.
 - Divergence from upstream: `generated\` stays git-ignored. Upstream commits `generated\` for its release CI. `CLAUDE.md` forbids committing generated C, so the upstream release CI templates will not work as-is. Decide later. See `docs/OPEN_QUESTIONS.md`.
 - Details of the run are in `docs/SETUP.md`.
+
+## D4 Do not register REA. Use Ghidra headless instead (T1.5)
+
+- Context: REA (`rea-agents` 6.7.0) was tested to open the boot EXE through Ghidra. Its inspect command fails with `unsupported binary format`. REA does not list MIPS as a raw-binary architecture. Its Windows Ghidra support is documented as experimental for x86, x64 and ARM PE files.
+- Decision: do not register REA. Do not run `rea-agents setup`. Use Ghidra directly, through `analyzeHeadless` and any post-scripts, and through the Ghidra GUI.
+- Not chosen, and why:
+  - Registering REA with `setup`. Setup writes to `~/.claude.json` and `~/.claude/skills`, and REA cannot open this EXE.
+  - Registering REA at project scope with `claude mcp add --scope local`. This was not tested.
+  - A raw binary import in Ghidra. It found 1934 functions, against 1730 with the PS1 loader.
+- Reason: the PS1 loader gives an entry point and text range that match T1.4. REA cannot read the EXE.
+- Revisit if REA adds MIPS, or if a community Ghidra MCP server (ReVa or GhidraMCP) is wanted. Neither was researched.
+- Details are in `docs/SETUP.md` (T1.5). Open items are in `docs/OPEN_QUESTIONS.md` (59 to 61).
