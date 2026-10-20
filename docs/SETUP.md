@@ -2013,3 +2013,54 @@ Both builds were made with nobody running the game.
 - `psxrecomp-analyze.exe` was missing from `psxrecomp\recompiler\build` at one point. The command `cmake --build psxrecomp/recompiler/build --target psxrecomp-analyze` rebuilt it. The cause of the disappearance is not known (question 216).
 - `psxrecomp.exe` and `psxrecomp-toml.exe` are also absent here. The T0.5 section says the recompiler build makes them.
 - `psxrecomp` shows ` m` in git status. This is the old CRLF noise (question 13). Do not commit inside the submodule.
+
+## Overlay coverage session (T2.17)
+
+Task T2.17 needs you to play into each level. The agent side is `tools\overlay_coverage.py` (launcher: `tools\run_overlay_coverage.ps1`). It starts the **debug build** (`work\build-dbg\MythologyKombat.exe`) in a normal visible window and watches it while you play. It reads the disc image and the debug server only. It changes nothing in `ps1_game\`. Output goes to `work\overlay_coverage\<timestamp>\` (git-ignored, never committed).
+
+### Commands
+
+Open PowerShell in `<REPO_ROOT>` and run one of these.
+
+```
+# You play from the logos on. Close the game window (or press Ctrl+C here) when you are done.
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\run_overlay_coverage.ps1
+
+# The tool presses START and selects New Game for you, so you take over in the first level (TEMPLE).
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\run_overlay_coverage.ps1 -BootRoute
+
+# All options
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\run_overlay_coverage.ps1 --help
+```
+
+The same without the launcher: `<RETRO_TOOLS_DIR>\python\python.exe -I tools\overlay_coverage.py [options]`.
+
+Useful options: `--interval 3` (seconds between polls), `--fresh-saves` (start with an empty memory card; by default the card in `work\overlay_coverage_saves` is kept between sessions, so you can save in a level and continue later), `--max-seconds N` (stop by itself), `--quiet`.
+
+Only one copy may run at a time (debug port 4385). If the tool says the port is in use, close the other game window first.
+
+### What you will see
+
+- A line such as `NEW OVERLAY 140 TEMPLE resident` each time a different level file is loaded, with the guest frame.
+- A line such as `level function entered: FIRE2` when the game calls one of the nine level-load functions.
+- A short status line every 30 seconds.
+- When you close the window or press Ctrl+C, a table with one row per overlay id: reached or not, first frame, static hits, distinct static entries hit, interpreter fallbacks, `segment_alias_interp` and CRC misses. Under it: which level functions were entered, and any fault (non-zero exit code, `psx_crash.txt`, crash-like lines of the game log).
+- Files in the output folder: `coverage.jsonl` (one JSON line per poll), `summary.json`, `summary.txt`, `run.log` (the game's output) and a copy of `psx_last_run_report.json`.
+
+### What to play
+
+Reach as many of these as you can, in any order, and say which you could not reach: TEMPLE (id 140), EARTH (136), WIND (142), WATER (141), PRISON (139), FIRE (137, two level functions), BRIDGE (135), FORTRESS (138). In each level, fight or walk for a minute so the code runs. Tell the agent about anything you see that the tool cannot see: wrong graphics, a freeze, missing sound, a crash. The tool counts a crash only if the process dies or writes `psx_crash.txt`.
+
+### How to read the numbers
+
+- Overlays share the load address `0x80130FF8`, so the tool identifies the resident one by comparing the first 256 bytes of the window with each `.OVR` file. Counter changes between two polls are credited to the id resident at the end of the poll. Polls are seconds apart, so the numbers are approximate.
+- "Static hits" are runs of build-time compiled overlay code (`overlay_static_entries` over `0x80130FF8..0x8013C720`). "Interpreter fallbacks" are calls the interpreter ran instead. Question 190 in `docs/OPEN_QUESTIONS.md` infers (not proven) that the fallbacks are the BIOS exception path in low RAM, not overlay code, so a non-zero fallback count alone is not a fault.
+- A `no match` poll means the window held no known `.OVR` head (a load in progress, or the level changed its own code).
+
+### Self-test result (agent, headless, no human)
+
+`tools\overlay_coverage.py -BootRoute --headless --max-seconds 100` (the same polling code as a visible run) booted by itself, entered the TEMPLE level function at frame 4063, saw the TEMPLE overlay resident from frame 5383, then 14,716 static hits in 81 entries, 65 CRC misses, a clean exit and no crash file. The other seven rows read "no". That proves the polling and the summary. It does not prove the other levels. A separate 20 s visible-window run (no input) started, polled 10 times with 0 errors, and exited cleanly; nobody played it, so Ctrl+C and window-close handling were not exercised.
+
+### Investigation script
+
+`tools\overlay_interp_probe.py` (headless, about 2 minutes) lists the interpreted PCs and their code, the FIRE and WIND entry instructions, and the shared-entry counts. Results are in `docs/OPEN_QUESTIONS.md` (190 to 193).
