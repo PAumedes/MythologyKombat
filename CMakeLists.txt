@@ -49,6 +49,12 @@ psxrecomp_add_game_runtime(psx-runtime
     # CI configures with -DPSXRECOMP_REQUIRE_GAME_C=ON so a checkout without
     # it fails instead of building a setup host.
     GEN_MARKER "generated/SLUS_004.76_dispatch.c"
+    # T2.16: statically compiled overlay shard (dispatcher + one unit per
+    # overlay image), written by Generate from aot/overlays.json
+    # (static_output); must name the same file. Keep it BEFORE the
+    # multi-value GEN_FULL_GLOB / CODEGEN_SETUP_SOURCES, which would swallow it
+    # as more source files (runtime.cmake multiValueArgs).
+    GAME_OVERLAY_STATIC_C "${CMAKE_CURRENT_SOURCE_DIR}/generated/overlays_static.c"
     GEN_FULL_GLOB "generated/SLUS_004.76_full_*.c"
     CODEGEN_SETUP_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/codegen_setup.c"
 )

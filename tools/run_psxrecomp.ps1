@@ -10,6 +10,9 @@
 #   (a) the embeddable <retro-tools>\python\python.exe as is (the CLI adds psxrecomp\tools to sys.path itself);
 #   (b) a private copy at work\py-psxrecomp whose python312._pth lists the psxrecomp dirs.
 # The retro-tools install is never modified.
+#   `generate` ALWAYS uses (b): it runs aot_overlay_pipeline.py as a subprocess that does not inherit the
+#   CLI's sys.path, so with (a) the static overlay step fails with "No module named 'compile_overlays'" (T2.16).
+#   Other subcommands (verify-disc, ...) keep (a) when it works.
 $ErrorActionPreference = 'Stop'
 
 $repo = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
@@ -45,7 +48,9 @@ function Test-Cli([string]$py) {
 $chosen = $null
 $why = ''
 $embed = Join-Path $retro 'python\python.exe'
-if ((-not $env:PSXRECOMP_FORCE_PRIVATE_PY) -and (Test-Path -LiteralPath $embed)) {
+$sub = if ($args.Count -gt 0) { [string]$args[0] } else { '' }
+$needPrivate = ($env:PSXRECOMP_FORCE_PRIVATE_PY) -or ($sub -eq 'generate')
+if ((-not $needPrivate) -and (Test-Path -LiteralPath $embed)) {
     if (Test-Cli $embed) { $chosen = $embed; $why = 'option (a): embeddable Python as is' }
 }
 if (-not $chosen) {
@@ -66,7 +71,7 @@ if (-not $chosen) {
         $lines += 'import site'
         Set-Content -LiteralPath $pth.FullName -Value $lines -Encoding ASCII
     }
-    if (Test-Cli $privPy) { $chosen = $privPy; $why = 'option (b): private copy work\py-psxrecomp with extended ._pth' }
+    if (Test-Cli $privPy) { $chosen = $privPy; $why = 'option (b): private copy work\py-psxrecomp with extended ._pth' + $(if ($sub -eq 'generate') { ' (forced for generate: static overlay subprocess needs the extended path)' } else { '' }) }
 }
 if (-not $chosen) {
     Write-Host '[run_psxrecomp] STOP: neither embeddable Python (a) nor private copy (b) can run psxrecomp_cli.py. A full Python install needs user approval.'

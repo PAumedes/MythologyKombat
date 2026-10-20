@@ -334,10 +334,98 @@ Scope: one level, TEMPLE (function `0x8002B688`, id 140). Only this level's over
 
 ## Overlay strategy (T2.14)
 
-The chosen route for these overlays is in `docs/DECISIONS.md` (D11). The runtime route stays on for now. The next step is the AOT static route, through `aot\overlays.json` (T2.15) and `GAME_OVERLAY_STATIC_C` (T2.16). Nothing is built yet. The DLL cache `release` route is not used now.
+The chosen route for these overlays is in `docs/DECISIONS.md` (D11). The runtime route stays on for now. The AOT static route is built (T2.16, see "Static overlay build (T2.16)" below). It runs through `aot\overlays.json` (T2.15) and `GAME_OVERLAY_STATIC_C`. The DLL cache `release` route is not used now.
 
 The T2.15 profile is `aot\overlays.json`. It holds addresses, sizes and hashes only. See `docs/SETUP.md` ("AOT overlay profile (T2.15)") and `docs/DECISIONS.md` (D12).
 
+## Static overlay build (T2.16)
+
+Source: `generated\overlays_static.c`, `generated\overlays_static_0000.c` to `generated\overlays_static_0007.c`, and `generated\AOT_STATIC_AUDIT.json`. All are git-ignored and derived from disc bytes. They are not committed. Steps are in `docs/SETUP.md` ("Static overlay build (T2.16)").
+
+### Audit
+
+| Image | Required entries verified | Native entries (all guarded) |
+|-------|---------------------------|------------------------------|
+| BRIDGE | 1 | 806 |
+| EARTH | 2 | 1488 |
+| FIRE | 1 | 633 |
+| FORTRESS | 3 | 775 |
+| PRISON | 2 | 864 |
+| TEMPLE | 2 | 689 |
+| WATER | 2 | 874 |
+| WIND | 1 | 1885 |
+
+Totals: 14 required entries verified, and 8014 static variants published in 9 files.
+
+| Audit field | Value |
+|-------------|-------|
+| `recipe_count` | 8 |
+| `all_pairs_valid` | true |
+| `all_guards_match_known_input_bytes` | true |
+| `full_static_coverage_proven` | false |
+| `static` | true |
+| `cps` | true |
+| `required_images` | 8 |
+| `mod_packages` | empty |
+
+### How the dispatcher works
+
+- Each variant holds a range list, a count, a CRC and a function. The table is `psx_ov_variants[8014]`.
+- The guard is `psx_overlay_static_code_matches(ranges, count, crc)`. It checks the live RAM bytes.
+- An address with no variant takes one load and a fast exit. The call then goes to the interpreter.
+- A variant whose CRC does not match returns to the interpreter.
+- Only KSEG0 PCs are dispatched.
+
+### Runtime probe (debug build)
+
+Source: `work\overlay_static_probe.json`, written by `tools\overlay_static_probe.py`. The run used the debug build, headless, with port 4384.
+
+| Run | Guest frame | `range_hits` | `static_checks` | `static_hits` | `static_crc_misses` |
+|-----|-------------|--------------|-----------------|---------------|---------------------|
+| Probe, first query | about 5002 and 5407 | 0 | 0 | 0 | 0 |
+| Agent run | about 6009 | 2865 | 2913 | 2865 | 48 |
+| First run (6019) | about 6019 | 2964 | 3012 | not recorded | 48 |
+| Reviewer run (6004) | about 6004 | 2804 | 2852 | not recorded | 48 |
+
+- 68 entries were hit. The hit counts grow with the landing frame. The 68 entries and the 48 CRC misses held in each run.
+- In the reviewer run, 2721 of the 2804 hits came through the generated fast path.
+- The probe exits 0 only when `range_hits` is 0 at the first query and above 0 at the last.
+
+Overlay loader status at about frame 6019:
+
+| Counter | Value |
+|---------|-------|
+| `static_address_misses` | 127,436 |
+| `dispatch_interp_fallback` | 127,436 |
+| `segment_alias_interp` | 121,833 (about 96%) |
+| `dispatch_native` | 0 |
+| `segment_native` | 0 |
+| `loads` | 0 |
+| `regions` | 0 |
+
+### Reading the counters (reviewer, not confirmed)
+
+- The counters count `call_by_address` calls since cold boot. They do not count instructions.
+- The fallback count rose from 115,204 (frame 5001) to 121,307 (frame 5401) and 127,324 (frame 6004). That is about 10 to 15 calls a frame. It is not "almost entirely interpreter".
+- `segment_alias_interp` counts non-KSEG0 aliases (KUSEG or KSEG1). The KSEG0-only static shards do not cover them. The upstream note in `psxrecomp\docs\SEGMENT_AWARE_CODE.md` (about lines 1237 and 1262) says these drop to about 0 to 700 with KUSEG and KSEG1 shards.
+- `dispatch_native` and `segment_native` stay at 0. They count the non-static DLL and JIT tier, which is not used here.
+- The 48 CRC misses are probably the first probes of addresses shared by several overlays. Several overlays share the base `0x80130FF8`. This is not confirmed.
+
+### Level seen (agent screenshot, evidence only)
+
+- At about frame 6000, the agent saw the first fight (Sub-Zero against Scorpion, with a health bar).
+- It came after the TEMPLE overlay load (id 140). The runtime memcpy of `TEMPLE.OVR` was seen in T2.13.
+- So the first level from a fresh New Game is TEMPLE, by agent observation. The user has not confirmed it.
+
+### Limits
+
+- Coverage is not proven. `full_static_coverage_proven` is false.
+- FIRE and WIND have entries that land on `lui`. Those entries are checked only by the static audit. They did not run in the probe.
+- The 48 CRC misses are not explained.
+- The `segment_alias_interp` callers are not identified. See `docs/OPEN_QUESTIONS.md` (190).
+- The steady-state fallback per frame and the interpreted instruction count are not measured. See question 191.
+- Only TEMPLE is runtime-proven for the overlay load (T2.13). The other seven are still pending.
+
 ## Not yet confirmed
 
-See `docs/OPEN_QUESTIONS.md`, questions 44 to 52, 130 to 139, and 178 to 183.
+See `docs/OPEN_QUESTIONS.md`, questions 44 to 52, 130 to 139, 178 to 183, and 190 to 196.

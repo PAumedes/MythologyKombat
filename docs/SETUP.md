@@ -1617,3 +1617,90 @@ Each change was made to a copy under `work\aot_neg\` or `work\review\`. The prof
 - Entry validity waits for the T2.16 audit (question 187).
 - The `--cps` value must match the runtime build. It was not checked (question 188).
 - The 16-byte overwrite at `0x80130FFC` is unchanged by this profile (question 180).
+
+## Static overlay build (T2.16)
+
+This step builds the static overlay code from the disc bytes. It writes generated C for the eight overlay images, and links that C into the game exe. It reads the disc only. It does not change anything in `ps1_game\`. The profile is `aot\overlays.json` (T2.15). The design is in `docs/DECISIONS.md` (D11 and D13). The results are in `docs/EXE_OVERLAYS.md` ("Static overlay build (T2.16)").
+
+### CMake change
+
+The root `CMakeLists.txt` gets 6 new lines. The new keyword must sit right after `GEN_MARKER` and before `GEN_FULL_GLOB`:
+
+```
+GAME_OVERLAY_STATIC_C "${CMAKE_CURRENT_SOURCE_DIR}/generated/overlays_static.c"
+```
+
+- `psxrecomp_add_game_runtime` takes several values after `GEN_FULL_GLOB`, `CODEGEN_SETUP_SOURCES` and `EXCLUDE_BUILTIN_MODS`. A keyword written after one of them is read as a value of that list.
+- The first attempt put the keyword after `CODEGEN_SETUP_SOURCES`. The link then failed with undefined `psxrecomp_codegen_host_apply`, `psxrecomp_codegen_relaunch_or_exit` and `psxrecomp_forward_if_built`.
+- `psxrecomp\runtime\overlay_static_sources.cmake` checks the two names. If `static_output` in `aot\overlays.json` and the keyword name point at different files, it stops with a FATAL_ERROR. If the file is absent while a game links, it prints a warning.
+
+### Generate
+
+Run the same command as T2.3, from the repo root:
+
+```
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\run_psxrecomp.ps1 generate --config game.toml --project-root . --disc "ps1_game\Mortal Kombat Mythologies - Sub-Zero.cue"
+```
+
+- The static step runs inside `generate`. For `generate`, the wrapper uses the private Python copy `work\py-psxrecomp` (D13).
+- With the unmodified embeddable Python, the static step failed with `ModuleNotFoundError: compile_overlays`. The error is at line 21 of `psxrecomp\tools\aot_overlay_pipeline.py`. The subprocess does not get `psxrecomp\tools` on `sys.path`.
+- The CLI adds `--cps` and `--reuse` itself, and runs with `--workers 2`. `--cps` was detected from `psx_cps_mark_game` in `generated\SLUS_004.76_dispatch.c`.
+- The static step found 5551 distinct entry addresses. Up to 5 variants share one address.
+
+| Run | Kind | Result |
+|-----|------|--------|
+| 1 | First static build | `Verified 8 images / 8 recipes`. `Published 8014 audited static variants in 9 files`. 30.6 s |
+| 2 | Plain rerun | `Reused 8014 audited static variants in 9 files: every generation input is unchanged (2748b13f56f3f09c)`. 11.6 to 11.9 s |
+| 3 | Full rebuild with `--force-aot-static` | `RESULT_STATIC=built`. The shard files are identical to run 1 |
+
+### Output
+
+All files are in `generated\`, which is git-ignored (`.gitignore` line 4). None may be committed.
+
+| File | Content |
+|------|---------|
+| `overlays_static.c` | Dispatcher. `PsxOvVariant` holds `{ranges, count, crc, fn}`. The table is `psx_ov_variants[8014]` |
+| `overlays_static_0000.c` to `overlays_static_0007.c` | Static code from the disc bytes. Derived from game data |
+| `AOT_STATIC_AUDIT.json` (1.07 MB) | Audit. See the fields in `docs/EXE_OVERLAYS.md` |
+
+- The `generated\` baseline is now 70 shard files: the 61 from T2.3 plus the 9 static files. The new listing is `work\generate_run4_static.sha256.txt`.
+- The T2.3 listing, `work\generate_run1.sha256.txt`, still matches the 61 original files.
+- The audit file is not byte-reproducible. Its `recipe_input_sha256` changes on each run that does not reuse. Compare the shard hashes and `generation_inputs_sha256` instead.
+
+### Builds
+
+Run these from the repo root. Set the toolchain first, as in T2.4.
+
+```
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DPSXRECOMP_REQUIRE_GAME_C=ON
+cmake --build build --target psx-runtime
+cmake -S . -B work\build-dbg -G Ninja -DCMAKE_BUILD_TYPE=Release -DPSX_DEBUG_TOOLS=ON -DPSXRECOMP_REQUIRE_GAME_C=ON
+cmake --build work\build-dbg --target psx-runtime
+```
+
+| Exe | Size (bytes) | SHA-256 | Note |
+|-----|--------------|---------|------|
+| `build\MythologyKombat.exe` (Release) | 51,699,712 | `7c86bcbc...b577` at build time | Was 46,905,344 bytes at T2.4. See the note below |
+| `work\build-dbg\MythologyKombat.exe` (debug) | 35,465,728 | `23e09f8514a642e6f2c975bd359d700d663432a2db40fa8c723c8350a35220b1` | Debug tools on |
+
+- Neither configure nor build printed a `GAME_OVERLAY_STATIC_C` mismatch or absent warning.
+- The `overlays_static` objects take about 1 minute to compile. A relink takes about 2.5 s.
+- The Release SHA-256 changes on every relink. A reviewer's no-op rebuild gave `4c3cca88...`, at the same size. Record the SHA of the exe you test. The SHA-256 values in the T2.4 and T2.6 sections belong to the older 46,905,344-byte exe.
+- The Release exe has no debug server. Its link was checked with a byte search (`grep -a`). The strings `psx_overlay_static_code_matches` and `overlay_static_entries` are in both exes.
+
+### Runtime checks
+
+| Check | Result |
+|-------|--------|
+| `tools\overlay_runtime_check.py --runs 1` on the new build | PROOF HOLDS, TEMPLE (see `docs/EXE_OVERLAYS.md`) |
+| `tools\overlay_static_probe.py` (new) | Debug build, headless, port 4384. Options used: `--out work\overlay_static_probe.json`, `--route`, `--frames 5000,5400,6000`, `--port 4384`, and `--shots` under `work\`. See the results in `docs/EXE_OVERLAYS.md` |
+| `tools\run_boot_route.py --expect` with `tests\replays\expected\boot_to_menu.json` | MATCH, 7 checkpoints. The only warning is the exe SHA-256 one |
+
+- The probe exits 0 only when `range_hits` is 0 at the first query and above 0 at the last query.
+- The `exe_sha256` in `tests\replays\expected\boot_to_menu.json` is now stale. It was not re-recorded. See `docs/OPEN_QUESTIONS.md` (173).
+- Coverage is not proven. The audit field `full_static_coverage_proven` is false.
+- The static dispatcher handles only KSEG0 PCs. See `docs/OPEN_QUESTIONS.md` (190).
+
+### Git status
+
+- `psxrecomp` still shows ` m` because of CRLF noise (`docs/OPEN_QUESTIONS.md`, question 13). Do not commit inside the submodule.

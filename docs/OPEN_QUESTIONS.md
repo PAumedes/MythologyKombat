@@ -143,7 +143,7 @@
 |---|----------|-------|
 | 78 | Should the wrapper check that the retro-tools folder exists? | `tools\run_psxrecomp.ps1` does not check `RETRO_TOOLS_DIR` up front. A bad value can silently reuse a stale `work\py-psxrecomp`. Reviewer note. |
 | 79 | Does the private Python copy go stale if the repo moves? | The `._pth` file in `work\py-psxrecomp` holds absolute repo paths, written once. If the repo moves, those paths are stale. Reviewer note. |
-| 80 | Is the unmodified Python enough for the `generate` subcommand? | Partly answered at T2.3: `generate` exited 0 through the wrapper. The report does not say which Python ran, so the private fallback is not ruled out. Check the wrapper's printed line in `work\generate_run1.txt`. |
+| 80 | Is the unmodified Python enough for the `generate` subcommand? | Partly answered at T2.3: `generate` exited 0 through the wrapper. The report does not say which Python ran, so the private fallback is not ruled out. Check the wrapper's printed line in `work\generate_run1.txt`. At T2.16 the unmodified embeddable Python failed in the static step, and the private copy passed. See `docs/DECISIONS.md` (D13). |
 
 ## Seeds and static coverage (from T2.2)
 
@@ -177,7 +177,7 @@
 | # | Question | Notes |
 |---|----------|-------|
 | 98 | When does the manifest workaround go? | The build has two manifests on one target: psxrecomp's and recomp-ui's. Both are at `psxrecomp` 449c31e5 and `recomp-ui` 7c635c6. The root `CMakeLists.txt` drops recomp-ui's manifest (D6, `docs/DECISIONS.md`). Upstream fix suggested: the guard should also match `$<TARGET_OBJECTS:..._manifest>`, or check for a `*_manifest` target. Keep the workaround until upstream fixes this. Then remove it. The workaround depends on recomp-ui's generated file name. |
-| 99 | Should an overlay toolchain be staged for the tcc tier (T2.8 and T2.16)? | The startup log says `tcc tier active but no bundled toolchain at build\overlay_toolchain`. Overlay gaps fall back to the interpreter. Not decided. See `docs/SETUP.md` (T2.4). |
+| 99 | Should an overlay toolchain be staged for the tcc tier (T2.8 and T2.16)? | The startup log says `tcc tier active but no bundled toolchain at build\overlay_toolchain`. Overlay gaps fall back to the interpreter. Not decided. See `docs/SETUP.md` (T2.4). T2.16 adds the static route through `GAME_OVERLAY_STATIC_C`. The T2.16 report does not say whether the tcc startup line still appears, and does not mention staging a toolchain. |
 | 100 | Is a retail BIOS backend needed? | The SCPH1001 backend was skipped at configure. Only OpenBIOS is linked. A retail BIOS backend would be needed only if T2.7 requires it. Not decided. |
 | 101 | Why is the `psxrecomp` submodule shown as modified after T2.4? | The `psxrecomp` submodule shows ` m`. The cause is CRLF noise from the T0.5 regen. It is not from T2.4. It is the same issue as question 13. Do not commit inside the submodule. |
 | 102 | Is the embedded manifest valid XML? | The exe has one embedded manifest (`<assembly` appears once). It was not checked with an XML validator. |
@@ -265,7 +265,7 @@ See `docs/SETUP.md` ("Playtest 2: FMV and gameplay") and `docs/CONTROLS.md`. All
 | # | Question | Notes |
 |---|----------|-------|
 | 148 | Which movies play, and do all of them stutter? | The user says all movies run at about 50 fps. Only the Midway logo movie and the intro are named. The other movies and their audio are not described. |
-| 149 | Which level was the fight in, and which overlay loaded it? | The user played a real fight and died. Controls responded. No crash was reported. The level or location was not stated, and the overlay id was not observed. Needs a debug-server `pc_break` observation, or an overlay log from `PSX_RUNTIME_PERF_DIAG`. This is the open part of T2.11. Do not name the level until it is observed. |
+| 149 | Which level was the fight in, and which overlay loaded it? | The user played a real fight and died. Controls responded. No crash was reported. The level or location was not stated, and the overlay id was not observed. Needs a debug-server `pc_break` observation, or an overlay log from `PSX_RUNTIME_PERF_DIAG`. This is the open part of T2.11. At T2.16 an agent observed the first fight after a fresh New Game follow the TEMPLE load (id 140, `0x80130FF8`). This is agent evidence from a screenshot and the overlay log, not a user observation. See `docs/EXE_OVERLAYS.md` ("Static overlay build (T2.16)"). |
 | 150 | What is the real frame rate of each movie? | The 48 to 54 fps figures are the user's estimates. Not measured by the user. Partly answered by measurement (hidden window, agent): guest Hz in the FMV phase is about 50 Hz with vsync on and 60.0 Hz with `PSX_VSYNC=0`. Only one movie was measured, and its file is not identified. See `docs/SETUP.md`. |
 | 151 | What are the monitor refresh rate, CPU model, power plan and system load? | Partly answered by measurement (agent). Recorded: panel 1920 by 1080 at 60 Hz, Intel i5-7300HQ, AC power, Windows "Balanced" plan, Intel HD 630 (old driver) and NVIDIA MX150. The window mode is windowed (question 127). Not recorded: the system load during the user's run. See `docs/SETUP.md`. |
 | 152 | Is the first digital glitch at the Midway logo a cold-start effect? | Partly answered by measurement (agent). The cold run A and the warm run B give the same FMV-phase rate, about 50 Hz. The dip at the Midway logo appears in both cold and warm vsync-on runs. The audio glitch itself was not heard in these runs. Hypothesis 2 in `work\audio_investigation.md`. |
@@ -296,7 +296,7 @@ See `docs/SETUP.md` ("Boot-to-menu replay route (T2.18)") and `docs/DECISIONS.md
 |---|----------|-------|
 | 171 | Should the final line of `tools\run_boot_route.py` say how many RAM and VRAM checks ran? | With `--runs 1`, a MATCH says "MATCH" but compares RAM and VRAM only where they are exact. The reviewer run skipped the hash at frame 1800, with a warning. The final line should print `RAM/VRAM compared at k/7`. Not done. |
 | 172 | Can the pause land on the exact frame? | `host_pause` lands one frame early or late (+-1). Commands are served once per vblank. Upstream removed `pause`, `run_to_frame` and `step`. A framework-level "pause at frame N" would make the RAM and VRAM hashes exact at every checkpoint. Not decided. |
-| 173 | When should the expected digests be re-recorded? | The expected digests are tied to one exe build (its SHA-256 is in `tests\replays\expected\boot_to_menu.json`). The script only warns when the exe differs. The policy for re-recording after a rebuild is not decided. |
+| 173 | When should the expected digests be re-recorded? | The expected digests are tied to one exe build (its SHA-256 is in `tests\replays\expected\boot_to_menu.json`). The script only warns when the exe differs. The policy for re-recording after a rebuild is not decided. At T2.16 the replay gave MATCH (7 checkpoints) on the new exe, with the exe SHA-256 warning only. The recorded `exe_sha256` is now stale, and it was not re-recorded. |
 | 174 | What caused the one earlier mid-run process death? | One earlier run died partway through. The cause is unknown. It did not come back in 8 runs. It may have been an external `taskkill`. Not checked. |
 | 175 | Does attract mode start at about frame 6500 on every run? | Seen once, in an agent screenshot. Not checked on other runs. |
 | 176 | Which exit code does a setup error give? | The docstring and README of `tools\run_boot_route.py` say exit 2. A `SystemExit` with a string exits 1. Either the docs or the code must change. Not changed. |
@@ -308,7 +308,7 @@ See `docs/EXE_OVERLAYS.md` ("Runtime proof (T2.13)"), `docs/SETUP.md` ("Runtime 
 
 | # | Question | Notes |
 |---|----------|-------|
-| 178 | What do the other eight level functions load at runtime? | Only TEMPLE (`0x8002B688`, id 140) fired in the committed route up to frame 9000. EARTH, WIND, WATER, PRISON, FIRE (both functions `0x8002DA94` and `0x8002E130`), BRIDGE and FORTRESS are not seen at runtime. The check is T2.17. The tool is hard-coded to TEMPLE-style checks (question 183). |
+| 178 | What do the other eight level functions load at runtime? | Only TEMPLE (`0x8002B688`, id 140) fired in the committed route up to frame 9000. EARTH, WIND, WATER, PRISON, FIRE (both functions `0x8002DA94` and `0x8002E130`), BRIDGE and FORTRESS are not seen at runtime. The check is T2.17. At T2.16 the static probe reached TEMPLE's fight, and no other id was reported as seen. The tool is hard-coded to TEMPLE-style checks (question 183). |
 | 179 | Does the retail BIOS memcpy copy the TEMPLE overlay the same way? | The overlap check (question 45) used OpenBIOS, as run by PSXRecomp. The retail BIOS memcpy was not examined. Its behaviour for an overlapping copy is not known. |
 | 180 | Does the game read the 16 bytes that the TEMPLE copy overwrites? | The bytes are `0x80130FFC` to `0x8013100B`. They were BIOS heap words before the copy and overlay bytes after it. Whether any code reads them later is not checked. |
 | 181 | What do the read_file ids 85 (`0x55`) and 144 (`0x90`) load, and do they copy into the window? | Earlier runs, not the committed tool, saw these reads at about frames 4002 and 4007. They used the same buffer `0x8013100C`. Id 140 (`0x8C`) was also seen. Id 144 is outside 134 to 143 and is in the constant id set of `0x8002DA94`. What these reads do is not known. |
@@ -324,6 +324,20 @@ See `docs/SETUP.md` ("AOT overlay profile (T2.15)") and `docs/DECISIONS.md` (D12
 | 184 | Does anything tie `load_addr` in the profile to the pointer word? | No. Changing `EARTH` `load_addr` to `0x80131000` still passes the extract step. `load_addr` is pinned only by the pointer-word check, the entries and the excluded ranges. Schema gap. |
 | 185 | Can the pipeline check the loader tables directly? | No, for this game. The `bcd_extent_table` check reads 8-byte entries. The game has a 4-byte location table and a separate size table. The words checks replace it. Their agreement with the ISO extents is shown by `tools\overlay_facts.py`, not by the pipeline. |
 | 186 | Can `adjacent_files` check the other `.OVR` files? | No. It needs non-last sizes to be multiples of 2048. The `.OVR` sizes are not. Only `BRDGDEMO` to `BRIDGE` is checked. |
-| 187 | Are the 14 profile entries real function starts? | Not yet. The entries are verified `jal` targets. FIRE and WIND land on a `lui`, not a stack prologue. Whether each is a function start is for the T2.16 audit. |
-| 188 | Does the `--cps` value in the profile match the runtime build? | Not checked. |
+| 187 | Are the 14 profile entries real function starts? | Not yet. The entries are verified `jal` targets. FIRE and WIND land on a `lui`, not a stack prologue. The T2.16 audit gives a guard for each of the 14 required entries. The audit does not state that each is a function start. Still open, see question 193 for the FIRE and WIND `lui` entries. |
+| 188 | Does the `--cps` value in the profile match the runtime build? | Partly. The CLI detected `--cps` from `psx_cps_mark_game` in `generated\SLUS_004.76_dispatch.c`, and the audit reports `cps` true. The runtime-side match was not checked as a separate step. |
 | 189 | Are the FIRE, WATER and WIND table lengths right? | The FIRE, WATER and WIND entries equal their table ends. This independently supports the lengths. Whether each entry is a real function start is question 187. Each table holds one zero word. |
+
+## Static overlay build (from T2.16)
+
+See `docs/EXE_OVERLAYS.md` ("Static overlay build (T2.16)"), `docs/SETUP.md` ("Static overlay build (T2.16)") and `docs/DECISIONS.md` (D13).
+
+| # | Question | Notes |
+|---|----------|-------|
+| 190 | Where do the about 121,000 `segment_alias_interp` calls come from? | The counter covers non-KSEG0 aliases. The likely PCs are KUSEG `0x00130000` or KSEG1 `0xA013xxxx`. Not checked. If they are real overlay code, KUSEG and KSEG1 static shards are needed. The upstream note in `psxrecomp\docs\SEGMENT_AWARE_CODE.md` (about lines 1237 and 1262) says these drop to about 0 to 700 with those shards. Planned for T2.17. |
+| 191 | What is the steady-state fallback per frame, and how many interpreted instructions run? | The counters are cumulative since cold boot. The reviewer's reading is about 10 to 15 calls a frame between frames 5001 and 6004. Instructions were not counted. Not confirmed. Planned for T2.17. |
+| 192 | Why are there 48 static CRC misses? | Probably the first probe of addresses shared by several overlays (the base `0x80130FF8` is shared). Not confirmed. |
+| 193 | Do the FIRE and WIND entries that land on `lui` run correctly? | The audit checks them. They were not run in the probe. Their behaviour is not known. |
+| 194 | Is static coverage complete? | No. The audit says `full_static_coverage_proven` is false. Not proven. |
+| 195 | Should `AOT_STATIC_AUDIT.json` be byte-reproducible? | Its `recipe_input_sha256` changes on each run that does not reuse. The shard hashes and `generation_inputs_sha256` are the compare keys. Whether upstream intends this is not checked. |
+| 196 | Should the wrapper detect the subcommand after global options? | `tools\run_psxrecomp.ps1` reads only `$args[0]`. A global option placed before `generate` defeats the `generate` check, so option (a) runs first. Reviewer minor. Not changed. See D13 in `docs/DECISIONS.md`. |

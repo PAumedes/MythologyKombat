@@ -30,6 +30,7 @@
 - T2.14 Overlay strategy decision: D11 in `docs\DECISIONS.md` keeps the runtime overlay route, makes the AOT static route (`aot\overlays.json`, `GAME_OVERLAY_STATIC_C`) the next step, and does not use the DLL cache `release` route; pointer added to `docs\EXE_OVERLAYS.md`; nothing built.
 - T2.18 Boot-to-menu replay route: `tools\run_boot_route.py` boots the debug build headless with a fixed START and CROSS route and checks fingerprints, RAM and VRAM digests at 7 checkpoints against `tests\replays\expected\boot_to_menu.json`; 3 cold boots are bit-identical and a START at 3001 negative control gives MISMATCH; steps in `docs/SETUP.md`, open items 171 to 177 in `docs/OPEN_QUESTIONS.md`.
 - T2.15 AOT overlay profile: `tools\make_overlay_profile.py` writes `aot\overlays.json` (8 images, 8 records, addresses, sizes and hashes only) and the upstream extract step verifies it; schema choices in D12 (`docs/DECISIONS.md`); steps in `docs/SETUP.md`, open items 184 to 189 in `docs/OPEN_QUESTIONS.md`.
+- T2.16 Static overlay build: `generate` writes `generated\overlays_static.c` and 9 `overlays_static_*.c` shards (8014 audited variants, git-ignored) from `aot\overlays.json`; `GAME_OVERLAY_STATIC_C` links the dispatcher into both exes (Release and debug build); `tools\overlay_static_probe.py` shows static hits at TEMPLE (about frame 6000) with 48 CRC misses; steps in `docs/SETUP.md`, results in `docs/EXE_OVERLAYS.md`, D13 in `docs/DECISIONS.md` (private Python for `generate`), open items 190 to 196 in `docs/OPEN_QUESTIONS.md`.
 
 ## Post-Phase-1 notes
 

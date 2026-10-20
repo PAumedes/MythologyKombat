@@ -157,3 +157,14 @@ _Filled in by the doc-writer as tasks pass review._
   - Dropping the checks that the schema cannot express. Not done. Each gap is listed as an open question.
 - Reason: the upstream pipeline reads only the schema it defines. The profile must pass its checks, and every hash is asserted against the disc.
 - Open items are in `docs/OPEN_QUESTIONS.md` (184 to 189). See `docs/SETUP.md` ("AOT overlay profile (T2.15)").
+
+## D13 Run `generate` with the private Python copy (T2.16)
+
+- Context: the static overlay step (T2.16) runs a subprocess from `psxrecomp\tools\aot_overlay_pipeline.py`. With the unmodified embeddable Python from T0.3, it failed with `ModuleNotFoundError: compile_overlays` at line 21. The subprocess does not get `psxrecomp\tools` on `sys.path`. The embeddable Python reads its `._pth` file, not `PYTHONPATH` (`docs/SETUP.md`, T0.6).
+- Decision: `tools\run_psxrecomp.ps1` always uses the private copy `work\py-psxrecomp` for `generate`. The script reads `$args[0]` as the subcommand. For `generate`, it skips option (a), the unmodified retro-tools Python. Other subcommands keep option (a).
+- Not chosen, and why:
+  - Changing the upstream subprocess. Upstream source is not modified (D1).
+  - Setting `PYTHONPATH`. The embeddable Python ignores it.
+- Reason: the static step passed with the private copy. Run 1 printed `Verified 8 images / 8 recipes`.
+- Risk: the check reads only the first argument. A global option placed before `generate` defeats it, so option (a) runs first. Reviewer minor. See `docs/OPEN_QUESTIONS.md` (196).
+- Details are in `docs/SETUP.md` (T2.16). Open items are in `docs/OPEN_QUESTIONS.md` (190 to 196).
