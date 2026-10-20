@@ -49,7 +49,7 @@
 | 23 | How should release CI work without committed `generated\`? | Upstream commits `generated\` for its release CI. `CLAUDE.md` forbids committing generated C, so the release CI templates will not work as-is. Not decided. |
 | 24 | Should the upstream scaffold bug be reported? | An empty `-Description`, `-Publisher` or `-Year` breaks `probe_disc.py`. Not reported. |
 | 25 | Should `seeds\ghidra_funcs.txt` be renamed? | The file name says Ghidra, but the addresses come from the boot EXE's JAL targets. Not decided. |
-| 26 | Should the scaffold's Python workaround be kept? | The embeddable Python ignores `PYTHONPATH`, so a private copy with a `._pth` edit was used. Not decided if this is needed again. |
+| 26 | Should the scaffold's Python workaround be kept? | Resolved in T2.1 by D5 (`docs/DECISIONS.md`). The unmodified retro-tools Python is used first. The private copy is only a fallback. |
 
 ## Disc file list (from T1.1)
 
@@ -136,3 +136,11 @@
 | 75 | Should these files be committed? | `seeds\ghidra_funcs.txt` (1175 JAL targets from the boot EXE, address list only, no bytes), `catalog_identity.json`, `game.toml`, and `.recomp.json` (disc digests). Not decided. |
 | 76 | Should the docs and tools stop hard-coding `%USERPROFILE%\...` paths? | Committed docs and tools use this machine's absolute paths. Not changed at the T1.7 gate. |
 | 77 | Should the stale comment at `tools\disc_classify.py` line 51 be fixed? | Same issue as question 39. Not changed at the T1.7 gate. |
+
+## Upstream CLI wrapper (from T2.1)
+
+| # | Question | Notes |
+|---|----------|-------|
+| 78 | Should the wrapper check that the retro-tools folder exists? | `tools\run_psxrecomp.ps1` does not check `RETRO_TOOLS_DIR` up front. A bad value can silently reuse a stale `work\py-psxrecomp`. Reviewer note. |
+| 79 | Does the private Python copy go stale if the repo moves? | The `._pth` file in `work\py-psxrecomp` holds absolute repo paths, written once. If the repo moves, those paths are stale. Reviewer note. |
+| 80 | Is the unmodified Python enough for the `generate` subcommand? | The `generate` subcommand has not run yet. Whether option (a) in D5 works for it is untested. To be checked at T2.3. Reviewer note. |

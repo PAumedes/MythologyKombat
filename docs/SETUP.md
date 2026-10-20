@@ -540,3 +540,51 @@ The script `tools\psyq_version_scan.py` checks the EXE's library-version records
 - Its `--ghidra` default is the hard-coded Ghidra path above. It does not read `GHIDRA_HOME`.
 - It has no existence checks. It opens files without closing them. See `docs/OPEN_QUESTIONS.md`.
 - It needs `work\disc\SLUS_004.76` from T1.4.
+
+## Upstream CLI wrapper (T2.1)
+
+The script `tools\run_psxrecomp.ps1` runs the upstream `psxrecomp_cli.py`. Run it from the repo root, with `--config game.toml`:
+
+```
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\run_psxrecomp.ps1 <subcommand> ...
+```
+
+| Item | Behaviour |
+|------|-----------|
+| `RETRO_TOOLS_DIR` | Environment variable. Sets the retro-tools folder. Defaults to `<RETRO_TOOLS_DIR>` |
+| Toolchain | Sets `PSXRECOMP_TOOLCHAIN_DIR`. Puts `cmake-clang\bin` and Git's `bin` folder first on `PATH`. Git's `bin` gives bash |
+| Output | Prints which Python and which toolchain it uses |
+| Exit code | The upstream exit code is passed through |
+| Exit 4 | STOP. No Python works, so nothing ran |
+
+Python choice: see `docs/DECISIONS.md` (D5). The first option is the unmodified `<RETRO_TOOLS_DIR>\python\python.exe`, without `-I`. The fallback is a private copy at `work\py-psxrecomp`. The script makes it only when the first option fails. The variable `PSXRECOMP_FORCE_PRIVATE_PY=1` forces the fallback, for testing.
+
+### Disc re-verification
+
+Verify the disc with the wrapper:
+
+```
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\run_psxrecomp.ps1 verify-disc --config game.toml --disc "ps1_game\Mortal Kombat Mythologies - Sub-Zero.cue"
+```
+
+- A relative `--disc` path resolves against the config's folder. So run this from the repo root, with `game.toml`.
+- `verify-disc` passes if any one digest family matches. Only `tools\check_boot_exe.py` checks all of them.
+
+Check the boot EXE with the retro-tools Python:
+
+```
+<RETRO_TOOLS_DIR>\python\python.exe -I tools\check_boot_exe.py
+```
+
+- It compares the SHA-256 of `work\disc\SLUS_004.76` with `45a937ac7785af328ae90cba37924b7b7c423ef01c28c116f193e1c1c0d0f1cd`. The file is 821248 bytes.
+- It also compares the size, and the known MD5, SHA-1 and CRC-32 values in `game.toml`, with `disc_probe.json`.
+- `disc_probe.json` is git-ignored and holds paths for this machine. If it is absent, the check is skipped.
+
+Results on this machine:
+
+| Check | Exit code | Output or reason |
+|-------|-----------|------------------|
+| `verify-disc` on the real disc | 0 | `Main track accepted; subchannel status: unknown` |
+| `verify-disc` with zeroed digests (negative test) | 3 | `disc digests not in prepare_disc.known_*` |
+
+- `ps1_game\` was checked before and after. The file sizes and modified times did not change.

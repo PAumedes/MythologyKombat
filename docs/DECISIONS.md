@@ -36,3 +36,16 @@ _Filled in by the doc-writer as tasks pass review._
 - Reason: the PS1 loader gives an entry point and text range that match T1.4. REA cannot read the EXE.
 - Revisit if REA adds MIPS, or if a community Ghidra MCP server (ReVa or GhidraMCP) is wanted. Neither was researched.
 - Details are in `docs/SETUP.md` (T1.5). Open items are in `docs/OPEN_QUESTIONS.md` (59 to 61).
+
+## D5 Python for the upstream CLI (T2.1)
+
+- Context: the upstream `psxrecomp_cli.py` must run. The embeddable Python from T0.3 ignores `PYTHONPATH` and reads its `._pth` file instead. The T0.6 workaround used a private Python copy.
+- Decision: run `psxrecomp_cli.py` with the unmodified embeddable Python at `<RETRO_TOOLS_DIR>\python\python.exe`. Do not pass `-I`. The CLI puts `psxrecomp\tools` on `sys.path` itself (`psxrecomp_cli.py` line 34, and again near line 2241). So the `._pth` limit does not matter. No full Python install is needed.
+- Fallback, used only if the first option fails: a private copy at `work\py-psxrecomp`. The script `tools\run_psxrecomp.ps1` creates it. Its `python312._pth` gets `psxrecomp\tools`, `psxrecomp\tools\new_project_layout` and `psxrecomp`, plus `import site`. It was tested, and it also passes `verify-disc`. The test hook is the environment variable `PSXRECOMP_FORCE_PRIVATE_PY=1`.
+- The retro-tools install is never modified.
+- Our own tools keep using `python -I`.
+- The TASKS.md text named `work\py-scaffold`. The fallback that was built is `work\py-psxrecomp`.
+- Not chosen, and why:
+  - A full Python install. It is not needed, as stated above.
+- Open items are in `docs/OPEN_QUESTIONS.md` (78 to 80). Question 26 is resolved by this decision.
+- Details are in `docs/SETUP.md` (T2.1).
