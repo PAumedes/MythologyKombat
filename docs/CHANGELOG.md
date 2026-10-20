@@ -25,6 +25,7 @@
 - T2.12 Static overlay facts: `tools\overlay_facts.py` writes `work\overlay_facts.json`; all ten loader ids 134 to 143 agree with the disc; the window base 0x80130FF8 has two static checks for FORTRESS and PRISON (strong consistency, runtime pending in T2.13); corrects the variable-id count (3, not 2) and the FORTRESS jal note; details in `docs/EXE_OVERLAYS.md`, steps in `docs/SETUP.md`, open items 130 to 139 in `docs/OPEN_QUESTIONS.md`.
 - T2.21 Seed symbols.toml from the SDK names: `tools\seed_symbols.py` seeds 438 entries from `work\symbols_sdk.json` (8 marked confirmed), keeps the hand-owned BootEntry, and `tools\sync_symbols.py` regenerates `psx_symbols.h`; generated C unchanged (61 of 61 SHA-256 match); steps in `docs/SETUP.md`, decision D8 in `docs/DECISIONS.md` (Q75 answered yes), open items 140 to 147 in `docs/OPEN_QUESTIONS.md`.
 - T2.10/T2.11 Playtest 2 (FMV and gameplay, partial): user-reported, not agent-verified; movies at about 50 fps, gameplay at 60 fps, main menu, new game and a fight reached with no crash; keys in new `docs/CONTROLS.md`; details in `docs/SETUP.md`, questions 116 to 127 updated and 148 to 161 added in `docs/OPEN_QUESTIONS.md`.
+- T2.10 FMV speed measurement: hidden-window Release runs show the FMV at about 50 Hz with vsync on and 60.0 Hz with vsync off (0 underruns); decision D9 makes the fix a vsync setting, pending the user's visible-window test; details in `docs/SETUP.md`, questions 116 to 161 updated where answered and 162 to 170 added in `docs/OPEN_QUESTIONS.md`.
 
 ## Post-Phase-1 notes
 

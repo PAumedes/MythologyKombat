@@ -1042,6 +1042,126 @@ Candidate engineering fixes, not decided:
 
 See `docs/OPEN_QUESTIONS.md`, questions 116 to 127 and 148 to 161.
 
+## FMV speed measurement (Release, hidden window)
+
+This is an agent measurement under T2.10. It is not a user test. The runs used a hidden window, not the window the user plays in. The reviewer re-parsed the logs and gave a PASS. The user's visible-window test is still to do.
+
+### System
+
+| Item | Value |
+|------|-------|
+| CPU | Intel Core i5-7300HQ, 4 cores, 4 threads, 2.5 GHz |
+| Machine | MSI laptop, model MS-16JD |
+| Power | AC power. Windows "Balanced" power plan |
+| GPU | Intel HD Graphics 630, driver 22.20.16.4708 (old). NVIDIA MX150 is also present |
+| GL context | Created on the Intel HD 630 |
+| Panel | 1920 x 1080 at 60 Hz |
+| Audio | Realtek HD Audio. The default device sample rate was not captured |
+
+### Method
+
+- Exe: `build\MythologyKombat.exe`, Release. SHA-256 `66fdb5be60c2b023465cadeb1b6a79f889f2d8553f1709ca1535224590052af5`.
+- Script: `tools\perf_run.ps1 -Name X [-Seconds 105] [-ExtraArgs ...] [-Env @{...}]`.
+- The script starts the exe in `build\` with `--hidden-window --no-launcher --disc <cue> --game game.toml --memcard-dir work\perf_saves`.
+- Every run sets `PSX_RUNTIME_PERF_DIAG=1`, `PSX_RUNTIME_PERF_DIAG_MS=1000` and `PSX_FPS_TELEMETRY=1`. Extra settings are in the run table.
+- Logs go to `work\perf\run_X.log`, `work\perf\run_X.err.log` and `work\perf\run_X.meta.txt`. The meta file holds the exact arguments, the environment and the PID.
+- The script kills only its own PID. It restores its environment variables in a `try/finally`.
+- An earlier version of the script leaked `PSX_VSYNC=0` from run D into a later run E. Those results were discarded and the run was repeated.
+- Summary: `tools\perf_summarize.py <names> [--series]`. It merges the runs. The FMV window is found from the data. It is the first 3 consecutive samples with guest work at or above 500 ms per second.
+
+### Runs
+
+| Run | Extra setting | Note |
+|-----|---------------|------|
+| A | None (cold default) | 100 s. Ends before the FMV |
+| B | None (warm) | 100 s. Ends before the FMV |
+| C | `--renderer software` | |
+| D | `PSX_VSYNC=0` | |
+| E | `PSXRECOMP_AUDIO_LEGACY=1` | 100 s. Ends before the FMV |
+| F | `PSX_LOAD_DELAY=0` | |
+| G | None, same as A | 260 s |
+
+### Timeline of a run
+
+- A boot burst comes first.
+- Samples 2 to 11 are the boot, the Midway logo and the menu. The guest runs at about 60 Hz.
+- The FMV phase starts at about sample 12. It is about 4690 guest frames, or about 78 s of guest time at 60 Hz.
+- The FMV phase takes 92 s of wall time with vsync on, and 78 s with vsync off.
+- After the FMV the guest is back at about 60 Hz.
+
+### Results in the FMV phase
+
+| Run | Setting | Guest Hz (min / median / max) | Underruns per s (median) | Other |
+|-----|---------|-------------------------------|--------------------------|-------|
+| A | Default | 47.2 / 50.9 / 54.9 | 6575 | Guest work about 652 ms/s. Pacer about 3 |
+| B | Warm | 46.8 / 50.4 / 54.2 | about 6868 | |
+| C | Software renderer | about 50.3 | not recorded | |
+| D | `PSX_VSYNC=0` | 58.8 / 60.0 / 61.0 | 0 | Audio fill about 178 ms. Guest work about 775 ms/s. Pacer about 180 ms/s |
+| E | Legacy audio | about 50.8 | about 25 | Audio fill 0 to 13 ms |
+| F | `PSX_LOAD_DELAY=0` | about 40.0 | about 14,700 | Worse than the default. Do not use. The upstream claim that it helps is not borne out. Cause not known |
+
+### Overlay counters
+
+- In the FMV phase the native overlay count is 0.
+- The interpreted overlay count is about 1100 dispatches a second, about 9k instructions a second.
+- So the FMV decode runs in the exe's AOT code, not in interpreted overlays.
+- Staging the overlay toolchain would not fix the FMV rate.
+
+### Other observations
+
+- Midway logo dip: the guest runs at about 50 to 54 Hz at samples 4 and 5 in every vsync-on run. Run B once fell to 18.7 Hz with 26,912 underruns. The dip lines up with overlay captures (+48 to +66) and GL uploads. It is absent with `PSX_VSYNC=0`.
+- Run G at about sample 209: the guest fell to 23.6 Hz with 25,317 underruns. This is outside the FMV. Not explained.
+- The log header shows the present mode:
+  - Vsync-on runs print `present cadence: driver vsync (60.0 Hz panel; wall-clock cap 16.6639 ms/frame)`.
+  - Run D prints `present cadence: wall-clock pacer (16.6639 ms/frame)`.
+
+### Reading (supported, not proven for the visible window)
+
+- With vsync on, the guest holds 60 Hz in light phases.
+- In the FMV, a frame costs about 13 ms against a 16.66 ms budget. That leaves about 22% headroom.
+- Some long frames miss a vblank and wait a full refresh. The average falls to about 50 Hz.
+- Audio underruns follow from this. SPU and XA are produced on guest time. 37 kHz audio goes to a 44.1 kHz device. The underruns are a result, not the cause.
+- The renderer, a cold cache and the audio bridge are not the cause.
+- Per-frame guest cost is about 13 ms in both modes. That is about 650 ms/s work at 50 Hz, and about 775 ms/s at 60 Hz.
+
+### Vsync settings in the code
+
+- `psxrecomp\runtime\src\main.cpp`, near line 18612, reads `PSX_VSYNC` as an integer:
+  - 1: vsync on. This is the default.
+  - 0: immediate. The wall-clock pacer still runs, so tearing is possible. It is not uncapped.
+  - -1: adaptive.
+  - 2: VRR. The swap interval is 0. "Smooth motion" targets the panel maximum.
+- The saved setting is `[video] vsync = "on"`, `"off"`, `"immediate"`, `"adaptive"` or `"vrr"` in `game.toml`. The code is in `psxrecomp\recompiler\src\config_loader.cpp`, lines 981 to 991. It is the per-game default.
+- The player's `settings.toml` overrides `game.toml` (`main.cpp`, about line 18522). The launcher writes it. Where it is kept is not verified.
+- The environment variable is for one run only (`main.cpp`, lines 1565 to 1568).
+- `PSX_PRESENT_THREAD=1` and `PSX_RENDER_THREAD=1` are not tested.
+
+### Caveats
+
+- All runs used a hidden window. The user's visible windowed run (48 to 54 fps) is similar in size.
+- These runs cannot separate the hidden-window effect from the vsync swap.
+- The visible-window vsync-off run is pending.
+- The movie file is not identified. The Release build prints no LBAs. The earlier guess of 7100 sectors and `FMV3B.STR` is withdrawn.
+- To identify it, the debug build needs `fmv_state` or `cdrom_sector_history`.
+
+### Next steps
+
+1. The user runs a visible-window test with vsync off. In PowerShell:
+
+```
+cd build
+$env:PSX_VSYNC = '0'
+.\MythologyKombat.exe --disc "<cue>" --game game.toml --no-launcher
+```
+
+   The user reports the fps, the audio and any tearing.
+2. Then try `PSX_VSYNC=-1` (adaptive).
+3. If vsync off is acceptable, set `[video] vsync = "off"` (or adaptive) in `game.toml`. Do this only with the user's agreement.
+4. Later: PGO or LTO. Headroom is thin. Updating the Intel driver, or forcing the MX150, is untested.
+5. Staging the overlay toolchain is low priority. It affects only the Midway logo dip and overlay interpretation.
+
+Do not call the fix confirmed until the visible-window vsync-off run shows 60 Hz. See `docs/DECISIONS.md` (D9) and `docs/OPEN_QUESTIONS.md`.
+
 ## LBA-to-file lookup (T2.9)
 
 The script `tools\lba_lookup.py` shows which disc file holds a given sector. Run it from the repo root:

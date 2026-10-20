@@ -85,3 +85,15 @@ _Filled in by the doc-writer as tasks pass review._
 - Replay recordings are a separate question. See `docs/TASKS.md`, open question 3.
 - Reason: the user's answer. Run `git status` before every commit, as `CLAUDE.md` requires.
 - Details are in `docs/SETUP.md` (T2.21). Open items are in `docs/OPEN_QUESTIONS.md` (140 to 147).
+
+## D9 FMV pacing fix is a vsync setting, not a code change (T2.10)
+
+- Status: pending. The user's visible-window test has not been run.
+- Context: hidden-window Release runs show the FMV at about 50 Hz with vsync on, and 60.0 Hz with vsync off. Per-frame guest cost is about 13 ms. Details are in `docs/SETUP.md` ("FMV speed measurement (Release, hidden window)").
+- Decision: treat the FMV pacing problem as a vsync setting. Do not change game code for it yet. The test is `PSX_VSYNC=0` in one visible-window run. If the user agrees, the setting becomes `[video] vsync = "off"` in `game.toml`.
+- Not chosen, and why:
+  - Changing the FMV decode or the overlay path. The FMV decode runs in the exe's AOT code, not in interpreted overlays. Staging the overlay toolchain would not fix the FMV rate.
+  - A PGO or LTO build first. Headroom is thin, and the build was not tested.
+  - Treating `PSX_VSYNC=0` as uncapped. The wall-clock pacer still runs.
+- Reason: with vsync off, the FMV phase median is 60.0 Hz, with 0 underruns. This was measured in a hidden window only.
+- Not confirmed. Do not call it a fix until the visible-window vsync-off run shows 60 Hz. Open items are in `docs/OPEN_QUESTIONS.md` (116, 155 and 162 to 170).
