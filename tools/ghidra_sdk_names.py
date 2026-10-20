@@ -13,8 +13,12 @@ Scratch: work/ghidra-sdk/ (Ghidra project; rebuilt from scratch unless --reuse)
 Usage:
   python -I tools/ghidra_sdk_names.py [--root PATH] [--ghidra DIR] [--jdk DIR]
                                       [--exe PATH] [--out PATH] [--reuse]
+                                      [--all-funcs]
 --reuse re-opens the existing project with -process -noanalysis (fast, ~20 s)
 instead of a full import and analysis (~3 min).
+--all-funcs (T2.2) instead dumps every function entry point (named or not) to
+work/ghidra_funcs_all.txt via ExportAllFunctions.java; requires the existing
+project (implies --reuse) and does not touch symbols_sdk.json.
 Stdlib only.
 """
 import argparse
@@ -37,6 +41,7 @@ def main():
     ap.add_argument("--exe", default=None)
     ap.add_argument("--out", default=None)
     ap.add_argument("--reuse", action="store_true")
+    ap.add_argument("--all-funcs", action="store_true")
     a = ap.parse_args()
 
     root = os.path.abspath(a.root)
@@ -54,6 +59,20 @@ def main():
     env["JAVA_HOME"] = a.jdk
     env["PATH"] = os.path.join(a.jdk, "bin") + os.pathsep + env.get("PATH", "")
 
+    if a.all_funcs:
+        if not os.path.exists(os.path.join(projdir, PROJ_NAME + ".gpr")):
+            sys.exit("--all-funcs needs the existing project; run without it first")
+        outp = os.path.abspath(a.out or os.path.join(root, "work", "ghidra_funcs_all.txt"))
+        cmd = [headless, projdir, PROJ_NAME, "-process", "SLUS_004.76", "-noanalysis",
+               "-scriptPath", scripts, "-postScript", "ExportAllFunctions.java", outp]
+        if os.path.exists(outp):
+            os.remove(outp)
+        with open(os.path.join(root, "work", "ghidra_all_funcs.log"), "wb") as log:
+            rc = subprocess.call(cmd, env=env, stdout=log, stderr=subprocess.STDOUT)
+        if rc != 0 or not os.path.exists(outp):
+            sys.exit("analyzeHeadless failed (rc=%s); see work/ghidra_all_funcs.log" % rc)
+        print("wrote", os.path.relpath(outp, root))
+        return
     if a.reuse and os.path.exists(os.path.join(projdir, PROJ_NAME + ".gpr")):
         step = ["-process", "SLUS_004.76", "-noanalysis"]
     else:

@@ -588,3 +588,31 @@ Results on this machine:
 | `verify-disc` with zeroed digests (negative test) | 3 | `disc digests not in prepare_disc.known_*` |
 
 - `ps1_game\` was checked before and after. The file sizes and modified times did not change.
+
+## Seed sanity and static coverage (T2.2)
+
+Two commands check the seed list and count what the analyzer covers. The counts are in `docs/COVERAGE.md`. Run both from the repo root.
+
+### Seed check
+
+```
+<RETRO_TOOLS_DIR>\python\python.exe -I tools\check_seeds.py [--no-run]
+```
+
+- It runs `psxrecomp-analyze` itself. It sets `PATH` before it runs.
+- It writes `work\seed_report.json` and the files in `work\analysis\`. Both are git-ignored.
+- It exits with code 1 if a seed is invalid or duplicated.
+- The seed file path is fixed in the script. There is no `--seeds` option.
+- The usage line lists `--no-run`. See `docs/OPEN_QUESTIONS.md`, question 88.
+
+### Ghidra function export
+
+```
+<RETRO_TOOLS_DIR>\python\python.exe -I tools\ghidra_sdk_names.py --all-funcs
+```
+
+- It reuses the Ghidra project under `work\ghidra-sdk\`.
+- It runs `tools\ghidra_scripts\ExportAllFunctions.java`.
+- It writes `work\ghidra_funcs_all.txt`. The file has 1730 entries: 1552 CODE, 153 GTEMAC and 25 RAM.
+- It leaves `work\symbols_sdk.json` untouched.
+- It saves the Ghidra project again. See `docs/OPEN_QUESTIONS.md`, question 89.

@@ -144,3 +144,18 @@
 | 78 | Should the wrapper check that the retro-tools folder exists? | `tools\run_psxrecomp.ps1` does not check `RETRO_TOOLS_DIR` up front. A bad value can silently reuse a stale `work\py-psxrecomp`. Reviewer note. |
 | 79 | Does the private Python copy go stale if the repo moves? | The `._pth` file in `work\py-psxrecomp` holds absolute repo paths, written once. If the repo moves, those paths are stale. Reviewer note. |
 | 80 | Is the unmodified Python enough for the `generate` subcommand? | The `generate` subcommand has not run yet. Whether option (a) in D5 works for it is untested. To be checked at T2.3. Reviewer note. |
+
+## Seeds and static coverage (from T2.2)
+
+| # | Question | Notes |
+|---|----------|-------|
+| 81 | Are the 106 seeds that are not Ghidra function starts real functions? | They are analyzer function starts. Most are low or medium class. Addresses are in `work\seed_report.json` under `seed_classification.anomalies`. Needs review. See `docs/COVERAGE.md`. |
+| 82 | Are the 325 Ghidra-only entries labels, not function boundaries? | All 325 carry PsyQ-style or OBJ label names. They are probably labels. Not confirmed. |
+| 83 | What are the 2 Ghidra symbols that lie in no analyzer function? | `cb_data` at `0x8009761C` and `_spu_2pitch` at `0x800A8D18`. Possibly data. Not checked. |
+| 84 | How many of the 1093 analyzer-only starts are real functions? | Most are orphans or low and medium prologue scans. The real count is unknown. |
+| 85 | What are the 133 unresolved indirect transfers (129 `jalr`, 4 `jr`)? | This is the dispatch-miss worklist for T2.8. Not resolved. |
+| 86 | What is the 25.4% of the image outside any code function? | Possibly data or overlay tables. Unverified. |
+| 87 | Does the invalid-seed exit code of `tools\check_seeds.py` work? | The script has no `--seeds` option, so the seed path cannot be changed. The exit 1 path for invalid seeds is untested. |
+| 88 | What does `tools\check_seeds.py --no-run` skip? | The usage line lists the flag. The effect is not described in the T2.2 report. Not checked. |
+| 89 | Should `--all-funcs` stop re-saving the Ghidra project? | It re-saves the project under `work\ghidra-sdk\`. Not decided. |
+| 90 | What do the 29 `lui` plus `addiu` or `ori` sites that point into the overlay window do? | They use 23 distinct constants. The reviewer found them by hand. Informational. Not checked. |

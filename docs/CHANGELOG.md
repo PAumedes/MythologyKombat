@@ -15,6 +15,7 @@
 - T1.5 Ghidra + PS1 loader + REA setup: Ghidra 12.1.4 headless (`analyzeHeadless`) opens the boot EXE with the PS1 loader (CODE 0x80010000, 1730 functions; the Ghidra GUI has not been opened) and matches the T1.4 entry, text, BSS and heap values; REA 6.7.0 fails on the EXE (unsupported binary format, no MIPS), so it is not registered (D4); setup and steps in `docs/SETUP.md`, open items 59 to 67 in `docs/OPEN_QUESTIONS.md`.
 - T1.6 Identify PsyQ SDK functions: `tools\ghidra_sdk_names.py` writes `work\symbols_sdk.json` with 443 SDK-named functions and 335 unresolved placeholders; PsyQ 4.0 signature set is a best fit, not an exact SDK identity; summary in `docs/SYMBOLS.md`, steps in `docs/SETUP.md`, open items 55 and 64 to 72 in `docs/OPEN_QUESTIONS.md`.
 - Phase 2 plan added to TASKS.md
+- T2.2 Seed sanity and static coverage: `tools\check_seeds.py` checks the 1175 seeds and runs `psxrecomp-analyze`; `tools\ghidra_sdk_names.py --all-funcs` exports 1730 Ghidra functions to `work\ghidra_funcs_all.txt`; counts in `docs/COVERAGE.md`, steps in `docs/SETUP.md`, open items 81 to 90 in `docs/OPEN_QUESTIONS.md`.
 - T2.1 CLI wrapper and disc re-verification: `tools\run_psxrecomp.ps1` runs the upstream `psxrecomp_cli.py` with the unmodified retro-tools Python (private fallback `work\py-psxrecomp`, D5); `verify-disc` exits 0 on the disc and 3 on zeroed digests; `tools\check_boot_exe.py` checks the boot EXE digests; `ps1_game\` unchanged; steps in `docs/SETUP.md`.
 
 ## Post-Phase-1 notes
