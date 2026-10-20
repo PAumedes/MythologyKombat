@@ -1505,3 +1505,115 @@ Run it from the repo root:
 
 - Open items are in `docs/OPEN_QUESTIONS.md`, questions 178 to 183.
 - `git status` shows `psxrecomp` as modified. This is the known CRLF noise (question 13). It is not from T2.13.
+
+## AOT overlay profile (T2.15)
+
+The file `aot\overlays.json` is the profile for the AOT static route (`docs/DECISIONS.md`, D11). It holds addresses, sizes, hashes and reason strings only. It has 258 lines and no absolute paths. It may be committed (D8). It is not a build. Nothing is linked from it yet (T2.16).
+
+The schema is set by the upstream `psxrecomp\tools\aot_overlay_pipeline.py`. It differs from the T2.15 text in `docs/TASKS.md`. The choices are in `docs/DECISIONS.md` (D12).
+
+### Regenerate the profile
+
+Run from the repo root:
+
+```
+<RETRO_TOOLS_DIR>\python\python.exe -I tools\make_overlay_profile.py
+```
+
+- It reads `work\overlay_facts.json`, the disc and the boot EXE.
+- It asserts every hash against the disc.
+- It has no `--out` option. It writes straight to `aot\overlays.json`.
+- Two runs give byte-identical output.
+
+### Check the profile
+
+Run the upstream `extract` step from the repo root. Do not pass `--stage`.
+
+```
+$env:PYTHONUTF8 = '1'
+work\py-psxrecomp\python.exe psxrecomp\tools\aot_overlay_pipeline.py extract --profile aot\overlays.json --game-toml game.toml --disc "ps1_game\Mortal Kombat Mythologies - Sub-Zero.cue" --recompiler psxrecomp\recompiler\build\psxrecomp-game.exe --work-dir work\aot_extract\run1
+```
+
+- Use the private Python copy at `work\py-psxrecomp` (D5), without `-I`. The retro-tools `python.exe` fails on this tool with `No module named compile_overlays`.
+- The run takes about 7 s. Output is written under `work\aot_extract\`.
+
+### Profile contents
+
+| Item | Value |
+|------|-------|
+| Schema | `psxrecomp AOT methods v1` |
+| `game_id` | `SLUS-00476`. Same as `[game].id` in `game.toml` |
+| `disc_hashes` | MD5 `8a75edba7855618f8f61338daef1be1d`, SHA-1 `bf5803d35aa7f55dc60bebbac645fc0d4e99c978` |
+| `generic_exclude_files` | `OVERLAYS/BRDGDEMO.BIN`, `OVERLAYS/WINDDEMO.BIN` |
+| Images | 8 |
+| `expected_records` | 8 |
+| `strict_bounds` | `true` |
+| `static_output` | `generated/overlays_static.c` |
+
+- Disc names have no leading slash, for example `OVERLAYS/BRIDGE.OVR`.
+- The pipeline uses only `hashlib` algorithms. So CRC-32 and `known_sizes` are not used.
+
+### Images and entries
+
+Sizes and hashes equal the disc and `work\overlay_facts.json`.
+
+| File | Size (bytes) | Loader entries (verified `jal` targets) | Excluded range (absolute) |
+|------|--------------|------------------------------------------|---------------------------|
+| `BRIDGE.OVR` | 23,164 | `0x801310C0` | `0x80130FF8` to `0x80131078` (32 words) |
+| `EARTH.OVR` | 37,516 | `0x80133EF0`, `0x801342C4` | none |
+| `FIRE.OVR` | 20,800 | `0x80131064` | `0x80130FF8` to `0x80131064` (27 words) |
+| `FORTRESS.OVR` | 19,874 | `0x80133274`, `0x80133380`, `0x801333FC` | none |
+| `PRISON.OVR` | 23,256 | `0x801316A4`, `0x80131DC0` | none |
+| `TEMPLE.OVR` | 19,100 | `0x80130FF8`, `0x80132854` | none |
+| `WATER.OVR` | 28,052 | `0x80131144`, `0x801313D8` | `0x80130FF8` to `0x80131144` (83 words) |
+| `WIND.OVR` | 46,888 | `0x80131190` | `0x80130FF8` to `0x80131190` (102 words) |
+
+- The entries are the `jal` targets of the level functions that the static check found (`docs/EXE_OVERLAYS.md`, T2.12). Whether each is a real function start is for the T2.16 audit.
+- `FIRE`, `WATER` and `WIND` each hold one zero word in their table. So not every word in those excluded ranges is an address. `BRIDGE`'s words are all addresses.
+- `FIRE` and `WIND` entries land on a `lui`, not on a stack prologue.
+- The fixed extents use the file name, offset 0, base 0, address 0, the file size, the SHA-256 and `load_addr` `0x80130FF8`. `allow_missing` is `true`.
+
+### Checks in the profile
+
+| Check | Where |
+|-------|-------|
+| Pointer word | EXE `0x80015134` must equal `0x80130FF8` |
+| CdlLOC words, ids 134 to 143 | `0x80013140` to `0x80013164` |
+| Size-table words | `0x8001347C` to `0x800134A0` |
+| Adjacent files | `BRDGDEMO.BIN` then `BRIDGE.OVR` |
+
+### Negative tests
+
+Each change was made to a copy under `work\aot_neg\` or `work\review\`. The profile was not changed.
+
+| Change | Exit | Message or result |
+|--------|------|-------------------|
+| `expected_records` 9 | 1 | `Expected 9 recipes, got 8` |
+| `expected_records` 7 | 1 | Fails |
+| One image removed | 1 | `Expected 8 recipes, got 7` |
+| One image removed and `expected_records` 7 | 0 | Passes |
+| Ninth image added | 1 | `Duplicate configured source` |
+| Corrupt extent SHA-256 | 1 | `Extent bytes changed` |
+| Corrupt disc MD5 | 3 | `not applicable` |
+| Corrupt excluded-range SHA-256 | 1 | Fails |
+| Wrong pointer word | 1 | Fails |
+| Wrong CdlLOC word | 1 | Fails |
+| `strict_bounds` false, with excluded ranges | 1 | Fails |
+| Adjacent files `BRIDGE` to `EARTH` | 1 | Fails |
+| Entry placed inside an excluded table | 1 | `Excluded required loader entry` |
+| Entries removed | 0 | Allowed by design |
+| `EARTH` `load_addr` changed to `0x80131000` | 0 | Passes. Nothing ties `load_addr` to the pointer word (question 184) |
+
+- Two extract runs gave 8 `runtime-inputs\*.json` files that are byte-identical.
+- The inventory shows `recipe_count` 8, 8 required images, and `full_static_coverage_proven` false.
+- The profile SHA-256 starts `06bf55548f8fd343`. The original disc SHA-256 starts `71d0e9785d7326e1`.
+
+### Limits
+
+- The schema cannot express this game's loader tables. The `bcd_extent_table` check reads 8-byte entries. This game has a 4-byte location table at `0x80012F28` and a separate size table at `0x80013264`. So the words checks replace it. Their agreement with the ISO extents is shown by `tools\overlay_facts.py`, not by the pipeline (question 185).
+- `adjacent_files` needs non-last sizes to be multiples of 2048. The `.OVR` sizes are not. So only `BRDGDEMO` to `BRIDGE` can be checked (question 186).
+- `load_addr` is pinned only by the pointer-word check, and by the entries and excluded ranges (question 184).
+- Only TEMPLE is runtime-proven (T2.13). The other seven are pending T2.17 (question 178).
+- Entry validity waits for the T2.16 audit (question 187).
+- The `--cps` value must match the runtime build. It was not checked (question 188).
+- The 16-byte overwrite at `0x80130FFC` is unchanged by this profile (question 180).

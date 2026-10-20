@@ -1,0 +1,258 @@
+{
+  "schema": "psxrecomp AOT methods v1",
+  "game_id": "SLUS-00476",
+  "disc_hashes": {
+    "md5": "8a75edba7855618f8f61338daef1be1d",
+    "sha1": "bf5803d35aa7f55dc60bebbac645fc0d4e99c978"
+  },
+  "generic_exclude_files": [
+    {
+      "files": [
+        "OVERLAYS/BRDGDEMO.BIN",
+        "OVERLAYS/WINDDEMO.BIN"
+      ],
+      "reason": "Data files (2048 bytes each, ids 134 and 143), not code; the profile owns the eight .OVR images (docs/EXE_OVERLAYS.md)."
+    }
+  ],
+  "checks": [
+    {
+      "method": "words",
+      "file": "SLUS_004.76",
+      "file_offset": "0x800",
+      "base": "0x80010000",
+      "values": {
+        "0x80015134": "0x80130FF8"
+      }
+    },
+    {
+      "method": "words",
+      "file": "SLUS_004.76",
+      "file_offset": "0x800",
+      "base": "0x80010000",
+      "values": {
+        "0x80013140": "0x00254546",
+        "0x80013144": "0x00264546",
+        "0x80013148": "0x00384546",
+        "0x8001314C": "0x00574546",
+        "0x80013150": "0x00684546",
+        "0x80013154": "0x00034646",
+        "0x80013158": "0x00154646",
+        "0x8001315C": "0x00254646",
+        "0x80013160": "0x00394646",
+        "0x80013164": "0x00624646"
+      }
+    },
+    {
+      "method": "words",
+      "file": "SLUS_004.76",
+      "file_offset": "0x800",
+      "base": "0x80010000",
+      "values": {
+        "0x8001347C": "0x00000800",
+        "0x80013480": "0x00005A7C",
+        "0x80013484": "0x0000928C",
+        "0x80013488": "0x00005140",
+        "0x8001348C": "0x00004DA2",
+        "0x80013490": "0x00005AD8",
+        "0x80013494": "0x00004A9C",
+        "0x80013498": "0x00006D94",
+        "0x8001349C": "0x0000B728",
+        "0x800134A0": "0x00000800"
+      }
+    },
+    {
+      "method": "adjacent_files",
+      "files": [
+        "OVERLAYS/BRDGDEMO.BIN",
+        "OVERLAYS/BRIDGE.OVR"
+      ]
+    }
+  ],
+  "images": [
+    {
+      "method": "fixed_address_extents",
+      "allow_missing": true,
+      "extents": [
+        {
+          "file": "OVERLAYS/BRIDGE.OVR",
+          "file_offset": "0x0",
+          "base": "0x0",
+          "address": "0x0",
+          "size": 23164,
+          "sha256": "c23488d03a45d87956f8fcc3b918b3d862be5b6d568969a74ce3e55a204fe2b3",
+          "load_addr": "0x80130FF8",
+          "excluded_ranges": [
+            {
+              "start": "0x80130FF8",
+              "end": "0x80131078",
+              "sha256": "395034c8c0ba730e5556f638a528d473a3a402c3f26b00cb67df1395e5649cd2",
+              "reason": "Leading 32-word address table: data words (RAM addresses 0x8013xxxx), not code. tools/overlay_facts.py (T2.12)."
+            }
+          ],
+          "entries": [
+            "0x801310C0"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "fixed_address_extents",
+      "allow_missing": true,
+      "extents": [
+        {
+          "file": "OVERLAYS/EARTH.OVR",
+          "file_offset": "0x0",
+          "base": "0x0",
+          "address": "0x0",
+          "size": 37516,
+          "sha256": "c612daa9585cc471be8bbbfb4b25e8cfc33c641636ce7c2677448b38480a7c21",
+          "load_addr": "0x80130FF8",
+          "entries": [
+            "0x80133EF0",
+            "0x801342C4"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "fixed_address_extents",
+      "allow_missing": true,
+      "extents": [
+        {
+          "file": "OVERLAYS/FIRE.OVR",
+          "file_offset": "0x0",
+          "base": "0x0",
+          "address": "0x0",
+          "size": 20800,
+          "sha256": "97542431c98528e4c36398dbca926c0d52a4dc4057f9c8767ced8f37f9ecf1ee",
+          "load_addr": "0x80130FF8",
+          "excluded_ranges": [
+            {
+              "start": "0x80130FF8",
+              "end": "0x80131064",
+              "sha256": "f33c439b1a9bb48bda67e4da5eda528efc604afcb422a5ebb2a106ecb5b84cdf",
+              "reason": "Leading 27-word address table: data words (RAM addresses 0x8013xxxx), not code. tools/overlay_facts.py (T2.12)."
+            }
+          ],
+          "entries": [
+            "0x80131064"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "fixed_address_extents",
+      "allow_missing": true,
+      "extents": [
+        {
+          "file": "OVERLAYS/FORTRESS.OVR",
+          "file_offset": "0x0",
+          "base": "0x0",
+          "address": "0x0",
+          "size": 19874,
+          "sha256": "358c301b724ac342e4c8e580b82e25a3878ac9ecf50f86f8a1eff8db7aebc121",
+          "load_addr": "0x80130FF8",
+          "entries": [
+            "0x80133274",
+            "0x80133380",
+            "0x801333FC"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "fixed_address_extents",
+      "allow_missing": true,
+      "extents": [
+        {
+          "file": "OVERLAYS/PRISON.OVR",
+          "file_offset": "0x0",
+          "base": "0x0",
+          "address": "0x0",
+          "size": 23256,
+          "sha256": "2270420ecfa226ec9ad0f1aee3c412970039e5975d04f078827f629d24b04d41",
+          "load_addr": "0x80130FF8",
+          "entries": [
+            "0x801316A4",
+            "0x80131DC0"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "fixed_address_extents",
+      "allow_missing": true,
+      "extents": [
+        {
+          "file": "OVERLAYS/TEMPLE.OVR",
+          "file_offset": "0x0",
+          "base": "0x0",
+          "address": "0x0",
+          "size": 19100,
+          "sha256": "291c16ccc2afa65e504a7603e4624f2d9bf5e71720ab5782cb9d1d6898e3a6eb",
+          "load_addr": "0x80130FF8",
+          "entries": [
+            "0x80130FF8",
+            "0x80132854"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "fixed_address_extents",
+      "allow_missing": true,
+      "extents": [
+        {
+          "file": "OVERLAYS/WATER.OVR",
+          "file_offset": "0x0",
+          "base": "0x0",
+          "address": "0x0",
+          "size": 28052,
+          "sha256": "7b076e6a7649f81510c76f92a84f445fb47dddd1ae832eaa18f5f373d8628e76",
+          "load_addr": "0x80130FF8",
+          "excluded_ranges": [
+            {
+              "start": "0x80130FF8",
+              "end": "0x80131144",
+              "sha256": "8b78a8bf50baaa6e488adae956c95221798346ae7ff277c4ce4c3270100fcea5",
+              "reason": "Leading 83-word address table: data words (RAM addresses 0x8013xxxx), not code. tools/overlay_facts.py (T2.12)."
+            }
+          ],
+          "entries": [
+            "0x80131144",
+            "0x801313D8"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "fixed_address_extents",
+      "allow_missing": true,
+      "extents": [
+        {
+          "file": "OVERLAYS/WIND.OVR",
+          "file_offset": "0x0",
+          "base": "0x0",
+          "address": "0x0",
+          "size": 46888,
+          "sha256": "530cd442a219cd441651c402f43df63f1e1a7591869844df44b239ea8dec9d7c",
+          "load_addr": "0x80130FF8",
+          "excluded_ranges": [
+            {
+              "start": "0x80130FF8",
+              "end": "0x80131190",
+              "sha256": "8a52132a6fda5c160f92e6c0ae6fc945e2a4975a10bad97abdb969b0f4da2507",
+              "reason": "Leading 102-word address table: data words (RAM addresses 0x8013xxxx), not code. tools/overlay_facts.py (T2.12)."
+            }
+          ],
+          "entries": [
+            "0x80131190"
+          ]
+        }
+      ]
+    }
+  ],
+  "expected_records": 8,
+  "strict_bounds": true,
+  "static_output": "generated/overlays_static.c"
+}

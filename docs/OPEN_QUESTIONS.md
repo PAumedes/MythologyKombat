@@ -314,3 +314,16 @@ See `docs/EXE_OVERLAYS.md` ("Runtime proof (T2.13)"), `docs/SETUP.md` ("Runtime 
 | 181 | What do the read_file ids 85 (`0x55`) and 144 (`0x90`) load, and do they copy into the window? | Earlier runs, not the committed tool, saw these reads at about frames 4002 and 4007. They used the same buffer `0x8013100C`. Id 140 (`0x8C`) was also seen. Id 144 is outside 134 to 143 and is in the constant id set of `0x8002DA94`. What these reads do is not known. |
 | 182 | Why does the pause frame differ between runs (5210 or 5212)? | The first pause lands inside the copy. The tool resumes one frame and pauses again. That second pause frame differs by run. The cause is not known. The pause frame is not part of the check. Exact frame pause is question 172. |
 | 183 | Should `tools\overlay_runtime_check.py` wait for any given overlay id? | The tool stops at the first overlay copy and checks TEMPLE-style loads only: a0 equals the window base, and a2 equals `get_size(id)`. Waiting for a given id is said to be a small change. Not made. |
+
+## AOT overlay profile (from T2.15)
+
+See `docs/SETUP.md` ("AOT overlay profile (T2.15)") and `docs/DECISIONS.md` (D12).
+
+| # | Question | Notes |
+|---|----------|-------|
+| 184 | Does anything tie `load_addr` in the profile to the pointer word? | No. Changing `EARTH` `load_addr` to `0x80131000` still passes the extract step. `load_addr` is pinned only by the pointer-word check, the entries and the excluded ranges. Schema gap. |
+| 185 | Can the pipeline check the loader tables directly? | No, for this game. The `bcd_extent_table` check reads 8-byte entries. The game has a 4-byte location table and a separate size table. The words checks replace it. Their agreement with the ISO extents is shown by `tools\overlay_facts.py`, not by the pipeline. |
+| 186 | Can `adjacent_files` check the other `.OVR` files? | No. It needs non-last sizes to be multiples of 2048. The `.OVR` sizes are not. Only `BRDGDEMO` to `BRIDGE` is checked. |
+| 187 | Are the 14 profile entries real function starts? | Not yet. The entries are verified `jal` targets. FIRE and WIND land on a `lui`, not a stack prologue. Whether each is a function start is for the T2.16 audit. |
+| 188 | Does the `--cps` value in the profile match the runtime build? | Not checked. |
+| 189 | Are the FIRE, WATER and WIND table lengths right? | The FIRE, WATER and WIND entries equal their table ends. This independently supports the lengths. Whether each entry is a real function start is question 187. Each table holds one zero word. |

@@ -139,3 +139,21 @@ _Filled in by the doc-writer as tasks pass review._
   - The static shard is a fixed snapshot. It does not grow with play (`psxrecomp\docs\COMPILING_OVERLAYS.md`, section 2).
   - Revisit if the interpreter fallback becomes a real cost. It is not the FMV bottleneck. Vsync is (D9).
 - Open items are in `docs/OPEN_QUESTIONS.md` (99 and 180). See `docs/EXE_OVERLAYS.md` ("Overlay strategy (T2.14)").
+
+## D12 AOT overlay profile: schema choices (T2.15)
+
+- Context: D11 asks for `aot\overlays.json`. The upstream pipeline, `psxrecomp\tools\aot_overlay_pipeline.py`, defines the schema. It differs from the T2.15 text in `docs/TASKS.md`.
+- Decision:
+  - Use `fixed_address_extents` for the eight images, not `fixed_address_files`. The upstream `fixed_address_files` has no size or SHA-256 field. The pipeline reads size and SHA-256 only for extents.
+  - Use `excluded_ranges` with absolute start and end addresses, a SHA-256 and a reason. Requires `strict_bounds` true. Used for the four images that start with an address table: `BRIDGE`, `FIRE`, `WATER` and `WIND`.
+  - Use the `entries` list for the verified loader `jal` targets from the level functions.
+  - Use disc names without a leading slash.
+  - Use `hashlib` algorithms only for `disc_hashes` (MD5 and SHA-1). CRC-32 and `known_sizes` cannot be used.
+  - Pin `expected_records` to 8. This is a count guard.
+  - Replace `bcd_extent_table` with the words checks. Their agreement with the ISO extents is shown by `tools\overlay_facts.py`.
+- Not chosen, and why:
+  - `fixed_address_files`. It has no size or SHA-256 field.
+  - `bcd_extent_table`. It cannot read this game's tables (4-byte location table, separate size table).
+  - Dropping the checks that the schema cannot express. Not done. Each gap is listed as an open question.
+- Reason: the upstream pipeline reads only the schema it defines. The profile must pass its checks, and every hash is asserted against the disc.
+- Open items are in `docs/OPEN_QUESTIONS.md` (184 to 189). See `docs/SETUP.md` ("AOT overlay profile (T2.15)").

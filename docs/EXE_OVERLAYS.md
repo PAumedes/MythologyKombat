@@ -336,6 +336,8 @@ Scope: one level, TEMPLE (function `0x8002B688`, id 140). Only this level's over
 
 The chosen route for these overlays is in `docs/DECISIONS.md` (D11). The runtime route stays on for now. The next step is the AOT static route, through `aot\overlays.json` (T2.15) and `GAME_OVERLAY_STATIC_C` (T2.16). Nothing is built yet. The DLL cache `release` route is not used now.
 
+The T2.15 profile is `aot\overlays.json`. It holds addresses, sizes and hashes only. See `docs/SETUP.md` ("AOT overlay profile (T2.15)") and `docs/DECISIONS.md` (D12).
+
 ## Not yet confirmed
 
 See `docs/OPEN_QUESTIONS.md`, questions 44 to 52, 130 to 139, and 178 to 183.
