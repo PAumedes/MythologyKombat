@@ -23,6 +23,7 @@
 - T2.6 Visual first boot: user-reported play test (not agent-verified) of `build\MythologyKombat.exe` under OpenBIOS; Midway logo and intro FMV reached, no crash; Sony logo not seen; FMV audio glitchy; accepted; details in `docs/SETUP.md`, open items 115 to 127 in `docs/OPEN_QUESTIONS.md`.
 - T2.9 LBA-to-file lookup tool: `tools\lba_lookup.py` maps LBAs, `mm:ss:ff` values and BCD CdlLOC fields to disc files; 1298 LBAs checked with 0 mismatches against an independent parse; steps in `docs/SETUP.md`, open items 128 and 129 in `docs/OPEN_QUESTIONS.md`.
 - T2.12 Static overlay facts: `tools\overlay_facts.py` writes `work\overlay_facts.json`; all ten loader ids 134 to 143 agree with the disc; the window base 0x80130FF8 has two static checks for FORTRESS and PRISON (strong consistency, runtime pending in T2.13); corrects the variable-id count (3, not 2) and the FORTRESS jal note; details in `docs/EXE_OVERLAYS.md`, steps in `docs/SETUP.md`, open items 130 to 139 in `docs/OPEN_QUESTIONS.md`.
+- T2.21 Seed symbols.toml from the SDK names: `tools\seed_symbols.py` seeds 438 entries from `work\symbols_sdk.json` (8 marked confirmed), keeps the hand-owned BootEntry, and `tools\sync_symbols.py` regenerates `psx_symbols.h`; generated C unchanged (61 of 61 SHA-256 match); steps in `docs/SETUP.md`, decision D8 in `docs/DECISIONS.md` (Q75 answered yes), open items 140 to 147 in `docs/OPEN_QUESTIONS.md`.
 
 ## Post-Phase-1 notes
 

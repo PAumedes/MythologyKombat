@@ -133,7 +133,7 @@
 |---|----------|-------|
 | 73 | Should `tools\disc_classify.py` report rejected TIM candidates? | The script tags no file as TIM. It does not list the byte patterns it rejected, so a reader cannot check the TIM result. Not changed at the T1.7 gate. |
 | 74 | Is there a script for the T1.5 Ghidra import checks? | The checks (CODE block, BSS range, heap arguments, entry point) are a manual `analyzeHeadless` command. See `docs/SETUP.md` (T1.5). No `tools\` script runs them. |
-| 75 | Should these files be committed? | `seeds\ghidra_funcs.txt` (1175 JAL targets from the boot EXE, address list only, no bytes), `catalog_identity.json`, `game.toml`, and `.recomp.json` (disc digests). Not decided. |
+| 75 | Should these files be committed? | `seeds\ghidra_funcs.txt` (1175 JAL targets from the boot EXE, address list only, no bytes), `catalog_identity.json`, `game.toml`, and `.recomp.json` (disc digests). Resolved at T2.21: the user answered yes. See `docs/DECISIONS.md` (D8). |
 | 76 | Should the docs and tools stop hard-coding `%USERPROFILE%\...` paths? | Committed docs and tools use this machine's absolute paths. Not changed at the T1.7 gate. |
 | 77 | Should the stale comment at `tools\disc_classify.py` line 51 be fixed? | Same issue as question 39. Not changed at the T1.7 gate. |
 
@@ -242,3 +242,18 @@ See `docs/EXE_OVERLAYS.md` ("Static overlay facts (T2.12)") and `docs/SETUP.md` 
 | 137 | Can DMA, the BIOS, or a computed pointer write `0x80015134` or the window? | The EXE text has no store to the destination pointer. A static scan cannot exclude a write through a computed pointer, DMA or the BIOS. |
 | 138 | Does any pointer outside the image (BSS or heap) point into the window? | The containment check for FORTRESS and PRISON would widen if one did. The check cannot exclude this. |
 | 139 | Does anything read the last 2 bytes of `/OVERLAYS/FORTRESS.OVR`? | The size is 19,874, not a multiple of 4. The tool's word scan drops the last 2 bytes. The loader's memcpy length is get_size(id). Whether the code reads those bytes is not checked. |
+
+## Symbols.toml seeding (from T2.21)
+
+See `docs/SETUP.md` ("Seeding symbols.toml (T2.21)") and `docs/DECISIONS.md` (D8).
+
+| # | Question | Notes |
+|---|----------|-------|
+| 140 | Should `tools\seed_symbols.py` give a clear message when `--sdk-json` names a missing file? | A missing file gives a raw traceback. Reviewer note. |
+| 141 | Should the risky-name list be complete? | The list of names that get the `sdk_` prefix is hand-picked from libc, POSIX and runtime names. It is not exhaustive. Reviewer note. |
+| 142 | Is the `confirmed` status for VSync right? | The note in `docs/SYMBOLS.md` shows evidence that `v_wait` refers to `VSync: timeout`. That supports the containing function, not the bare name `VSync` at `0x800945E4`. Not decided whether the status stays. Reviewer note. |
+| 143 | Should the loader-named `main` at `0x80020474` get a name? | T2.21 leaves it unnamed. Not decided. |
+| 144 | Do DrawSync, StartPAD, DecDCTReset and InitPAD have recorded evidence? | They stay `guessed` until their evidence is recorded in `docs/SYMBOLS.md`. The reviewer spot-checked them. |
+| 145 | Do `callback` (`0x80097268`) and `timeout` (`0x8009928C`) need the `sdk_` prefix? | They match a broad libc list but are not in the risky list. Harmless unless a `func_XXXXXXXX` alias is used for them. Reviewer note. |
+| 146 | Which entries make up the status counts? | The recorded counts are 8 `confirmed` and 431 `guessed`. They add to 439. The seeded count is 438, and BootEntry is hand-owned. Whether BootEntry is in the 431, or one count is off, is not checked. |
+| 147 | What does `tools\seed_symbols.py --dry-run` change? | The option is listed in the usage. Its effect is not recorded in the T2.21 report. Not checked. |

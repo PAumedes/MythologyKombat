@@ -4,6 +4,1758 @@
  */
 #pragma once
 
+/* guessed: PsyQ SDK name '__main' (psyq_sig), 8 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk___main 0x80090E68u
+#define func_80090E68 sdk___main  /* alias */
+
 /* guessed: SYSTEM.CNF / EXE entry PC (probe seed) */
 #define PSX_FN_BootEntry 0x80090E70u
 #define func_80090E70 BootEntry  /* alias */
+
+/* guessed: PsyQ SDK name 'stup1' (psyq_sig), 124 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_stup1 0x80090E94u
+#define func_80090E94 stup1  /* alias */
+
+/* guessed: PsyQ SDK name 'stup0' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_stup0 0x80090F10u
+#define func_80090F10 stup0  /* alias */
+
+/* guessed: PsyQ SDK name 'InitTAP' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_InitTAP 0x8009210Cu
+#define func_8009210C InitTAP  /* alias */
+
+/* guessed: PsyQ SDK name 'StartTAP' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_StartTAP 0x8009212Cu
+#define func_8009212C StartTAP  /* alias */
+
+/* guessed: PsyQ SDK name 'StopTAP' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_StopTAP 0x8009214Cu
+#define func_8009214C StopTAP  /* alias */
+
+/* guessed: PsyQ SDK name 'SendTAP' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SendTAP 0x8009216Cu
+#define func_8009216C SendTAP  /* alias */
+
+/* guessed: PsyQ SDK name 'EnableTAP' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_EnableTAP 0x8009218Cu
+#define func_8009218C EnableTAP  /* alias */
+
+/* guessed: PsyQ SDK name 'DisableTAP' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DisableTAP 0x800921ACu
+#define func_800921AC DisableTAP  /* alias */
+
+/* guessed: PsyQ SDK name 'SpuSetReverb' (psyq_sig), 176 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SpuSetReverb 0x800921CCu
+#define func_800921CC SpuSetReverb  /* alias */
+
+/* guessed: PsyQ SDK name '_spu_init' (psyq_sig), 220 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__spu_init 0x8009229Cu
+#define func_8009229C _spu_init  /* alias */
+
+/* guessed: PsyQ SDK name '_spu_FwriteByIO' (psyq_sig), 280 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__spu_FwriteByIO 0x80092530u
+#define func_80092530 _spu_FwriteByIO  /* alias */
+
+/* guessed: PsyQ SDK name '_spu_FiDMA' (psyq_sig), 176 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__spu_FiDMA 0x800926FCu
+#define func_800926FC _spu_FiDMA  /* alias */
+
+/* guessed: PsyQ SDK name '_spu_Fr_' (psyq_sig), 172 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__spu_Fr_ 0x800927BCu
+#define func_800927BC _spu_Fr_  /* alias */
+
+/* guessed: PsyQ SDK name '_spu_t' (psyq_sig), 500 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__spu_t 0x80092868u
+#define func_80092868 _spu_t  /* alias */
+
+/* guessed: PsyQ SDK name '_spu_Fw' (psyq_sig), 112 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__spu_Fw 0x80092AF8u
+#define func_80092AF8 _spu_Fw  /* alias */
+
+/* guessed: PsyQ SDK name '_spu_Fr' (psyq_sig), 104 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__spu_Fr 0x80092B80u
+#define func_80092B80 _spu_Fr  /* alias */
+
+/* guessed: PsyQ SDK name '_spu_FsetRXX' (psyq_sig), 64 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__spu_FsetRXX 0x80092BE8u
+#define func_80092BE8 _spu_FsetRXX  /* alias */
+
+/* guessed: PsyQ SDK name '_spu_FsetRXXa' (psyq_sig), 156 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__spu_FsetRXXa 0x80092C30u
+#define func_80092C30 _spu_FsetRXXa  /* alias */
+
+/* guessed: PsyQ SDK name '_spu_FgetRXXa' (psyq_sig), 52 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__spu_FgetRXXa 0x80092CD4u
+#define func_80092CD4 _spu_FgetRXXa  /* alias */
+
+/* guessed: PsyQ SDK name '_spu_FsetPCR' (psyq_sig), 80 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__spu_FsetPCR 0x80092D10u
+#define func_80092D10 _spu_FsetPCR  /* alias */
+
+/* guessed: PsyQ SDK name '_spu_FsetDelayW' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__spu_FsetDelayW 0x80092D70u
+#define func_80092D70 _spu_FsetDelayW  /* alias */
+
+/* guessed: PsyQ SDK name '_spu_FsetDelayR' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__spu_FsetDelayR 0x80092D9Cu
+#define func_80092D9C _spu_FsetDelayR  /* alias */
+
+/* guessed: PsyQ SDK name '_spu_Fw1ts' (psyq_sig), 72 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__spu_Fw1ts 0x80092DC8u
+#define func_80092DC8 _spu_Fw1ts  /* alias */
+
+/* guessed: PsyQ SDK name '_SpuInit' (psyq_sig), 248 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__SpuInit 0x80092E30u
+#define func_80092E30 _SpuInit  /* alias */
+
+/* guessed: PsyQ SDK name 'SpuStart' (psyq_sig), 124 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SpuStart 0x80092F28u
+#define func_80092F28 SpuStart  /* alias */
+
+/* guessed: PsyQ SDK name '_SpuDataCallback' (psyq_sig), 36 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__SpuDataCallback 0x80092FA4u
+#define func_80092FA4 _SpuDataCallback  /* alias */
+
+/* guessed: PsyQ SDK name '_SpuIsInAllocateArea' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__SpuIsInAllocateArea 0x80092FC8u
+#define func_80092FC8 _SpuIsInAllocateArea  /* alias */
+
+/* guessed: PsyQ SDK name '_SpuIsInAllocateArea_' (psyq_sig), 56 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__SpuIsInAllocateArea_ 0x80093048u
+#define func_80093048 _SpuIsInAllocateArea_  /* alias */
+
+/* guessed: PsyQ SDK name 'SpuSetReverbModeParam' (psyq_sig), 368 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SpuSetReverbModeParam 0x800930D4u
+#define func_800930D4 SpuSetReverbModeParam  /* alias */
+
+/* guessed: PsyQ SDK name '_spu_setReverbAttr' (psyq_sig), 1232 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__spu_setReverbAttr 0x800935CCu
+#define func_800935CC _spu_setReverbAttr  /* alias */
+
+/* guessed: PsyQ SDK name 'SpuSetReverbDepth' (psyq_sig), 120 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SpuSetReverbDepth 0x80093A9Cu
+#define func_80093A9C SpuSetReverbDepth  /* alias */
+
+/* guessed: PsyQ SDK name 'SpuClearReverbWorkArea' (psyq_sig), 156 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SpuClearReverbWorkArea 0x80093B14u
+#define func_80093B14 SpuClearReverbWorkArea  /* alias */
+
+/* guessed: PsyQ SDK name 'SpuRead' (psyq_sig), 96 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SpuRead 0x80093CB0u
+#define func_80093CB0 SpuRead  /* alias */
+
+/* guessed: PsyQ SDK name 'SpuSetTransferStartAddr' (psyq_sig), 72 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SpuSetTransferStartAddr 0x80093D10u
+#define func_80093D10 SpuSetTransferStartAddr  /* alias */
+
+/* confirmed: PsyQ SDK name 'SpuIsTransferCompleted' (psyq_sig), 136 bytes; seeded from T1.6 symbols_sdk.json; evidence: TestEvent loop (docs/SYMBOLS.md, T1.6) */
+#define PSX_FN_SpuIsTransferCompleted 0x80093D68u
+#define func_80093D68 SpuIsTransferCompleted  /* alias */
+
+/* guessed: PsyQ SDK name 'PCopen' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_PCopen 0x80093E10u
+#define func_80093E10 PCopen  /* alias */
+
+/* guessed: PsyQ SDK name 'PClseek' (psyq_sig), 36 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_PClseek 0x80093E40u
+#define func_80093E40 PClseek  /* alias */
+
+/* guessed: PsyQ SDK name 'PCread' (psyq_sig), 148 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_PCread 0x80093E64u
+#define func_80093E64 PCread  /* alias */
+
+/* guessed: PsyQ SDK name '_SN_read' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__SN_read 0x80093F24u
+#define func_80093F24 _SN_read  /* alias */
+
+/* guessed: PsyQ SDK name '__divdi3' (psyq_sig), 152 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk___divdi3 0x80093F3Cu
+#define func_80093F3C sdk___divdi3  /* alias */
+
+/* guessed: PsyQ SDK name '__udivmoddi4' (psyq_sig), 96 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk___udivmoddi4 0x80093FD4u
+#define func_80093FD4 sdk___udivmoddi4  /* alias */
+
+/* confirmed: PsyQ SDK name 'VSync' (psyq_sig), 132 bytes; seeded from T1.6 symbols_sdk.json; evidence: v_wait at 0x8009472C refers to string 'VSync: timeout' (docs/SYMBOLS.md, T1.6) */
+#define PSX_FN_VSync 0x800945E4u
+#define func_800945E4 VSync  /* alias */
+
+/* guessed: PsyQ SDK name 'v_wait' (psyq_sig), 140 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_v_wait 0x8009472Cu
+#define func_8009472C v_wait  /* alias */
+
+/* guessed: PsyQ SDK name 'ResetCallback' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_ResetCallback 0x800947C8u
+#define func_800947C8 ResetCallback  /* alias */
+
+/* guessed: PsyQ SDK name 'InterruptCallback' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_InterruptCallback 0x800947F8u
+#define func_800947F8 InterruptCallback  /* alias */
+
+/* guessed: PsyQ SDK name 'DMACallback' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DMACallback 0x80094828u
+#define func_80094828 DMACallback  /* alias */
+
+/* guessed: PsyQ SDK name 'VSyncCallback' (psyq_sig), 52 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_VSyncCallback 0x80094858u
+#define func_80094858 VSyncCallback  /* alias */
+
+/* guessed: PsyQ SDK name 'VSyncCallbacks' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_VSyncCallbacks 0x8009488Cu
+#define func_8009488C VSyncCallbacks  /* alias */
+
+/* guessed: PsyQ SDK name 'StopCallback' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_StopCallback 0x800948BCu
+#define func_800948BC StopCallback  /* alias */
+
+/* guessed: PsyQ SDK name 'RestartCallback' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_RestartCallback 0x800948ECu
+#define func_800948EC RestartCallback  /* alias */
+
+/* guessed: PsyQ SDK name 'CheckCallback' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CheckCallback 0x8009491Cu
+#define func_8009491C CheckCallback  /* alias */
+
+/* guessed: PsyQ SDK name 'GetIntrMask' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_GetIntrMask 0x8009492Cu
+#define func_8009492C GetIntrMask  /* alias */
+
+/* guessed: PsyQ SDK name 'SetIntrMask' (psyq_sig), 28 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetIntrMask 0x80094944u
+#define func_80094944 SetIntrMask  /* alias */
+
+/* guessed: PsyQ SDK name 'startIntr' (psyq_sig), 220 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_startIntr 0x80094960u
+#define func_80094960 startIntr  /* alias */
+
+/* guessed: PsyQ SDK name 'trapIntr' (psyq_sig), 436 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_trapIntr 0x80094A3Cu
+#define func_80094A3C trapIntr  /* alias */
+
+/* guessed: PsyQ SDK name 'setIntr' (psyq_sig), 184 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_setIntr 0x80094C24u
+#define func_80094C24 setIntr  /* alias */
+
+/* guessed: PsyQ SDK name 'stopIntr' (psyq_sig), 172 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_stopIntr 0x80094D78u
+#define func_80094D78 stopIntr  /* alias */
+
+/* guessed: PsyQ SDK name 'restartIntr' (psyq_sig), 116 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_restartIntr 0x80094E24u
+#define func_80094E24 restartIntr  /* alias */
+
+/* guessed: PsyQ SDK name 'memclr' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_memclr_80094EAC 0x80094EACu
+#define func_80094EAC memclr_80094EAC  /* alias */
+
+/* guessed: PsyQ SDK name 'startIntrVSync' (psyq_sig), 88 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_startIntrVSync 0x80094ED8u
+#define func_80094ED8 startIntrVSync  /* alias */
+
+/* guessed: PsyQ SDK name 'trapIntrVSync' (psyq_sig), 120 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_trapIntrVSync 0x80094F30u
+#define func_80094F30 trapIntrVSync  /* alias */
+
+/* guessed: PsyQ SDK name 'setIntrVSync' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_setIntrVSync 0x80094FA8u
+#define func_80094FA8 setIntrVSync  /* alias */
+
+/* guessed: PsyQ SDK name 'memclr' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_memclr_80094FD4 0x80094FD4u
+#define func_80094FD4 memclr_80094FD4  /* alias */
+
+/* guessed: PsyQ SDK name 'startIntrDMA' (psyq_sig), 80 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_startIntrDMA 0x80095000u
+#define func_80095000 startIntrDMA  /* alias */
+
+/* guessed: PsyQ SDK name 'trapIntrDMA' (psyq_sig), 388 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_trapIntrDMA 0x80095050u
+#define func_80095050 trapIntrDMA  /* alias */
+
+/* guessed: PsyQ SDK name 'setIntrDMA' (psyq_sig), 160 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_setIntrDMA 0x800951D4u
+#define func_800951D4 setIntrDMA  /* alias */
+
+/* guessed: PsyQ SDK name 'memclr' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_memclr_8009527C 0x8009527Cu
+#define func_8009527C memclr_8009527C  /* alias */
+
+/* guessed: PsyQ SDK name 'StSetRing' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_StSetRing 0x800952A8u
+#define func_800952A8 StSetRing  /* alias */
+
+/* confirmed: PsyQ SDK name 'CdInit' (psyq_sig), 132 bytes; seeded from T1.6 symbols_sdk.json; evidence: string 'CdInit: Init failed' (docs/SYMBOLS.md, T1.6) */
+#define PSX_FN_CdInit 0x800952D8u
+#define func_800952D8 CdInit  /* alias */
+
+/* guessed: PsyQ SDK name 'def_cbsync' (psyq_sig), 40 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_def_cbsync 0x80095370u
+#define func_80095370 def_cbsync  /* alias */
+
+/* guessed: PsyQ SDK name 'def_cbready' (psyq_sig), 40 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_def_cbready 0x80095398u
+#define func_80095398 def_cbready  /* alias */
+
+/* guessed: PsyQ SDK name 'def_cbread' (psyq_sig), 40 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_def_cbread 0x800953C0u
+#define func_800953C0 def_cbread  /* alias */
+
+/* guessed: PsyQ SDK name 'CdStatus' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdStatus 0x800953E8u
+#define func_800953E8 CdStatus  /* alias */
+
+/* guessed: PsyQ SDK name 'CdMode' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdMode 0x800953F8u
+#define func_800953F8 CdMode  /* alias */
+
+/* guessed: PsyQ SDK name 'CdLastCom' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdLastCom 0x80095408u
+#define func_80095408 CdLastCom  /* alias */
+
+/* guessed: PsyQ SDK name 'CdLastPos' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdLastPos 0x80095418u
+#define func_80095418 CdLastPos  /* alias */
+
+/* guessed: PsyQ SDK name 'CdReset' (psyq_sig), 88 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdReset 0x80095428u
+#define func_80095428 CdReset  /* alias */
+
+/* guessed: PsyQ SDK name 'CdFlush' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdFlush 0x80095494u
+#define func_80095494 CdFlush  /* alias */
+
+/* guessed: PsyQ SDK name 'CdSetDebug' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdSetDebug 0x800954B4u
+#define func_800954B4 CdSetDebug  /* alias */
+
+/* guessed: PsyQ SDK name 'CdComstr' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdComstr 0x800954CCu
+#define func_800954CC CdComstr  /* alias */
+
+/* guessed: PsyQ SDK name 'CdIntstr' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdIntstr 0x80095500u
+#define func_80095500 CdIntstr  /* alias */
+
+/* guessed: PsyQ SDK name 'CdSync' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdSync 0x80095534u
+#define func_80095534 CdSync  /* alias */
+
+/* guessed: PsyQ SDK name 'CdReady' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdReady 0x80095554u
+#define func_80095554 CdReady  /* alias */
+
+/* guessed: PsyQ SDK name 'CdSyncCallback' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdSyncCallback 0x80095574u
+#define func_80095574 CdSyncCallback  /* alias */
+
+/* guessed: PsyQ SDK name 'CdReadyCallback' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdReadyCallback 0x8009558Cu
+#define func_8009558C CdReadyCallback  /* alias */
+
+/* guessed: PsyQ SDK name 'CdControl' (psyq_sig), 312 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdControl 0x800955A4u
+#define func_800955A4 CdControl  /* alias */
+
+/* guessed: PsyQ SDK name 'CdControlF' (psyq_sig), 300 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdControlF 0x800956DCu
+#define func_800956DC CdControlF  /* alias */
+
+/* guessed: PsyQ SDK name 'CdControlB' (psyq_sig), 280 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdControlB 0x80095808u
+#define func_80095808 CdControlB  /* alias */
+
+/* guessed: PsyQ SDK name 'CdMix' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdMix 0x8009594Cu
+#define func_8009594C CdMix  /* alias */
+
+/* guessed: PsyQ SDK name 'CdGetSector' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdGetSector 0x8009596Cu
+#define func_8009596C CdGetSector  /* alias */
+
+/* guessed: PsyQ SDK name 'CdGetSector2' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdGetSector2 0x8009598Cu
+#define func_8009598C CdGetSector2  /* alias */
+
+/* guessed: PsyQ SDK name 'CdDataCallback' (psyq_sig), 36 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdDataCallback 0x800959ACu
+#define func_800959AC CdDataCallback  /* alias */
+
+/* guessed: PsyQ SDK name 'CdDataSync' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdDataSync 0x800959D0u
+#define func_800959D0 CdDataSync  /* alias */
+
+/* guessed: PsyQ SDK name 'CdIntToPos' (psyq_sig), 260 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdIntToPos 0x800959F0u
+#define func_800959F0 CdIntToPos  /* alias */
+
+/* guessed: PsyQ SDK name 'CdPosToInt' (psyq_sig), 128 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdPosToInt 0x80095AF4u
+#define func_80095AF4 CdPosToInt  /* alias */
+
+/* guessed: PsyQ SDK name 'getintr' (psyq_sig), 100 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_getintr 0x80095B74u
+#define func_80095B74 getintr  /* alias */
+
+/* guessed: PsyQ SDK name 'CD_sync' (psyq_sig), 300 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CD_sync 0x800960FCu
+#define func_800960FC CD_sync  /* alias */
+
+/* guessed: PsyQ SDK name 'CD_ready' (psyq_sig), 308 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CD_ready 0x8009637Cu
+#define func_8009637C CD_ready  /* alias */
+
+/* guessed: PsyQ SDK name 'CD_cw' (psyq_sig), 728 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CD_cw 0x80096648u
+#define func_80096648 CD_cw  /* alias */
+
+/* guessed: PsyQ SDK name 'CD_vol' (psyq_sig), 136 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CD_vol 0x80096A64u
+#define func_80096A64 CD_vol  /* alias */
+
+/* guessed: PsyQ SDK name 'CD_flush' (psyq_sig), 224 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CD_flush 0x80096AECu
+#define func_80096AEC CD_flush  /* alias */
+
+/* guessed: PsyQ SDK name 'CD_initvol' (psyq_sig), 244 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CD_initvol 0x80096BCCu
+#define func_80096BCC CD_initvol  /* alias */
+
+/* guessed: PsyQ SDK name 'CD_initintr' (psyq_sig), 80 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CD_initintr 0x80096CC0u
+#define func_80096CC0 CD_initintr  /* alias */
+
+/* guessed: PsyQ SDK name 'CD_init' (psyq_sig), 492 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CD_init 0x80096D10u
+#define func_80096D10 CD_init  /* alias */
+
+/* guessed: PsyQ SDK name 'CD_datasync' (psyq_sig), 284 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CD_datasync 0x80096EFCu
+#define func_80096EFC CD_datasync  /* alias */
+
+/* guessed: PsyQ SDK name 'CD_getsector' (psyq_sig), 256 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CD_getsector 0x80097068u
+#define func_80097068 CD_getsector  /* alias */
+
+/* guessed: PsyQ SDK name 'CD_getsector2' (psyq_sig), 240 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CD_getsector2 0x80097168u
+#define func_80097168 CD_getsector2  /* alias */
+
+/* guessed: PsyQ SDK name 'CD_set_test_parmnum' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CD_set_test_parmnum 0x80097258u
+#define func_80097258 CD_set_test_parmnum  /* alias */
+
+/* guessed: PsyQ SDK name 'callback' (psyq_sig), 52 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_callback 0x80097268u
+#define func_80097268 callback  /* alias */
+
+/* guessed: PsyQ SDK name 'cb_read' (psyq_sig), 164 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_cb_read 0x8009734Cu
+#define func_8009734C cb_read  /* alias */
+
+/* guessed: PsyQ SDK name 'cb_data' (psyq_sig), 252 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_cb_data 0x8009761Cu
+#define func_8009761C cb_data  /* alias */
+
+/* guessed: PsyQ SDK name 'cd_read_retry' (psyq_sig), 500 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_cd_read_retry 0x80097718u
+#define func_80097718 cd_read_retry  /* alias */
+
+/* guessed: PsyQ SDK name 'CdReadBreak' (psyq_sig), 156 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdReadBreak 0x8009792Cu
+#define func_8009792C CdReadBreak  /* alias */
+
+/* guessed: PsyQ SDK name 'CdRead' (psyq_sig), 60 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdRead 0x800979C8u
+#define func_800979C8 CdRead  /* alias */
+
+/* guessed: PsyQ SDK name 'CdReadSync' (psyq_sig), 144 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdReadSync 0x80097ACCu
+#define func_80097ACC CdReadSync  /* alias */
+
+/* guessed: PsyQ SDK name 'CdReadCallback' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdReadCallback 0x80097B98u
+#define func_80097B98 CdReadCallback  /* alias */
+
+/* guessed: PsyQ SDK name 'CdReadMode' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdReadMode 0x80097BB0u
+#define func_80097BB0 CdReadMode  /* alias */
+
+/* guessed: PsyQ SDK name 'CdRead2' (psyq_sig), 80 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CdRead2 0x80097BC8u
+#define func_80097BC8 CdRead2  /* alias */
+
+/* guessed: PsyQ SDK name 'StCdInterrupt2' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_StCdInterrupt2 0x80097C5Cu
+#define func_80097C5C StCdInterrupt2  /* alias */
+
+/* guessed: PsyQ SDK name 'StClearRing' (psyq_sig), 96 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_StClearRing 0x80097C7Cu
+#define func_80097C7C StClearRing  /* alias */
+
+/* guessed: PsyQ SDK name 'data_ready_callback' (psyq_sig), 144 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_data_ready_callback 0x80097D60u
+#define func_80097D60 data_ready_callback  /* alias */
+
+/* guessed: PsyQ SDK name 'StGetBackloc' (psyq_sig), 76 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_StGetBackloc 0x80097DF0u
+#define func_80097DF0 StGetBackloc  /* alias */
+
+/* guessed: PsyQ SDK name 'StSetStream' (psyq_sig), 136 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_StSetStream 0x80097E50u
+#define func_80097E50 StSetStream  /* alias */
+
+/* guessed: PsyQ SDK name 'StFreeRing' (psyq_sig), 172 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_StFreeRing 0x80097ED8u
+#define func_80097ED8 StFreeRing  /* alias */
+
+/* guessed: PsyQ SDK name 'init_ring_status' (psyq_sig), 60 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_init_ring_status 0x80097F90u
+#define func_80097F90 init_ring_status  /* alias */
+
+/* guessed: PsyQ SDK name 'StGetNext' (psyq_sig), 196 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_StGetNext 0x80097FCCu
+#define func_80097FCC StGetNext  /* alias */
+
+/* guessed: PsyQ SDK name 'StCdInterrupt' (psyq_sig), 624 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_StCdInterrupt 0x800980B0u
+#define func_800980B0 StCdInterrupt  /* alias */
+
+/* guessed: PsyQ SDK name 'mem2mem' (psyq_sig), 52 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_mem2mem 0x80098A20u
+#define func_80098A20 mem2mem  /* alias */
+
+/* guessed: PsyQ SDK name 'dma_execute' (psyq_sig), 140 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_dma_execute 0x80098A54u
+#define func_80098A54 dma_execute  /* alias */
+
+/* guessed: PsyQ SDK name 'DsSyncCallback' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DsSyncCallback 0x80098C10u
+#define func_80098C10 DsSyncCallback  /* alias */
+
+/* guessed: PsyQ SDK name 'DsReadyCallback' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DsReadyCallback 0x80098C24u
+#define func_80098C24 DsReadyCallback  /* alias */
+
+/* guessed: PsyQ SDK name 'DsDataCallback' (psyq_sig), 36 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DsDataCallback 0x80098C38u
+#define func_80098C38 DsDataCallback  /* alias */
+
+/* guessed: PsyQ SDK name 'DecDCTReset' (psyq_sig), 56 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DecDCTReset 0x80098C5Cu
+#define func_80098C5C DecDCTReset  /* alias */
+
+/* guessed: PsyQ SDK name 'DecDCTGetEnv' (psyq_sig), 140 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DecDCTGetEnv 0x80098C94u
+#define func_80098C94 DecDCTGetEnv  /* alias */
+
+/* guessed: PsyQ SDK name 'DecDCTPutEnv' (psyq_sig), 156 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DecDCTPutEnv 0x80098D20u
+#define func_80098D20 DecDCTPutEnv  /* alias */
+
+/* guessed: PsyQ SDK name 'DecDCTBufSize' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DecDCTBufSize 0x80098DBCu
+#define func_80098DBC DecDCTBufSize  /* alias */
+
+/* guessed: PsyQ SDK name 'DecDCTin' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DecDCTin 0x80098DC8u
+#define func_80098DC8 DecDCTin  /* alias */
+
+/* guessed: PsyQ SDK name 'DecDCTout' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DecDCTout 0x80098E44u
+#define func_80098E44 DecDCTout  /* alias */
+
+/* guessed: PsyQ SDK name 'DecDCTinSync' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DecDCTinSync 0x80098E64u
+#define func_80098E64 DecDCTinSync  /* alias */
+
+/* guessed: PsyQ SDK name 'DecDCToutSync' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DecDCToutSync 0x80098EA0u
+#define func_80098EA0 DecDCToutSync  /* alias */
+
+/* guessed: PsyQ SDK name 'DecDCTinCallback' (psyq_sig), 36 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DecDCTinCallback 0x80098EDCu
+#define func_80098EDC DecDCTinCallback  /* alias */
+
+/* guessed: PsyQ SDK name 'DecDCToutCallback' (psyq_sig), 36 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DecDCToutCallback 0x80098F00u
+#define func_80098F00 DecDCToutCallback  /* alias */
+
+/* guessed: PsyQ SDK name 'MDEC_reset' (psyq_sig), 220 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MDEC_reset 0x80098F24u
+#define func_80098F24 MDEC_reset  /* alias */
+
+/* guessed: PsyQ SDK name 'MDEC_in' (psyq_sig), 148 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MDEC_in 0x80099020u
+#define func_80099020 MDEC_in  /* alias */
+
+/* guessed: PsyQ SDK name 'MDEC_out' (psyq_sig), 144 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MDEC_out 0x800990B4u
+#define func_800990B4 MDEC_out  /* alias */
+
+/* guessed: PsyQ SDK name 'MDEC_in_sync' (psyq_sig), 136 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MDEC_in_sync 0x80099144u
+#define func_80099144 MDEC_in_sync  /* alias */
+
+/* guessed: PsyQ SDK name 'MDEC_out_sync' (psyq_sig), 136 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MDEC_out_sync 0x800991DCu
+#define func_800991DC MDEC_out_sync  /* alias */
+
+/* guessed: PsyQ SDK name 'MDEC_status' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MDEC_status 0x80099274u
+#define func_80099274 MDEC_status  /* alias */
+
+/* guessed: PsyQ SDK name 'timeout' (psyq_sig), 304 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_timeout 0x8009928Cu
+#define func_8009928C timeout  /* alias */
+
+/* guessed: PsyQ SDK name 'DecDCTvlcSize' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DecDCTvlcSize 0x800993C0u
+#define func_800993C0 DecDCTvlcSize  /* alias */
+
+/* guessed: PsyQ SDK name 'DecDCTvlc' (psyq_sig), 832 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DecDCTvlc 0x800993F0u
+#define func_800993F0 DecDCTvlc  /* alias */
+
+/* guessed: PsyQ SDK name 'rsin' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_rsin 0x80099754u
+#define func_80099754 rsin  /* alias */
+
+/* guessed: PsyQ SDK name 'sin_1' (psyq_sig), 136 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sin_1 0x80099790u
+#define func_80099790 sin_1  /* alias */
+
+/* guessed: PsyQ SDK name 'rcos' (psyq_sig), 152 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_rcos 0x80099820u
+#define func_80099820 rcos  /* alias */
+
+/* guessed: PsyQ SDK name 'SetFogNearFar' (psyq_sig), 268 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetFogNearFar 0x800998C0u
+#define func_800998C0 SetFogNearFar  /* alias */
+
+/* guessed: PsyQ SDK name 'csin_1' (psyq_sig), 144 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_csin_1 0x800999CCu
+#define func_800999CC csin_1  /* alias */
+
+/* guessed: PsyQ SDK name 'csin' (psyq_sig), 296 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk_csin 0x80099A6Cu
+#define func_80099A6C sdk_csin  /* alias */
+
+/* guessed: PsyQ SDK name 'csincos' (psyq_sig), 172 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk_csincos 0x80099BA4u
+#define func_80099BA4 sdk_csincos  /* alias */
+
+/* guessed: PsyQ SDK name 'catan' (psyq_sig), 164 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk_catan 0x80099CC4u
+#define func_80099CC4 sdk_catan  /* alias */
+
+/* guessed: PsyQ SDK name 'InitGeom' (psyq_sig), 128 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_InitGeom 0x80099DA0u
+#define func_80099DA0 InitGeom  /* alias */
+
+/* guessed: PsyQ SDK name 'SquareRoot0' (psyq_sig), 124 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SquareRoot0 0x80099E28u
+#define func_80099E28 SquareRoot0  /* alias */
+
+/* guessed: PsyQ SDK name 'InvSquareRoot' (psyq_sig), 132 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_InvSquareRoot 0x80099EB8u
+#define func_80099EB8 InvSquareRoot  /* alias */
+
+/* guessed: PsyQ SDK name 'VectorNormalS' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_VectorNormalS 0x80099F44u
+#define func_80099F44 VectorNormalS  /* alias */
+
+/* guessed: PsyQ SDK name 'VectorNormal' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_VectorNormal 0x80099F58u
+#define func_80099F58 VectorNormal  /* alias */
+
+/* guessed: PsyQ SDK name 'VectorNormalSS' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_VectorNormalSS 0x80099F84u
+#define func_80099F84 VectorNormalSS  /* alias */
+
+/* guessed: PsyQ SDK name 'MatrixNormal' (psyq_sig), 228 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MatrixNormal 0x8009A070u
+#define func_8009A070 MatrixNormal  /* alias */
+
+/* guessed: PsyQ SDK name 'MulMatrix0' (psyq_sig), 268 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MulMatrix0 0x8009A158u
+#define func_8009A158 MulMatrix0  /* alias */
+
+/* guessed: PsyQ SDK name 'ReadRotMatrix' (psyq_sig), 72 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_ReadRotMatrix 0x8009A268u
+#define func_8009A268 ReadRotMatrix  /* alias */
+
+/* guessed: PsyQ SDK name 'ScaleMatrix' (psyq_sig), 292 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_ScaleMatrix 0x8009A2E8u
+#define func_8009A2E8 ScaleMatrix  /* alias */
+
+/* guessed: PsyQ SDK name 'SetRotMatrix' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetRotMatrix 0x8009A418u
+#define func_8009A418 SetRotMatrix  /* alias */
+
+/* guessed: PsyQ SDK name 'SetColorMatrix' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetColorMatrix 0x8009A448u
+#define func_8009A448 SetColorMatrix  /* alias */
+
+/* guessed: PsyQ SDK name 'SetTransMatrix' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetTransMatrix 0x8009A478u
+#define func_8009A478 SetTransMatrix  /* alias */
+
+/* guessed: PsyQ SDK name 'SetVertex0' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetVertex0 0x8009A498u
+#define func_8009A498 SetVertex0  /* alias */
+
+/* guessed: PsyQ SDK name 'SetVertex1' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetVertex1 0x8009A4A8u
+#define func_8009A4A8 SetVertex1  /* alias */
+
+/* guessed: PsyQ SDK name 'SetVertex2' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetVertex2 0x8009A4B8u
+#define func_8009A4B8 SetVertex2  /* alias */
+
+/* guessed: PsyQ SDK name 'SetVertexTri' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetVertexTri 0x8009A4C8u
+#define func_8009A4C8 SetVertexTri  /* alias */
+
+/* guessed: PsyQ SDK name 'SetRGBfifo' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetRGBfifo 0x8009A4E8u
+#define func_8009A4E8 SetRGBfifo  /* alias */
+
+/* guessed: PsyQ SDK name 'SetIR123' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetIR123 0x8009A4FCu
+#define func_8009A4FC SetIR123  /* alias */
+
+/* guessed: PsyQ SDK name 'SetIR0' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetIR0 0x8009A510u
+#define func_8009A510 SetIR0  /* alias */
+
+/* guessed: PsyQ SDK name 'SetSZfifo3' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetSZfifo3 0x8009A51Cu
+#define func_8009A51C SetSZfifo3  /* alias */
+
+/* guessed: PsyQ SDK name 'SetSZfifo4' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetSZfifo4 0x8009A530u
+#define func_8009A530 SetSZfifo4  /* alias */
+
+/* guessed: PsyQ SDK name 'SetSXSYfifo' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetSXSYfifo 0x8009A548u
+#define func_8009A548 SetSXSYfifo  /* alias */
+
+/* guessed: PsyQ SDK name 'SetRii' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetRii 0x8009A55Cu
+#define func_8009A55C SetRii  /* alias */
+
+/* guessed: PsyQ SDK name 'SetMAC123' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetMAC123 0x8009A570u
+#define func_8009A570 SetMAC123  /* alias */
+
+/* guessed: PsyQ SDK name 'SetData32' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetData32 0x8009A584u
+#define func_8009A584 SetData32  /* alias */
+
+/* guessed: PsyQ SDK name 'SetDQA' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetDQA 0x8009A590u
+#define func_8009A590 SetDQA  /* alias */
+
+/* guessed: PsyQ SDK name 'SetDQB' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetDQB 0x8009A59Cu
+#define func_8009A59C SetDQB  /* alias */
+
+/* guessed: PsyQ SDK name 'SetBackColor' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetBackColor 0x8009A5A8u
+#define func_8009A5A8 SetBackColor  /* alias */
+
+/* guessed: PsyQ SDK name 'SetFarColor' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetFarColor 0x8009A5C8u
+#define func_8009A5C8 SetFarColor  /* alias */
+
+/* confirmed: PsyQ SDK name 'RotTransPers' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json; evidence: lwc2 and COP2 RTPS word 0x4A180001 (docs/SYMBOLS.md, T1.6) */
+#define PSX_FN_RotTransPers 0x8009A618u
+#define func_8009A618 RotTransPers  /* alias */
+
+/* guessed: PsyQ SDK name 'RotTrans' (psyq_sig), 40 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_RotTrans 0x8009A648u
+#define func_8009A648 RotTrans  /* alias */
+
+/* guessed: PsyQ SDK name 'RotMatrix' (psyq_sig), 100 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_RotMatrix 0x8009A678u
+#define func_8009A678 RotMatrix  /* alias */
+
+/* guessed: PsyQ SDK name 'RotMatrixYXZ' (psyq_sig), 104 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_RotMatrixYXZ 0x8009A908u
+#define func_8009A908 RotMatrixYXZ  /* alias */
+
+/* guessed: PsyQ SDK name 'RotMatrixZ' (psyq_sig), 100 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_RotMatrixZ 0x8009AB98u
+#define func_8009AB98 RotMatrixZ  /* alias */
+
+/* guessed: PsyQ SDK name '_patch_gte' (psyq_sig), 104 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__patch_gte 0x8009AD38u
+#define func_8009AD38 _patch_gte  /* alias */
+
+/* guessed: PsyQ SDK name 'LoadTPage' (psyq_sig), 168 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_LoadTPage 0x8009ADD8u
+#define func_8009ADD8 LoadTPage  /* alias */
+
+/* guessed: PsyQ SDK name 'LoadClut' (psyq_sig), 104 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_LoadClut 0x8009AEC4u
+#define func_8009AEC4 LoadClut  /* alias */
+
+/* guessed: PsyQ SDK name 'LoadClut2' (psyq_sig), 104 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_LoadClut2 0x8009AF2Cu
+#define func_8009AF2C LoadClut2  /* alias */
+
+/* guessed: PsyQ SDK name 'SetDefDrawEnv' (psyq_sig), 120 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetDefDrawEnv 0x8009AF94u
+#define func_8009AF94 SetDefDrawEnv  /* alias */
+
+/* guessed: PsyQ SDK name 'SetDefDispEnv' (psyq_sig), 60 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetDefDispEnv 0x8009B04Cu
+#define func_8009B04C SetDefDispEnv  /* alias */
+
+/* guessed: PsyQ SDK name 'SetDumpFnt' (psyq_sig), 64 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetDumpFnt 0x8009B0B0u
+#define func_8009B0B0 SetDumpFnt  /* alias */
+
+/* guessed: PsyQ SDK name 'FntLoad' (psyq_sig), 164 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_FntLoad 0x8009B0F0u
+#define func_8009B0F0 FntLoad  /* alias */
+
+/* guessed: PsyQ SDK name 'FntOpen' (psyq_sig), 648 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_FntOpen 0x8009B194u
+#define func_8009B194 FntOpen  /* alias */
+
+/* guessed: PsyQ SDK name 'FntFlush' (psyq_sig), 408 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_FntFlush 0x8009B44Cu
+#define func_8009B44C FntFlush  /* alias */
+
+/* guessed: PsyQ SDK name 'FntPrint' (psyq_sig), 364 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_FntPrint 0x8009B764u
+#define func_8009B764 FntPrint  /* alias */
+
+/* guessed: PsyQ SDK name 'GetTPage' (psyq_sig), 60 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_GetTPage 0x8009BB44u
+#define func_8009BB44 GetTPage  /* alias */
+
+/* guessed: PsyQ SDK name 'GetClut' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_GetClut 0x8009BB80u
+#define func_8009BB80 GetClut  /* alias */
+
+/* guessed: PsyQ SDK name 'DumpTPage' (psyq_sig), 96 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DumpTPage 0x8009BB98u
+#define func_8009BB98 DumpTPage  /* alias */
+
+/* guessed: PsyQ SDK name 'DumpClut' (psyq_sig), 64 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DumpClut 0x8009BBF8u
+#define func_8009BBF8 DumpClut  /* alias */
+
+/* guessed: PsyQ SDK name 'NextPrim' (psyq_sig), 28 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_NextPrim 0x8009BC38u
+#define func_8009BC38 NextPrim  /* alias */
+
+/* guessed: PsyQ SDK name 'IsEndPrim' (psyq_sig), 28 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_IsEndPrim 0x8009BC54u
+#define func_8009BC54 IsEndPrim  /* alias */
+
+/* guessed: PsyQ SDK name 'AddPrim' (psyq_sig), 60 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_AddPrim 0x8009BC70u
+#define func_8009BC70 AddPrim  /* alias */
+
+/* guessed: PsyQ SDK name 'AddPrims' (psyq_sig), 60 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_AddPrims 0x8009BCACu
+#define func_8009BCAC AddPrims  /* alias */
+
+/* guessed: PsyQ SDK name 'CatPrim' (psyq_sig), 36 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CatPrim 0x8009BCE8u
+#define func_8009BCE8 CatPrim  /* alias */
+
+/* guessed: PsyQ SDK name 'TermPrim' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_TermPrim 0x8009BD0Cu
+#define func_8009BD0C TermPrim  /* alias */
+
+/* guessed: PsyQ SDK name 'SetSemiTrans' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetSemiTrans 0x8009BD24u
+#define func_8009BD24 SetSemiTrans  /* alias */
+
+/* guessed: PsyQ SDK name 'SetShadeTex' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetShadeTex 0x8009BD4Cu
+#define func_8009BD4C SetShadeTex  /* alias */
+
+/* guessed: PsyQ SDK name 'SetPolyF3' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetPolyF3 0x8009BD74u
+#define func_8009BD74 SetPolyF3  /* alias */
+
+/* guessed: PsyQ SDK name 'SetPolyFT3' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetPolyFT3 0x8009BD88u
+#define func_8009BD88 SetPolyFT3  /* alias */
+
+/* guessed: PsyQ SDK name 'SetPolyG3' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetPolyG3 0x8009BD9Cu
+#define func_8009BD9C SetPolyG3  /* alias */
+
+/* guessed: PsyQ SDK name 'SetPolyGT3' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetPolyGT3 0x8009BDB0u
+#define func_8009BDB0 SetPolyGT3  /* alias */
+
+/* guessed: PsyQ SDK name 'SetPolyF4' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetPolyF4 0x8009BDC4u
+#define func_8009BDC4 SetPolyF4  /* alias */
+
+/* guessed: PsyQ SDK name 'SetPolyFT4' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetPolyFT4 0x8009BDD8u
+#define func_8009BDD8 SetPolyFT4  /* alias */
+
+/* guessed: PsyQ SDK name 'SetPolyG4' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetPolyG4 0x8009BDECu
+#define func_8009BDEC SetPolyG4  /* alias */
+
+/* guessed: PsyQ SDK name 'SetPolyGT4' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetPolyGT4 0x8009BE00u
+#define func_8009BE00 SetPolyGT4  /* alias */
+
+/* guessed: PsyQ SDK name 'SetSprt8' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetSprt8 0x8009BE14u
+#define func_8009BE14 SetSprt8  /* alias */
+
+/* guessed: PsyQ SDK name 'SetSprt16' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetSprt16 0x8009BE28u
+#define func_8009BE28 SetSprt16  /* alias */
+
+/* guessed: PsyQ SDK name 'SetSprt' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetSprt 0x8009BE3Cu
+#define func_8009BE3C SetSprt  /* alias */
+
+/* guessed: PsyQ SDK name 'SetTile1' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetTile1 0x8009BE50u
+#define func_8009BE50 SetTile1  /* alias */
+
+/* guessed: PsyQ SDK name 'SetTile8' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetTile8 0x8009BE64u
+#define func_8009BE64 SetTile8  /* alias */
+
+/* guessed: PsyQ SDK name 'SetTile16' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetTile16 0x8009BE78u
+#define func_8009BE78 SetTile16  /* alias */
+
+/* guessed: PsyQ SDK name 'SetTile' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetTile 0x8009BE8Cu
+#define func_8009BE8C SetTile  /* alias */
+
+/* guessed: PsyQ SDK name 'SetLineF2' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetLineF2 0x8009BEA0u
+#define func_8009BEA0 SetLineF2  /* alias */
+
+/* guessed: PsyQ SDK name 'SetLineG2' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetLineG2 0x8009BEB4u
+#define func_8009BEB4 SetLineG2  /* alias */
+
+/* guessed: PsyQ SDK name 'SetLineF3' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetLineF3 0x8009BEC8u
+#define func_8009BEC8 SetLineF3  /* alias */
+
+/* guessed: PsyQ SDK name 'SetLineG3' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetLineG3 0x8009BEE8u
+#define func_8009BEE8 SetLineG3  /* alias */
+
+/* guessed: PsyQ SDK name 'SetLineF4' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetLineF4 0x8009BF08u
+#define func_8009BF08 SetLineF4  /* alias */
+
+/* guessed: PsyQ SDK name 'SetLineG4' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetLineG4 0x8009BF28u
+#define func_8009BF28 SetLineG4  /* alias */
+
+/* guessed: PsyQ SDK name 'SetDrawTPage' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetDrawTPage 0x8009BF48u
+#define func_8009BF48 SetDrawTPage  /* alias */
+
+/* guessed: PsyQ SDK name 'SetDrawMove' (psyq_sig), 96 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetDrawMove 0x8009BF74u
+#define func_8009BF74 SetDrawMove  /* alias */
+
+/* guessed: PsyQ SDK name 'SetDrawLoad' (psyq_sig), 108 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetDrawLoad 0x8009BFD4u
+#define func_8009BFD4 SetDrawLoad  /* alias */
+
+/* guessed: PsyQ SDK name 'MargePrim' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MargePrim 0x8009C040u
+#define func_8009C040 MargePrim  /* alias */
+
+/* guessed: PsyQ SDK name 'DumpDrawEnv' (psyq_sig), 276 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DumpDrawEnv 0x8009C078u
+#define func_8009C078 DumpDrawEnv  /* alias */
+
+/* guessed: PsyQ SDK name 'DumpDispEnv' (psyq_sig), 172 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DumpDispEnv 0x8009C18Cu
+#define func_8009C18C DumpDispEnv  /* alias */
+
+/* confirmed: PsyQ SDK name 'ResetGraph' (psyq_sig), 284 bytes; seeded from T1.6 symbols_sdk.json; evidence: string 'ResetGraph:jtb=' (docs/SYMBOLS.md, T1.6) */
+#define PSX_FN_ResetGraph 0x8009C238u
+#define func_8009C238 ResetGraph  /* alias */
+
+/* guessed: PsyQ SDK name 'SetGraphReverse' (psyq_sig), 140 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetGraphReverse 0x8009C3BCu
+#define func_8009C3BC SetGraphReverse  /* alias */
+
+/* guessed: PsyQ SDK name 'SetGraphDebug' (psyq_sig), 100 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetGraphDebug 0x8009C4D0u
+#define func_8009C4D0 SetGraphDebug  /* alias */
+
+/* guessed: PsyQ SDK name 'SetGraphQueue' (psyq_sig), 172 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetGraphQueue 0x8009C534u
+#define func_8009C534 SetGraphQueue  /* alias */
+
+/* guessed: PsyQ SDK name 'GetGraphType' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_GetGraphType 0x8009C5E0u
+#define func_8009C5E0 GetGraphType  /* alias */
+
+/* guessed: PsyQ SDK name 'GetGraphDebug' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_GetGraphDebug 0x8009C5F0u
+#define func_8009C5F0 GetGraphDebug  /* alias */
+
+/* guessed: PsyQ SDK name 'DrawSyncCallback' (psyq_sig), 92 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DrawSyncCallback 0x8009C600u
+#define func_8009C600 DrawSyncCallback  /* alias */
+
+/* guessed: PsyQ SDK name 'SetDispMask' (psyq_sig), 156 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetDispMask 0x8009C65Cu
+#define func_8009C65C SetDispMask  /* alias */
+
+/* guessed: PsyQ SDK name 'DrawSync' (psyq_sig), 108 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DrawSync 0x8009C6F8u
+#define func_8009C6F8 DrawSync  /* alias */
+
+/* guessed: PsyQ SDK name 'checkRECT' (psyq_sig), 216 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_checkRECT 0x8009C764u
+#define func_8009C764 checkRECT  /* alias */
+
+/* guessed: PsyQ SDK name 'ClearImage' (psyq_sig), 148 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_ClearImage 0x8009C88Cu
+#define func_8009C88C ClearImage  /* alias */
+
+/* guessed: PsyQ SDK name 'ClearImage2' (psyq_sig), 156 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_ClearImage2 0x8009C920u
+#define func_8009C920 ClearImage2  /* alias */
+
+/* guessed: PsyQ SDK name 'LoadImage' (psyq_sig), 100 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_LoadImage 0x8009C9BCu
+#define func_8009C9BC LoadImage  /* alias */
+
+/* guessed: PsyQ SDK name 'StoreImage' (psyq_sig), 100 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_StoreImage 0x8009CA20u
+#define func_8009CA20 StoreImage  /* alias */
+
+/* guessed: PsyQ SDK name 'MoveImage' (psyq_sig), 168 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MoveImage 0x8009CA84u
+#define func_8009CA84 MoveImage  /* alias */
+
+/* guessed: PsyQ SDK name 'ClearOTag' (psyq_sig), 184 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_ClearOTag 0x8009CB48u
+#define func_8009CB48 ClearOTag  /* alias */
+
+/* guessed: PsyQ SDK name 'ClearOTagR' (psyq_sig), 152 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_ClearOTagR 0x8009CC00u
+#define func_8009CC00 ClearOTagR  /* alias */
+
+/* guessed: PsyQ SDK name 'DrawPrim' (psyq_sig), 96 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DrawPrim 0x8009CC98u
+#define func_8009CC98 DrawPrim  /* alias */
+
+/* guessed: PsyQ SDK name 'DrawOTag' (psyq_sig), 116 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DrawOTag 0x8009CCF8u
+#define func_8009CCF8 DrawOTag  /* alias */
+
+/* guessed: PsyQ SDK name 'PutDrawEnv' (psyq_sig), 260 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_PutDrawEnv 0x8009CD6Cu
+#define func_8009CD6C PutDrawEnv  /* alias */
+
+/* guessed: PsyQ SDK name 'DrawOTagEnv' (psyq_sig), 284 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DrawOTagEnv 0x8009CE70u
+#define func_8009CE70 DrawOTagEnv  /* alias */
+
+/* guessed: PsyQ SDK name 'GetDrawEnv' (psyq_sig), 56 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_GetDrawEnv 0x8009CF8Cu
+#define func_8009CF8C GetDrawEnv  /* alias */
+
+/* guessed: PsyQ SDK name 'PutDispEnv' (psyq_sig), 168 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_PutDispEnv 0x8009CFC4u
+#define func_8009CFC4 PutDispEnv  /* alias */
+
+/* guessed: PsyQ SDK name 'GetDispEnv' (psyq_sig), 56 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_GetDispEnv 0x8009D46Cu
+#define func_8009D46C GetDispEnv  /* alias */
+
+/* guessed: PsyQ SDK name 'GetODE' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_GetODE 0x8009D4A4u
+#define func_8009D4A4 GetODE  /* alias */
+
+/* guessed: PsyQ SDK name 'SetTexWindow' (psyq_sig), 60 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetTexWindow 0x8009D4D4u
+#define func_8009D4D4 SetTexWindow  /* alias */
+
+/* guessed: PsyQ SDK name 'SetDrawArea' (psyq_sig), 132 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetDrawArea 0x8009D510u
+#define func_8009D510 SetDrawArea  /* alias */
+
+/* guessed: PsyQ SDK name 'SetDrawOffset' (psyq_sig), 68 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetDrawOffset 0x8009D594u
+#define func_8009D594 SetDrawOffset  /* alias */
+
+/* guessed: PsyQ SDK name 'SetPriority' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetPriority 0x8009D5D8u
+#define func_8009D5D8 SetPriority  /* alias */
+
+/* guessed: PsyQ SDK name 'SetDrawMode' (psyq_sig), 88 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetDrawMode 0x8009D604u
+#define func_8009D604 SetDrawMode  /* alias */
+
+/* guessed: PsyQ SDK name 'SetDrawEnv' (psyq_sig), 340 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetDrawEnv 0x8009D65Cu
+#define func_8009D65C SetDrawEnv  /* alias */
+
+/* guessed: PsyQ SDK name 'SetDrawEnv2' (psyq_sig), 340 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetDrawEnv2 0x8009D874u
+#define func_8009D874 SetDrawEnv2  /* alias */
+
+/* guessed: PsyQ SDK name 'get_mode' (psyq_sig), 80 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_get_mode 0x8009DB04u
+#define func_8009DB04 get_mode  /* alias */
+
+/* guessed: PsyQ SDK name 'get_cs' (psyq_sig), 64 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_get_cs 0x8009DB5Cu
+#define func_8009DB5C get_cs  /* alias */
+
+/* guessed: PsyQ SDK name 'get_ce' (psyq_sig), 64 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_get_ce 0x8009DC28u
+#define func_8009DC28 get_ce  /* alias */
+
+/* guessed: PsyQ SDK name 'get_ofs' (psyq_sig), 52 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_get_ofs 0x8009DCF4u
+#define func_8009DCF4 get_ofs  /* alias */
+
+/* guessed: PsyQ SDK name 'get_tw' (psyq_sig), 120 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_get_tw 0x8009DD38u
+#define func_8009DD38 get_tw  /* alias */
+
+/* guessed: PsyQ SDK name 'get_dx' (psyq_sig), 64 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_get_dx 0x8009DDBCu
+#define func_8009DDBC get_dx  /* alias */
+
+/* guessed: PsyQ SDK name '_status' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__status 0x8009DE6Cu
+#define func_8009DE6C _status  /* alias */
+
+/* guessed: PsyQ SDK name '_otc' (psyq_sig), 232 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__otc 0x8009DE84u
+#define func_8009DE84 _otc  /* alias */
+
+/* guessed: PsyQ SDK name '_clr' (psyq_sig), 80 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__clr 0x8009DF6Cu
+#define func_8009DF6C _clr  /* alias */
+
+/* guessed: PsyQ SDK name '_dws' (psyq_sig), 100 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__dws 0x8009E1C8u
+#define func_8009E1C8 _dws  /* alias */
+
+/* guessed: PsyQ SDK name '_drs' (psyq_sig), 96 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__drs 0x8009E404u
+#define func_8009E404 _drs  /* alias */
+
+/* guessed: PsyQ SDK name '_ctl' (psyq_sig), 40 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__ctl 0x8009E688u
+#define func_8009E688 _ctl  /* alias */
+
+/* guessed: PsyQ SDK name '_getctl' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__getctl 0x8009E6B0u
+#define func_8009E6B0 _getctl  /* alias */
+
+/* guessed: PsyQ SDK name '_cwb' (psyq_sig), 80 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__cwb 0x8009E6C4u
+#define func_8009E6C4 _cwb  /* alias */
+
+/* guessed: PsyQ SDK name '_cwc' (psyq_sig), 76 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__cwc 0x8009E714u
+#define func_8009E714 _cwc  /* alias */
+
+/* guessed: PsyQ SDK name '_param' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__param 0x8009E760u
+#define func_8009E760 _param  /* alias */
+
+/* guessed: PsyQ SDK name '_addque' (psyq_sig), 36 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__addque 0x8009E790u
+#define func_8009E790 _addque  /* alias */
+
+/* guessed: PsyQ SDK name '_addque2' (psyq_sig), 76 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__addque2 0x8009E7B4u
+#define func_8009E7B4 _addque2  /* alias */
+
+/* guessed: PsyQ SDK name '_exeque' (psyq_sig), 748 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__exeque 0x8009EA94u
+#define func_8009EA94 _exeque  /* alias */
+
+/* guessed: PsyQ SDK name '_reset' (psyq_sig), 292 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__reset 0x8009ED80u
+#define func_8009ED80 _reset  /* alias */
+
+/* guessed: PsyQ SDK name '_sync' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__sync 0x8009EEDCu
+#define func_8009EEDC _sync  /* alias */
+
+/* guessed: PsyQ SDK name 'set_alarm' (psyq_sig), 52 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_set_alarm 0x8009F024u
+#define func_8009F024 set_alarm  /* alias */
+
+/* guessed: PsyQ SDK name 'get_alarm' (psyq_sig), 348 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_get_alarm 0x8009F058u
+#define func_8009F058 get_alarm  /* alias */
+
+/* guessed: PsyQ SDK name '_version' (psyq_sig), 212 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__version 0x8009F1C4u
+#define func_8009F1C4 _version  /* alias */
+
+/* guessed: PsyQ SDK name 'memset' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk_memset_8009F2A0 0x8009F2A0u
+#define func_8009F2A0 sdk_memset_8009F2A0  /* alias */
+
+/* guessed: PsyQ SDK name 'setjmp' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk_setjmp 0x8009F2ECu
+#define func_8009F2EC sdk_setjmp  /* alias */
+
+/* guessed: PsyQ SDK name 'strlen' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk_strlen 0x8009F2FCu
+#define func_8009F2FC sdk_strlen  /* alias */
+
+/* guessed: PsyQ SDK name 'bzero' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk_bzero 0x8009F30Cu
+#define func_8009F30C sdk_bzero  /* alias */
+
+/* confirmed: PsyQ SDK name 'memcpy' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json; evidence: BIOS trampoline A(0x2a) (docs/SYMBOLS.md, T1.6) */
+#define PSX_FN_sdk_memcpy 0x8009F31Cu
+#define func_8009F31C sdk_memcpy  /* alias */
+
+/* guessed: PsyQ SDK name 'memset' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk_memset_8009F32C 0x8009F32Cu
+#define func_8009F32C sdk_memset_8009F32C  /* alias */
+
+/* guessed: PsyQ SDK name 'malloc' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk_malloc 0x8009F33Cu
+#define func_8009F33C sdk_malloc  /* alias */
+
+/* confirmed: PsyQ SDK name 'printf' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json; evidence: BIOS trampoline A(0x3f) (docs/SYMBOLS.md, T1.6) */
+#define PSX_FN_sdk_printf 0x8009F34Cu
+#define func_8009F34C sdk_printf  /* alias */
+
+/* guessed: PsyQ SDK name 'sprintf' (psyq_sig), 144 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk_sprintf 0x8009F35Cu
+#define func_8009F35C sdk_sprintf  /* alias */
+
+/* guessed: PsyQ SDK name 'memchr' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk_memchr 0x8009FBB8u
+#define func_8009FBB8 sdk_memchr  /* alias */
+
+/* guessed: PsyQ SDK name 'memmove' (psyq_sig), 100 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk_memmove 0x8009FBC8u
+#define func_8009FBC8 sdk_memmove  /* alias */
+
+/* guessed: PsyQ SDK name 'InitHeap' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_InitHeap 0x8009FC34u
+#define func_8009FC34 InitHeap  /* alias */
+
+/* guessed: PsyQ SDK name 'FlushCache' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_FlushCache 0x8009FC44u
+#define func_8009FC44 FlushCache  /* alias */
+
+/* guessed: PsyQ SDK name 'GPU_cw' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_GPU_cw 0x8009FC54u
+#define func_8009FC54 GPU_cw  /* alias */
+
+/* guessed: PsyQ SDK name 'DeliverEvent' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DeliverEvent 0x8009FC84u
+#define func_8009FC84 DeliverEvent  /* alias */
+
+/* guessed: PsyQ SDK name 'OpenEvent' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_OpenEvent 0x8009FC94u
+#define func_8009FC94 OpenEvent  /* alias */
+
+/* guessed: PsyQ SDK name 'CloseEvent' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_CloseEvent 0x8009FCA4u
+#define func_8009FCA4 CloseEvent  /* alias */
+
+/* guessed: PsyQ SDK name 'WaitEvent' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_WaitEvent 0x8009FCB4u
+#define func_8009FCB4 WaitEvent  /* alias */
+
+/* guessed: PsyQ SDK name 'TestEvent' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_TestEvent 0x8009FCC4u
+#define func_8009FCC4 TestEvent  /* alias */
+
+/* guessed: PsyQ SDK name 'EnableEvent' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_EnableEvent 0x8009FCD4u
+#define func_8009FCD4 EnableEvent  /* alias */
+
+/* guessed: PsyQ SDK name 'DisableEvent' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DisableEvent 0x8009FCE4u
+#define func_8009FCE4 DisableEvent  /* alias */
+
+/* guessed: PsyQ SDK name 'PAD_dr' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_PAD_dr 0x8009FCF4u
+#define func_8009FCF4 PAD_dr  /* alias */
+
+/* guessed: PsyQ SDK name 'ReturnFromException' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_ReturnFromException 0x8009FD04u
+#define func_8009FD04 ReturnFromException  /* alias */
+
+/* guessed: PsyQ SDK name 'ResetEntryInt' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_ResetEntryInt 0x8009FD14u
+#define func_8009FD14 ResetEntryInt  /* alias */
+
+/* guessed: PsyQ SDK name 'HookEntryInt' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_HookEntryInt 0x8009FD24u
+#define func_8009FD24 HookEntryInt  /* alias */
+
+/* guessed: PsyQ SDK name 'ChangeClearPAD' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_ChangeClearPAD 0x8009FD54u
+#define func_8009FD54 ChangeClearPAD  /* alias */
+
+/* guessed: PsyQ SDK name 'SysEnqIntRP' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SysEnqIntRP 0x8009FD64u
+#define func_8009FD64 SysEnqIntRP  /* alias */
+
+/* guessed: PsyQ SDK name 'SysDeqIntRP' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SysDeqIntRP 0x8009FD74u
+#define func_8009FD74 SysDeqIntRP  /* alias */
+
+/* guessed: PsyQ SDK name 'ChangeClearRCnt' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_ChangeClearRCnt 0x8009FD84u
+#define func_8009FD84 ChangeClearRCnt  /* alias */
+
+/* guessed: PsyQ SDK name 'SetRCnt' (psyq_sig), 116 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetRCnt 0x8009FD94u
+#define func_8009FD94 SetRCnt  /* alias */
+
+/* guessed: PsyQ SDK name 'GetRCnt' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_GetRCnt 0x8009FE30u
+#define func_8009FE30 GetRCnt  /* alias */
+
+/* guessed: PsyQ SDK name 'StartRCnt' (psyq_sig), 52 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_StartRCnt 0x8009FE68u
+#define func_8009FE68 StartRCnt  /* alias */
+
+/* guessed: PsyQ SDK name 'StopRCnt' (psyq_sig), 56 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_StopRCnt 0x8009FE9Cu
+#define func_8009FE9C StopRCnt  /* alias */
+
+/* guessed: PsyQ SDK name 'ResetRCnt' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_ResetRCnt 0x8009FED4u
+#define func_8009FED4 ResetRCnt  /* alias */
+
+/* confirmed: PsyQ SDK name 'MemCardInit' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json; evidence: calls _card_open at 0x800A1B10 (docs/SYMBOLS.md, T1.6) */
+#define PSX_FN_MemCardInit 0x8009FF0Cu
+#define func_8009FF0C MemCardInit  /* alias */
+
+/* guessed: PsyQ SDK name 'MemCardEnd' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MemCardEnd 0x8009FF3Cu
+#define func_8009FF3C MemCardEnd  /* alias */
+
+/* guessed: PsyQ SDK name 'MemCardStart' (psyq_sig), 96 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MemCardStart 0x8009FF5Cu
+#define func_8009FF5C MemCardStart  /* alias */
+
+/* guessed: PsyQ SDK name 'MemCardStop' (psyq_sig), 64 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MemCardStop 0x8009FFBCu
+#define func_8009FFBC MemCardStop  /* alias */
+
+/* guessed: PsyQ SDK name 'MemCardExist' (psyq_sig), 108 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MemCardExist 0x8009FFFCu
+#define func_8009FFFC MemCardExist  /* alias */
+
+/* guessed: PsyQ SDK name '_card_exist_back' (psyq_sig), 376 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__card_exist_back 0x800A0078u
+#define func_800A0078 _card_exist_back  /* alias */
+
+/* guessed: PsyQ SDK name 'MemCardAccept' (psyq_sig), 108 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MemCardAccept 0x800A0258u
+#define func_800A0258 MemCardAccept  /* alias */
+
+/* guessed: PsyQ SDK name '_card_accept_back' (psyq_sig), 60 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__card_accept_back 0x800A02D4u
+#define func_800A02D4 _card_accept_back  /* alias */
+
+/* guessed: PsyQ SDK name 'MemCardOpen' (psyq_sig), 264 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MemCardOpen 0x800A04E0u
+#define func_800A04E0 MemCardOpen  /* alias */
+
+/* guessed: PsyQ SDK name 'MemCardClose' (psyq_sig), 72 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MemCardClose 0x800A0660u
+#define func_800A0660 MemCardClose  /* alias */
+
+/* guessed: PsyQ SDK name 'MemCardReadData' (psyq_sig), 164 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MemCardReadData 0x800A06A8u
+#define func_800A06A8 MemCardReadData  /* alias */
+
+/* guessed: PsyQ SDK name '_card_read_data' (psyq_sig), 308 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__card_read_data 0x800A0768u
+#define func_800A0768 _card_read_data  /* alias */
+
+/* guessed: PsyQ SDK name 'MemCardWriteData' (psyq_sig), 164 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MemCardWriteData 0x800A08B8u
+#define func_800A08B8 MemCardWriteData  /* alias */
+
+/* guessed: PsyQ SDK name '_card_write_data' (psyq_sig), 308 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__card_write_data 0x800A0978u
+#define func_800A0978 _card_write_data  /* alias */
+
+/* guessed: PsyQ SDK name 'MemCardReadFile' (psyq_sig), 212 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MemCardReadFile 0x800A0AC8u
+#define func_800A0AC8 MemCardReadFile  /* alias */
+
+/* guessed: PsyQ SDK name '_card_read_file' (psyq_sig), 64 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__card_read_file 0x800A0BD4u
+#define func_800A0BD4 _card_read_file  /* alias */
+
+/* guessed: PsyQ SDK name 'MemCardWriteFile' (psyq_sig), 212 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MemCardWriteFile 0x800A0D84u
+#define func_800A0D84 MemCardWriteFile  /* alias */
+
+/* guessed: PsyQ SDK name '_card_write_file' (psyq_sig), 64 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__card_write_file 0x800A0E90u
+#define func_800A0E90 _card_write_file  /* alias */
+
+/* guessed: PsyQ SDK name 'MemCardGetDirentry' (psyq_sig), 336 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MemCardGetDirentry 0x800A1040u
+#define func_800A1040 MemCardGetDirentry  /* alias */
+
+/* guessed: PsyQ SDK name 'MemCardCallback' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MemCardCallback 0x800A12B4u
+#define func_800A12B4 MemCardCallback  /* alias */
+
+/* guessed: PsyQ SDK name 'MemCardSync' (psyq_sig), 164 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MemCardSync 0x800A12C8u
+#define func_800A12C8 MemCardSync  /* alias */
+
+/* guessed: PsyQ SDK name 'MemCardCreateFile' (psyq_sig), 320 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MemCardCreateFile 0x800A13B8u
+#define func_800A13B8 MemCardCreateFile  /* alias */
+
+/* guessed: PsyQ SDK name 'MemCardDeleteFile' (psyq_sig), 260 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MemCardDeleteFile 0x800A15E8u
+#define func_800A15E8 MemCardDeleteFile  /* alias */
+
+/* guessed: PsyQ SDK name 'MemCardFormat' (psyq_sig), 136 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MemCardFormat 0x800A17C8u
+#define func_800A17C8 MemCardFormat  /* alias */
+
+/* guessed: PsyQ SDK name 'MemCardUnformat' (psyq_sig), 164 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_MemCardUnformat 0x800A1860u
+#define func_800A1860 MemCardUnformat  /* alias */
+
+/* guessed: PsyQ SDK name '_rslt_to_code' (psyq_sig), 80 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__rslt_to_code 0x800A191Cu
+#define func_800A191C _rslt_to_code  /* alias */
+
+/* guessed: PsyQ SDK name '_callback_handler' (psyq_sig), 160 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__callback_handler 0x800A1974u
+#define func_800A1974 _callback_handler  /* alias */
+
+/* guessed: PsyQ SDK name '_make_file_discrpt' (psyq_sig), 92 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__make_file_discrpt 0x800A1A14u
+#define func_800A1A14 _make_file_discrpt  /* alias */
+
+/* guessed: PsyQ SDK name 'funcEvSpIOE' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_funcEvSpIOE 0x800A1A70u
+#define func_800A1A70 funcEvSpIOE  /* alias */
+
+/* guessed: PsyQ SDK name 'funcEvSpError' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_funcEvSpError 0x800A1A84u
+#define func_800A1A84 funcEvSpError  /* alias */
+
+/* guessed: PsyQ SDK name 'funcEvSpTimeout' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_funcEvSpTimeout 0x800A1A98u
+#define func_800A1A98 funcEvSpTimeout  /* alias */
+
+/* guessed: PsyQ SDK name 'funcEvSpNewcard' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_funcEvSpNewcard 0x800A1AACu
+#define func_800A1AAC funcEvSpNewcard  /* alias */
+
+/* guessed: PsyQ SDK name 'funcEvSpIOEx' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_funcEvSpIOEx 0x800A1AC0u
+#define func_800A1AC0 funcEvSpIOEx  /* alias */
+
+/* guessed: PsyQ SDK name 'funcEvSpErrorx' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_funcEvSpErrorx 0x800A1AD4u
+#define func_800A1AD4 funcEvSpErrorx  /* alias */
+
+/* guessed: PsyQ SDK name 'funcEvSpTimeoutx' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_funcEvSpTimeoutx 0x800A1AE8u
+#define func_800A1AE8 funcEvSpTimeoutx  /* alias */
+
+/* guessed: PsyQ SDK name 'funcEvSpNewcardx' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_funcEvSpNewcardx 0x800A1AFCu
+#define func_800A1AFC funcEvSpNewcardx  /* alias */
+
+/* guessed: PsyQ SDK name '_card_open' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__card_open 0x800A1B10u
+#define func_800A1B10 _card_open  /* alias */
+
+/* guessed: PsyQ SDK name '_card_start' (psyq_sig), 484 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__card_start 0x800A1B40u
+#define func_800A1B40 _card_start  /* alias */
+
+/* guessed: PsyQ SDK name '_card_close' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__card_close 0x800A1D24u
+#define func_800A1D24 _card_close  /* alias */
+
+/* guessed: PsyQ SDK name '_card_stop' (psyq_sig), 184 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__card_stop 0x800A1D44u
+#define func_800A1D44 _card_stop  /* alias */
+
+/* guessed: PsyQ SDK name '_clr_card_event' (psyq_sig), 264 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__clr_card_event 0x800A1DFCu
+#define func_800A1DFC _clr_card_event  /* alias */
+
+/* guessed: PsyQ SDK name '_get_card_event' (psyq_sig), 220 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__get_card_event 0x800A1F04u
+#define func_800A1F04 _get_card_event  /* alias */
+
+/* guessed: PsyQ SDK name '_get_card_event_x' (psyq_sig), 220 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__get_card_event_x 0x800A1FE0u
+#define func_800A1FE0 _get_card_event_x  /* alias */
+
+/* guessed: PsyQ SDK name '_chk_card_event' (psyq_sig), 60 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__chk_card_event 0x800A20BCu
+#define func_800A20BC _chk_card_event  /* alias */
+
+/* guessed: PsyQ SDK name '_chk_card_event_x' (psyq_sig), 60 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__chk_card_event_x 0x800A20F8u
+#define func_800A20F8 _chk_card_event_x  /* alias */
+
+/* guessed: PsyQ SDK name 'strcat' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk_strcat 0x800A2134u
+#define func_800A2134 sdk_strcat  /* alias */
+
+/* guessed: PsyQ SDK name '_bu_init' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__bu_init 0x800A2144u
+#define func_800A2144 _bu_init  /* alias */
+
+/* guessed: PsyQ SDK name 'open' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk_open 0x800A2154u
+#define func_800A2154 sdk_open  /* alias */
+
+/* guessed: PsyQ SDK name 'lseek' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk_lseek 0x800A2164u
+#define func_800A2164 sdk_lseek  /* alias */
+
+/* guessed: PsyQ SDK name 'read' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk_read 0x800A2174u
+#define func_800A2174 sdk_read  /* alias */
+
+/* guessed: PsyQ SDK name 'write' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk_write 0x800A2184u
+#define func_800A2184 sdk_write  /* alias */
+
+/* guessed: PsyQ SDK name 'close' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk_close 0x800A2194u
+#define func_800A2194 sdk_close  /* alias */
+
+/* guessed: PsyQ SDK name 'format' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk_format 0x800A21A4u
+#define func_800A21A4 sdk_format  /* alias */
+
+/* guessed: PsyQ SDK name 'firstfile' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_firstfile 0x800A21B4u
+#define func_800A21B4 firstfile  /* alias */
+
+/* guessed: PsyQ SDK name 'nextfile' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_nextfile 0x800A21C4u
+#define func_800A21C4 nextfile  /* alias */
+
+/* guessed: PsyQ SDK name 'erase' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk_erase 0x800A21D4u
+#define func_800A21D4 sdk_erase  /* alias */
+
+/* guessed: PsyQ SDK name '_card_info' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__card_info 0x800A21E4u
+#define func_800A21E4 _card_info  /* alias */
+
+/* guessed: PsyQ SDK name '_card_load' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__card_load 0x800A21F4u
+#define func_800A21F4 _card_load  /* alias */
+
+/* guessed: PsyQ SDK name '_card_write' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__card_write 0x800A2204u
+#define func_800A2204 _card_write  /* alias */
+
+/* guessed: PsyQ SDK name '_new_card' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__new_card 0x800A2214u
+#define func_800A2214 _new_card  /* alias */
+
+/* guessed: PsyQ SDK name '_card_clear' (psyq_sig), 56 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__card_clear 0x800A2224u
+#define func_800A2224 _card_clear  /* alias */
+
+/* guessed: PsyQ SDK name 'SetInitPadFlag' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetInitPadFlag 0x800A2314u
+#define func_800A2314 SetInitPadFlag  /* alias */
+
+/* guessed: PsyQ SDK name 'ReadInitPadFlag' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_ReadInitPadFlag 0x800A2324u
+#define func_800A2324 ReadInitPadFlag  /* alias */
+
+/* guessed: PsyQ SDK name 'PAD_init' (psyq_sig), 156 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_PAD_init 0x800A2334u
+#define func_800A2334 PAD_init  /* alias */
+
+/* guessed: PsyQ SDK name 'InitPAD' (psyq_sig), 156 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_InitPAD 0x800A23D0u
+#define func_800A23D0 InitPAD  /* alias */
+
+/* guessed: PsyQ SDK name 'StartPAD' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_StartPAD 0x800A246Cu
+#define func_800A246C StartPAD  /* alias */
+
+/* guessed: PsyQ SDK name 'StopPAD' (psyq_sig), 56 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_StopPAD 0x800A249Cu
+#define func_800A249C StopPAD  /* alias */
+
+/* guessed: PsyQ SDK name 'SetPatchPad' (psyq_sig), 128 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SetPatchPad 0x800A24D4u
+#define func_800A24D4 SetPatchPad  /* alias */
+
+/* guessed: PsyQ SDK name 'RemovePatchPad' (psyq_sig), 56 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_RemovePatchPad 0x800A2554u
+#define func_800A2554 RemovePatchPad  /* alias */
+
+/* guessed: PsyQ SDK name '_Pad1' (psyq_sig), 104 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__Pad1 0x800A258Cu
+#define func_800A258C _Pad1  /* alias */
+
+/* guessed: PsyQ SDK name '_IsVSync' (psyq_sig), 64 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__IsVSync 0x800A25F4u
+#define func_800A25F4 _IsVSync  /* alias */
+
+/* guessed: PsyQ SDK name 'InitPAD2' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_InitPAD2 0x800A2634u
+#define func_800A2634 InitPAD2  /* alias */
+
+/* guessed: PsyQ SDK name 'StartPAD2' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_StartPAD2 0x800A2644u
+#define func_800A2644 StartPAD2  /* alias */
+
+/* guessed: PsyQ SDK name 'StopPAD2' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_StopPAD2 0x800A2654u
+#define func_800A2654 StopPAD2  /* alias */
+
+/* guessed: PsyQ SDK name 'PAD_init2' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_PAD_init2 0x800A2664u
+#define func_800A2664 PAD_init2  /* alias */
+
+/* guessed: PsyQ SDK name 'EnablePAD' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_EnablePAD 0x800A2674u
+#define func_800A2674 EnablePAD  /* alias */
+
+/* guessed: PsyQ SDK name 'DisablePAD' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_DisablePAD 0x800A2688u
+#define func_800A2688 DisablePAD  /* alias */
+
+/* guessed: PsyQ SDK name '_patch_pad' (psyq_sig), 104 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__patch_pad 0x800A269Cu
+#define func_800A269C _patch_pad  /* alias */
+
+/* guessed: PsyQ SDK name '_SendPAD' (psyq_sig), 40 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__SendPAD 0x800A2704u
+#define func_800A2704 _SendPAD  /* alias */
+
+/* guessed: PsyQ SDK name '_send_pad' (psyq_sig), 124 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__send_pad 0x800A272Cu
+#define func_800A272C _send_pad  /* alias */
+
+/* guessed: PsyQ SDK name '_remove_ChgclrPAD' (psyq_sig), 92 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__remove_ChgclrPAD 0x800A27C4u
+#define func_800A27C4 _remove_ChgclrPAD  /* alias */
+
+/* guessed: PsyQ SDK name 'InitCARD2' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_InitCARD2 0x800A2824u
+#define func_800A2824 InitCARD2  /* alias */
+
+/* guessed: PsyQ SDK name 'StartCARD2' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_StartCARD2 0x800A2834u
+#define func_800A2834 StartCARD2  /* alias */
+
+/* guessed: PsyQ SDK name 'StopCARD2' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_StopCARD2 0x800A2844u
+#define func_800A2844 StopCARD2  /* alias */
+
+/* guessed: PsyQ SDK name 'UserFuncInit' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_UserFuncInit 0x800A28D4u
+#define func_800A28D4 UserFuncInit  /* alias */
+
+/* guessed: PsyQ SDK name 'UserFuncOpen' (psyq_sig), 112 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_UserFuncOpen 0x800A28E8u
+#define func_800A28E8 UserFuncOpen  /* alias */
+
+/* guessed: PsyQ SDK name 'UserFuncExecute' (psyq_sig), 108 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_UserFuncExecute 0x800A2968u
+#define func_800A2968 UserFuncExecute  /* alias */
+
+/* guessed: PsyQ SDK name 'UserFuncComplete' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_UserFuncComplete 0x800A29D4u
+#define func_800A29D4 UserFuncComplete  /* alias */
+
+/* guessed: PsyQ SDK name '__udivdi3' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_sdk___udivdi3 0x800A43ACu
+#define func_800A43AC sdk___udivdi3  /* alias */
+
+/* guessed: PsyQ SDK name 'SpuSetVoiceAttr' (psyq_sig), 40 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SpuSetVoiceAttr 0x800A8258u
+#define func_800A8258 SpuSetVoiceAttr  /* alias */
+
+/* guessed: PsyQ SDK name 'SpuSetReverbVoice' (psyq_sig), 36 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SpuSetReverbVoice 0x800A8280u
+#define func_800A8280 SpuSetReverbVoice  /* alias */
+
+/* guessed: PsyQ SDK name '_SpuSetAnyVoice' (psyq_sig), 56 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__SpuSetAnyVoice 0x800A82A4u
+#define func_800A82A4 _SpuSetAnyVoice  /* alias */
+
+/* guessed: PsyQ SDK name 'SpuSetKey' (psyq_sig), 492 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SpuSetKey 0x800A84ACu
+#define func_800A84AC SpuSetKey  /* alias */
+
+/* guessed: PsyQ SDK name 'SpuSetKeyOnWithAttr' (psyq_sig), 52 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SpuSetKeyOnWithAttr 0x800A86A8u
+#define func_800A86A8 SpuSetKeyOnWithAttr  /* alias */
+
+/* guessed: PsyQ SDK name '_SpuRSetVoiceAttr' (psyq_sig), 492 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__SpuRSetVoiceAttr 0x800A86DCu
+#define func_800A86DC _SpuRSetVoiceAttr  /* alias */
+
+/* guessed: PsyQ SDK name '_spu_2pitch' (psyq_sig), 144 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__spu_2pitch 0x800A8D18u
+#define func_800A8D18 _spu_2pitch  /* alias */
+
+/* guessed: PsyQ SDK name '_spu_note2pitch' (psyq_sig), 140 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__spu_note2pitch 0x800A8DA8u
+#define func_800A8DA8 _spu_note2pitch  /* alias */
+
+/* guessed: PsyQ SDK name '_spu_pitch2note' (psyq_sig), 60 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN__spu_pitch2note 0x800A8EE4u
+#define func_800A8EE4 _spu_pitch2note  /* alias */
+
+/* guessed: PsyQ SDK name 'SpuRGetAllKeysStatus' (psyq_sig), 180 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SpuRGetAllKeysStatus 0x800A900Cu
+#define func_800A900C SpuRGetAllKeysStatus  /* alias */
+
+/* guessed: PsyQ SDK name 'SpuGetAllKeysStatus' (psyq_sig), 112 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SpuGetAllKeysStatus 0x800A90DCu
+#define func_800A90DC SpuGetAllKeysStatus  /* alias */
+
+/* guessed: PsyQ SDK name 'SpuInitMalloc' (psyq_sig), 76 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SpuInitMalloc 0x800A989Cu
+#define func_800A989C SpuInitMalloc  /* alias */
+
+/* guessed: PsyQ SDK name 'SpuSetTransferMode' (psyq_sig), 28 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SpuSetTransferMode 0x800A98F0u
+#define func_800A98F0 SpuSetTransferMode  /* alias */
+
+/* guessed: PsyQ SDK name 'SpuSetCommonAttr' (psyq_sig), 92 bytes; seeded from T1.6 symbols_sdk.json */
+#define PSX_FN_SpuSetCommonAttr 0x800A9924u
+#define func_800A9924 SpuSetCommonAttr  /* alias */

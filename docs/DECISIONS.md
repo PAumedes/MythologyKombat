@@ -69,3 +69,19 @@ _Filled in by the doc-writer as tasks pass review._
   - Turn on `PSX_DEBUG_TOOLS` in `build\`. Not done. It would change the shipping exe. Open as question 103.
 - Reason: the user run needs no debug server. The automated test does.
 - Details are in `docs/SETUP.md` (T2.5). Open items are in `docs/OPEN_QUESTIONS.md` (103).
+
+## D8 Commit derived symbol and address data, never game data (T2.21)
+
+- Context: question 75 asked whether the derived files may be committed. These are address lists, names, sizes and hashes, not game data.
+- Decision: the user answered yes (Patricio, through the question tool). The following may be committed:
+  - `symbols.toml`
+  - `psx_symbols.h`
+  - `seeds\ghidra_funcs.txt`
+  - `catalog_identity.json`
+  - `game.toml`
+  - `.recomp.json`
+  - Later: `aot\overlays.json` and test routes
+- Still never committed: game data, `generated\`, extracted files, BIOS dumps, and any `work\` output. `CLAUDE.md` lists these rules.
+- Replay recordings are a separate question. See `docs/TASKS.md`, open question 3.
+- Reason: the user's answer. Run `git status` before every commit, as `CLAUDE.md` requires.
+- Details are in `docs/SETUP.md` (T2.21). Open items are in `docs/OPEN_QUESTIONS.md` (140 to 147).

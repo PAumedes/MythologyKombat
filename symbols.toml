@@ -9,3 +9,3507 @@ name = "BootEntry"
 emit = false
 status = "guessed"
 note = "SYSTEM.CNF / EXE entry PC (probe seed)"
+
+# seed_symbols:df74d8814c45
+[[func]]
+pc = 0x80090E68
+name = "sdk___main"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '__main' (psyq_sig), 8 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:842a3d3b9a9d
+[[func]]
+pc = 0x80090E94
+name = "stup1"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'stup1' (psyq_sig), 124 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:3df725664b89
+[[func]]
+pc = 0x80090F10
+name = "stup0"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'stup0' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:78d9687cdea1
+[[func]]
+pc = 0x8009210C
+name = "InitTAP"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'InitTAP' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:68d9649653bb
+[[func]]
+pc = 0x8009212C
+name = "StartTAP"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'StartTAP' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:afd6691cbe44
+[[func]]
+pc = 0x8009214C
+name = "StopTAP"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'StopTAP' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:88b7055d7727
+[[func]]
+pc = 0x8009216C
+name = "SendTAP"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SendTAP' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:3cc6f139acec
+[[func]]
+pc = 0x8009218C
+name = "EnableTAP"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'EnableTAP' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:eb946a229505
+[[func]]
+pc = 0x800921AC
+name = "DisableTAP"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DisableTAP' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:e3e29d59fcb9
+[[func]]
+pc = 0x800921CC
+name = "SpuSetReverb"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SpuSetReverb' (psyq_sig), 176 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:4fff7429afb7
+[[func]]
+pc = 0x8009229C
+name = "_spu_init"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_spu_init' (psyq_sig), 220 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:f47188cb8976
+[[func]]
+pc = 0x80092530
+name = "_spu_FwriteByIO"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_spu_FwriteByIO' (psyq_sig), 280 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:da3b84eb95fc
+[[func]]
+pc = 0x800926FC
+name = "_spu_FiDMA"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_spu_FiDMA' (psyq_sig), 176 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:eca45a5a5e8c
+[[func]]
+pc = 0x800927BC
+name = "_spu_Fr_"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_spu_Fr_' (psyq_sig), 172 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:6ea991dda2bf
+[[func]]
+pc = 0x80092868
+name = "_spu_t"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_spu_t' (psyq_sig), 500 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:94c1d4196c7f
+[[func]]
+pc = 0x80092AF8
+name = "_spu_Fw"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_spu_Fw' (psyq_sig), 112 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:7c44597cec85
+[[func]]
+pc = 0x80092B80
+name = "_spu_Fr"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_spu_Fr' (psyq_sig), 104 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:edab3df9b78c
+[[func]]
+pc = 0x80092BE8
+name = "_spu_FsetRXX"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_spu_FsetRXX' (psyq_sig), 64 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:dd69a51cef70
+[[func]]
+pc = 0x80092C30
+name = "_spu_FsetRXXa"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_spu_FsetRXXa' (psyq_sig), 156 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:a5816b8add02
+[[func]]
+pc = 0x80092CD4
+name = "_spu_FgetRXXa"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_spu_FgetRXXa' (psyq_sig), 52 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:2ed149494725
+[[func]]
+pc = 0x80092D10
+name = "_spu_FsetPCR"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_spu_FsetPCR' (psyq_sig), 80 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:c5e55d3c5212
+[[func]]
+pc = 0x80092D70
+name = "_spu_FsetDelayW"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_spu_FsetDelayW' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:eba923098852
+[[func]]
+pc = 0x80092D9C
+name = "_spu_FsetDelayR"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_spu_FsetDelayR' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:a373acf65ce5
+[[func]]
+pc = 0x80092DC8
+name = "_spu_Fw1ts"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_spu_Fw1ts' (psyq_sig), 72 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:9b87bf671e2e
+[[func]]
+pc = 0x80092E30
+name = "_SpuInit"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_SpuInit' (psyq_sig), 248 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:5df2c0ad21de
+[[func]]
+pc = 0x80092F28
+name = "SpuStart"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SpuStart' (psyq_sig), 124 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:16ca3c7b9c5d
+[[func]]
+pc = 0x80092FA4
+name = "_SpuDataCallback"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_SpuDataCallback' (psyq_sig), 36 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:a933c3c621f4
+[[func]]
+pc = 0x80092FC8
+name = "_SpuIsInAllocateArea"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_SpuIsInAllocateArea' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:57e44b7beb1d
+[[func]]
+pc = 0x80093048
+name = "_SpuIsInAllocateArea_"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_SpuIsInAllocateArea_' (psyq_sig), 56 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:1cbcba289847
+[[func]]
+pc = 0x800930D4
+name = "SpuSetReverbModeParam"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SpuSetReverbModeParam' (psyq_sig), 368 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:f3ec04ae713f
+[[func]]
+pc = 0x800935CC
+name = "_spu_setReverbAttr"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_spu_setReverbAttr' (psyq_sig), 1232 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:291fffc972c0
+[[func]]
+pc = 0x80093A9C
+name = "SpuSetReverbDepth"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SpuSetReverbDepth' (psyq_sig), 120 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:371d30b2d1b4
+[[func]]
+pc = 0x80093B14
+name = "SpuClearReverbWorkArea"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SpuClearReverbWorkArea' (psyq_sig), 156 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:acdb2d361168
+[[func]]
+pc = 0x80093CB0
+name = "SpuRead"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SpuRead' (psyq_sig), 96 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:d717c9f073a3
+[[func]]
+pc = 0x80093D10
+name = "SpuSetTransferStartAddr"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SpuSetTransferStartAddr' (psyq_sig), 72 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:9320dd580763
+[[func]]
+pc = 0x80093D68
+name = "SpuIsTransferCompleted"
+emit = false
+status = "confirmed"
+note = "PsyQ SDK name 'SpuIsTransferCompleted' (psyq_sig), 136 bytes; seeded from T1.6 symbols_sdk.json; evidence: TestEvent loop (docs/SYMBOLS.md, T1.6)"
+
+# seed_symbols:4b6569b669c0
+[[func]]
+pc = 0x80093E10
+name = "PCopen"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'PCopen' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:f946d5389f67
+[[func]]
+pc = 0x80093E40
+name = "PClseek"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'PClseek' (psyq_sig), 36 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:8794eac4fa67
+[[func]]
+pc = 0x80093E64
+name = "PCread"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'PCread' (psyq_sig), 148 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:b9ba7fe9cc3e
+[[func]]
+pc = 0x80093F24
+name = "_SN_read"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_SN_read' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:f7029d22c2d3
+[[func]]
+pc = 0x80093F3C
+name = "sdk___divdi3"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '__divdi3' (psyq_sig), 152 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:3a201fd62109
+[[func]]
+pc = 0x80093FD4
+name = "sdk___udivmoddi4"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '__udivmoddi4' (psyq_sig), 96 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:f40b4a427e2a
+[[func]]
+pc = 0x800945E4
+name = "VSync"
+emit = false
+status = "confirmed"
+note = "PsyQ SDK name 'VSync' (psyq_sig), 132 bytes; seeded from T1.6 symbols_sdk.json; evidence: v_wait at 0x8009472C refers to string 'VSync: timeout' (docs/SYMBOLS.md, T1.6)"
+
+# seed_symbols:ed31270e1219
+[[func]]
+pc = 0x8009472C
+name = "v_wait"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'v_wait' (psyq_sig), 140 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:b0c5e0c61bac
+[[func]]
+pc = 0x800947C8
+name = "ResetCallback"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'ResetCallback' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:2e10cb764e16
+[[func]]
+pc = 0x800947F8
+name = "InterruptCallback"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'InterruptCallback' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:69ccd6574232
+[[func]]
+pc = 0x80094828
+name = "DMACallback"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DMACallback' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:a2787e9db131
+[[func]]
+pc = 0x80094858
+name = "VSyncCallback"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'VSyncCallback' (psyq_sig), 52 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:cb47be5a2954
+[[func]]
+pc = 0x8009488C
+name = "VSyncCallbacks"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'VSyncCallbacks' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:156d05960ae7
+[[func]]
+pc = 0x800948BC
+name = "StopCallback"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'StopCallback' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:93b653d74c90
+[[func]]
+pc = 0x800948EC
+name = "RestartCallback"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'RestartCallback' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:da79c69b3216
+[[func]]
+pc = 0x8009491C
+name = "CheckCallback"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CheckCallback' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:0b46a4023278
+[[func]]
+pc = 0x8009492C
+name = "GetIntrMask"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'GetIntrMask' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:2306e7a5f835
+[[func]]
+pc = 0x80094944
+name = "SetIntrMask"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetIntrMask' (psyq_sig), 28 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:a52fe91ca60a
+[[func]]
+pc = 0x80094960
+name = "startIntr"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'startIntr' (psyq_sig), 220 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:3de6169c15cb
+[[func]]
+pc = 0x80094A3C
+name = "trapIntr"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'trapIntr' (psyq_sig), 436 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:aa0ac9ba195d
+[[func]]
+pc = 0x80094C24
+name = "setIntr"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'setIntr' (psyq_sig), 184 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:116529e6f0e9
+[[func]]
+pc = 0x80094D78
+name = "stopIntr"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'stopIntr' (psyq_sig), 172 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:5d06b0466647
+[[func]]
+pc = 0x80094E24
+name = "restartIntr"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'restartIntr' (psyq_sig), 116 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:5af673b088b4
+[[func]]
+pc = 0x80094EAC
+name = "memclr_80094EAC"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'memclr' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:d65763c89d72
+[[func]]
+pc = 0x80094ED8
+name = "startIntrVSync"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'startIntrVSync' (psyq_sig), 88 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:a967533ba2df
+[[func]]
+pc = 0x80094F30
+name = "trapIntrVSync"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'trapIntrVSync' (psyq_sig), 120 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:f6af0b15c046
+[[func]]
+pc = 0x80094FA8
+name = "setIntrVSync"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'setIntrVSync' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:f88428ab16d4
+[[func]]
+pc = 0x80094FD4
+name = "memclr_80094FD4"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'memclr' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:e1548f11deb5
+[[func]]
+pc = 0x80095000
+name = "startIntrDMA"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'startIntrDMA' (psyq_sig), 80 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:371ca7edfffa
+[[func]]
+pc = 0x80095050
+name = "trapIntrDMA"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'trapIntrDMA' (psyq_sig), 388 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:96f87bc16689
+[[func]]
+pc = 0x800951D4
+name = "setIntrDMA"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'setIntrDMA' (psyq_sig), 160 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:422390eca6a0
+[[func]]
+pc = 0x8009527C
+name = "memclr_8009527C"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'memclr' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:98c957652a01
+[[func]]
+pc = 0x800952A8
+name = "StSetRing"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'StSetRing' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:93f47ce882fd
+[[func]]
+pc = 0x800952D8
+name = "CdInit"
+emit = false
+status = "confirmed"
+note = "PsyQ SDK name 'CdInit' (psyq_sig), 132 bytes; seeded from T1.6 symbols_sdk.json; evidence: string 'CdInit: Init failed' (docs/SYMBOLS.md, T1.6)"
+
+# seed_symbols:34dbd30e3a26
+[[func]]
+pc = 0x80095370
+name = "def_cbsync"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'def_cbsync' (psyq_sig), 40 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:275a24013c5b
+[[func]]
+pc = 0x80095398
+name = "def_cbready"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'def_cbready' (psyq_sig), 40 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:1413f450e18f
+[[func]]
+pc = 0x800953C0
+name = "def_cbread"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'def_cbread' (psyq_sig), 40 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:07bfbd39d868
+[[func]]
+pc = 0x800953E8
+name = "CdStatus"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdStatus' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:febcf246002e
+[[func]]
+pc = 0x800953F8
+name = "CdMode"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdMode' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:bf501c3b25a1
+[[func]]
+pc = 0x80095408
+name = "CdLastCom"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdLastCom' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:0ef9c8a6499f
+[[func]]
+pc = 0x80095418
+name = "CdLastPos"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdLastPos' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:7bcf5b41e348
+[[func]]
+pc = 0x80095428
+name = "CdReset"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdReset' (psyq_sig), 88 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:9fdd875c8d38
+[[func]]
+pc = 0x80095494
+name = "CdFlush"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdFlush' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:b67be60ed5bc
+[[func]]
+pc = 0x800954B4
+name = "CdSetDebug"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdSetDebug' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:f52f99bcf950
+[[func]]
+pc = 0x800954CC
+name = "CdComstr"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdComstr' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:f2ba16d09cfd
+[[func]]
+pc = 0x80095500
+name = "CdIntstr"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdIntstr' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:314a24c5455e
+[[func]]
+pc = 0x80095534
+name = "CdSync"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdSync' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:18c237a90855
+[[func]]
+pc = 0x80095554
+name = "CdReady"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdReady' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:cd66db2b6a85
+[[func]]
+pc = 0x80095574
+name = "CdSyncCallback"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdSyncCallback' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:c98c047d4c19
+[[func]]
+pc = 0x8009558C
+name = "CdReadyCallback"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdReadyCallback' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:1d71c776eb1a
+[[func]]
+pc = 0x800955A4
+name = "CdControl"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdControl' (psyq_sig), 312 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:e46a9bf6258c
+[[func]]
+pc = 0x800956DC
+name = "CdControlF"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdControlF' (psyq_sig), 300 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:287a16e76de7
+[[func]]
+pc = 0x80095808
+name = "CdControlB"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdControlB' (psyq_sig), 280 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:eb2b45d7fcba
+[[func]]
+pc = 0x8009594C
+name = "CdMix"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdMix' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:7bb254365462
+[[func]]
+pc = 0x8009596C
+name = "CdGetSector"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdGetSector' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:4a513e30725d
+[[func]]
+pc = 0x8009598C
+name = "CdGetSector2"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdGetSector2' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:26989e0171fb
+[[func]]
+pc = 0x800959AC
+name = "CdDataCallback"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdDataCallback' (psyq_sig), 36 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:7c7f58495128
+[[func]]
+pc = 0x800959D0
+name = "CdDataSync"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdDataSync' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:0532dc537b73
+[[func]]
+pc = 0x800959F0
+name = "CdIntToPos"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdIntToPos' (psyq_sig), 260 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:8a85abe5e0d6
+[[func]]
+pc = 0x80095AF4
+name = "CdPosToInt"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdPosToInt' (psyq_sig), 128 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:e0f4f2ff731e
+[[func]]
+pc = 0x80095B74
+name = "getintr"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'getintr' (psyq_sig), 100 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:b652c2c70c0e
+[[func]]
+pc = 0x800960FC
+name = "CD_sync"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CD_sync' (psyq_sig), 300 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:6b8d03fd0c35
+[[func]]
+pc = 0x8009637C
+name = "CD_ready"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CD_ready' (psyq_sig), 308 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:a71ab4144d02
+[[func]]
+pc = 0x80096648
+name = "CD_cw"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CD_cw' (psyq_sig), 728 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:31f9e8cc0286
+[[func]]
+pc = 0x80096A64
+name = "CD_vol"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CD_vol' (psyq_sig), 136 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:07bfd1299d13
+[[func]]
+pc = 0x80096AEC
+name = "CD_flush"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CD_flush' (psyq_sig), 224 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:c8785098e3f5
+[[func]]
+pc = 0x80096BCC
+name = "CD_initvol"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CD_initvol' (psyq_sig), 244 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:460bc27abb61
+[[func]]
+pc = 0x80096CC0
+name = "CD_initintr"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CD_initintr' (psyq_sig), 80 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:0a1bf9abe291
+[[func]]
+pc = 0x80096D10
+name = "CD_init"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CD_init' (psyq_sig), 492 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:0fb31c5c9995
+[[func]]
+pc = 0x80096EFC
+name = "CD_datasync"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CD_datasync' (psyq_sig), 284 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:e72155a0cd02
+[[func]]
+pc = 0x80097068
+name = "CD_getsector"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CD_getsector' (psyq_sig), 256 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:041405104d58
+[[func]]
+pc = 0x80097168
+name = "CD_getsector2"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CD_getsector2' (psyq_sig), 240 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:cf13ad2ae266
+[[func]]
+pc = 0x80097258
+name = "CD_set_test_parmnum"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CD_set_test_parmnum' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:64f7886afe89
+[[func]]
+pc = 0x80097268
+name = "callback"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'callback' (psyq_sig), 52 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:f309c27e260b
+[[func]]
+pc = 0x8009734C
+name = "cb_read"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'cb_read' (psyq_sig), 164 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:481caa9c898f
+[[func]]
+pc = 0x8009761C
+name = "cb_data"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'cb_data' (psyq_sig), 252 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:7393b4303546
+[[func]]
+pc = 0x80097718
+name = "cd_read_retry"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'cd_read_retry' (psyq_sig), 500 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:ade1bfe538e8
+[[func]]
+pc = 0x8009792C
+name = "CdReadBreak"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdReadBreak' (psyq_sig), 156 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:4c1663d1e0db
+[[func]]
+pc = 0x800979C8
+name = "CdRead"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdRead' (psyq_sig), 60 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:8a0de83328c6
+[[func]]
+pc = 0x80097ACC
+name = "CdReadSync"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdReadSync' (psyq_sig), 144 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:defd40fcdb9a
+[[func]]
+pc = 0x80097B98
+name = "CdReadCallback"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdReadCallback' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:ab0daa568167
+[[func]]
+pc = 0x80097BB0
+name = "CdReadMode"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdReadMode' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:d5499fd90058
+[[func]]
+pc = 0x80097BC8
+name = "CdRead2"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CdRead2' (psyq_sig), 80 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:8d360916b3de
+[[func]]
+pc = 0x80097C5C
+name = "StCdInterrupt2"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'StCdInterrupt2' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:eb89303f64c7
+[[func]]
+pc = 0x80097C7C
+name = "StClearRing"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'StClearRing' (psyq_sig), 96 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:46ae8cfcd4ed
+[[func]]
+pc = 0x80097D60
+name = "data_ready_callback"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'data_ready_callback' (psyq_sig), 144 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:10d6d507c694
+[[func]]
+pc = 0x80097DF0
+name = "StGetBackloc"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'StGetBackloc' (psyq_sig), 76 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:15ba6ab69f17
+[[func]]
+pc = 0x80097E50
+name = "StSetStream"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'StSetStream' (psyq_sig), 136 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:c94944368960
+[[func]]
+pc = 0x80097ED8
+name = "StFreeRing"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'StFreeRing' (psyq_sig), 172 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:c29c635ebfb6
+[[func]]
+pc = 0x80097F90
+name = "init_ring_status"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'init_ring_status' (psyq_sig), 60 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:e6aa6de5537e
+[[func]]
+pc = 0x80097FCC
+name = "StGetNext"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'StGetNext' (psyq_sig), 196 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:7860f5e04dc7
+[[func]]
+pc = 0x800980B0
+name = "StCdInterrupt"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'StCdInterrupt' (psyq_sig), 624 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:8fa5988cb018
+[[func]]
+pc = 0x80098A20
+name = "mem2mem"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'mem2mem' (psyq_sig), 52 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:5eee61382378
+[[func]]
+pc = 0x80098A54
+name = "dma_execute"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'dma_execute' (psyq_sig), 140 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:bb54153b7428
+[[func]]
+pc = 0x80098C10
+name = "DsSyncCallback"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DsSyncCallback' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:11ff5d3bdc7b
+[[func]]
+pc = 0x80098C24
+name = "DsReadyCallback"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DsReadyCallback' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:c9944c618831
+[[func]]
+pc = 0x80098C38
+name = "DsDataCallback"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DsDataCallback' (psyq_sig), 36 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:f5cb873a665a
+[[func]]
+pc = 0x80098C5C
+name = "DecDCTReset"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DecDCTReset' (psyq_sig), 56 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:e43260667caf
+[[func]]
+pc = 0x80098C94
+name = "DecDCTGetEnv"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DecDCTGetEnv' (psyq_sig), 140 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:bf0a6b646ce8
+[[func]]
+pc = 0x80098D20
+name = "DecDCTPutEnv"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DecDCTPutEnv' (psyq_sig), 156 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:ca6f95c001b6
+[[func]]
+pc = 0x80098DBC
+name = "DecDCTBufSize"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DecDCTBufSize' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:9b147d8d7d2e
+[[func]]
+pc = 0x80098DC8
+name = "DecDCTin"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DecDCTin' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:9502afa4dab8
+[[func]]
+pc = 0x80098E44
+name = "DecDCTout"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DecDCTout' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:e338fe81b084
+[[func]]
+pc = 0x80098E64
+name = "DecDCTinSync"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DecDCTinSync' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:17bd8a1f3010
+[[func]]
+pc = 0x80098EA0
+name = "DecDCToutSync"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DecDCToutSync' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:e4641073955c
+[[func]]
+pc = 0x80098EDC
+name = "DecDCTinCallback"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DecDCTinCallback' (psyq_sig), 36 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:1abd45fe9e4d
+[[func]]
+pc = 0x80098F00
+name = "DecDCToutCallback"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DecDCToutCallback' (psyq_sig), 36 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:2c6e6e4f904c
+[[func]]
+pc = 0x80098F24
+name = "MDEC_reset"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MDEC_reset' (psyq_sig), 220 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:25c7f02bb24d
+[[func]]
+pc = 0x80099020
+name = "MDEC_in"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MDEC_in' (psyq_sig), 148 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:e063052ab97a
+[[func]]
+pc = 0x800990B4
+name = "MDEC_out"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MDEC_out' (psyq_sig), 144 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:c37dba8bed25
+[[func]]
+pc = 0x80099144
+name = "MDEC_in_sync"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MDEC_in_sync' (psyq_sig), 136 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:223622b803cc
+[[func]]
+pc = 0x800991DC
+name = "MDEC_out_sync"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MDEC_out_sync' (psyq_sig), 136 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:cb216dca6434
+[[func]]
+pc = 0x80099274
+name = "MDEC_status"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MDEC_status' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:0080226b5be2
+[[func]]
+pc = 0x8009928C
+name = "timeout"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'timeout' (psyq_sig), 304 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:77bdb13b5602
+[[func]]
+pc = 0x800993C0
+name = "DecDCTvlcSize"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DecDCTvlcSize' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:b92beba0657b
+[[func]]
+pc = 0x800993F0
+name = "DecDCTvlc"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DecDCTvlc' (psyq_sig), 832 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:001953deafc4
+[[func]]
+pc = 0x80099754
+name = "rsin"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'rsin' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:b73f094881bc
+[[func]]
+pc = 0x80099790
+name = "sin_1"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'sin_1' (psyq_sig), 136 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:b557d3892916
+[[func]]
+pc = 0x80099820
+name = "rcos"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'rcos' (psyq_sig), 152 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:3bfcf2d88b30
+[[func]]
+pc = 0x800998C0
+name = "SetFogNearFar"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetFogNearFar' (psyq_sig), 268 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:0c1be3268a42
+[[func]]
+pc = 0x800999CC
+name = "csin_1"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'csin_1' (psyq_sig), 144 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:2e7f7752bdf6
+[[func]]
+pc = 0x80099A6C
+name = "sdk_csin"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'csin' (psyq_sig), 296 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:4fb8ac65cb19
+[[func]]
+pc = 0x80099BA4
+name = "sdk_csincos"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'csincos' (psyq_sig), 172 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:d861529015e6
+[[func]]
+pc = 0x80099CC4
+name = "sdk_catan"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'catan' (psyq_sig), 164 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:ef08fa5aed44
+[[func]]
+pc = 0x80099DA0
+name = "InitGeom"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'InitGeom' (psyq_sig), 128 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:7d89c9e19b2c
+[[func]]
+pc = 0x80099E28
+name = "SquareRoot0"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SquareRoot0' (psyq_sig), 124 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:30d861777174
+[[func]]
+pc = 0x80099EB8
+name = "InvSquareRoot"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'InvSquareRoot' (psyq_sig), 132 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:abe6fddc9df8
+[[func]]
+pc = 0x80099F44
+name = "VectorNormalS"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'VectorNormalS' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:39377af20948
+[[func]]
+pc = 0x80099F58
+name = "VectorNormal"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'VectorNormal' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:fd74a8aaa208
+[[func]]
+pc = 0x80099F84
+name = "VectorNormalSS"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'VectorNormalSS' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:ed9e3c95e2ac
+[[func]]
+pc = 0x8009A070
+name = "MatrixNormal"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MatrixNormal' (psyq_sig), 228 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:e172956bee30
+[[func]]
+pc = 0x8009A158
+name = "MulMatrix0"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MulMatrix0' (psyq_sig), 268 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:a1eee37b59f5
+[[func]]
+pc = 0x8009A268
+name = "ReadRotMatrix"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'ReadRotMatrix' (psyq_sig), 72 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:ff0e1b56f916
+[[func]]
+pc = 0x8009A2E8
+name = "ScaleMatrix"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'ScaleMatrix' (psyq_sig), 292 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:9fd70d530481
+[[func]]
+pc = 0x8009A418
+name = "SetRotMatrix"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetRotMatrix' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:7ff2ce240e8c
+[[func]]
+pc = 0x8009A448
+name = "SetColorMatrix"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetColorMatrix' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:986ff6a991ab
+[[func]]
+pc = 0x8009A478
+name = "SetTransMatrix"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetTransMatrix' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:a69915f06c15
+[[func]]
+pc = 0x8009A498
+name = "SetVertex0"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetVertex0' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:0e425964dc9a
+[[func]]
+pc = 0x8009A4A8
+name = "SetVertex1"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetVertex1' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:4fccefe66365
+[[func]]
+pc = 0x8009A4B8
+name = "SetVertex2"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetVertex2' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:64337b220182
+[[func]]
+pc = 0x8009A4C8
+name = "SetVertexTri"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetVertexTri' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:ab66166f14e2
+[[func]]
+pc = 0x8009A4E8
+name = "SetRGBfifo"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetRGBfifo' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:481acbf0c90a
+[[func]]
+pc = 0x8009A4FC
+name = "SetIR123"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetIR123' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:69e894ecaf82
+[[func]]
+pc = 0x8009A510
+name = "SetIR0"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetIR0' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:ceb0841c5c4e
+[[func]]
+pc = 0x8009A51C
+name = "SetSZfifo3"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetSZfifo3' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:5228c2ba749c
+[[func]]
+pc = 0x8009A530
+name = "SetSZfifo4"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetSZfifo4' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:a23e29063319
+[[func]]
+pc = 0x8009A548
+name = "SetSXSYfifo"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetSXSYfifo' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:aa0497bec3a4
+[[func]]
+pc = 0x8009A55C
+name = "SetRii"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetRii' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:86e99017d596
+[[func]]
+pc = 0x8009A570
+name = "SetMAC123"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetMAC123' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:1952c7708e80
+[[func]]
+pc = 0x8009A584
+name = "SetData32"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetData32' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:400d03ffcba0
+[[func]]
+pc = 0x8009A590
+name = "SetDQA"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetDQA' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:c67c0d4153e0
+[[func]]
+pc = 0x8009A59C
+name = "SetDQB"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetDQB' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:59f8afe12c26
+[[func]]
+pc = 0x8009A5A8
+name = "SetBackColor"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetBackColor' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:dbac572914f2
+[[func]]
+pc = 0x8009A5C8
+name = "SetFarColor"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetFarColor' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:2ae9c4ad25c1
+[[func]]
+pc = 0x8009A618
+name = "RotTransPers"
+emit = false
+status = "confirmed"
+note = "PsyQ SDK name 'RotTransPers' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json; evidence: lwc2 and COP2 RTPS word 0x4A180001 (docs/SYMBOLS.md, T1.6)"
+
+# seed_symbols:3f539315433f
+[[func]]
+pc = 0x8009A648
+name = "RotTrans"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'RotTrans' (psyq_sig), 40 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:4eb6d5d765fa
+[[func]]
+pc = 0x8009A678
+name = "RotMatrix"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'RotMatrix' (psyq_sig), 100 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:42f6f69efa09
+[[func]]
+pc = 0x8009A908
+name = "RotMatrixYXZ"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'RotMatrixYXZ' (psyq_sig), 104 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:f789a0e23ea2
+[[func]]
+pc = 0x8009AB98
+name = "RotMatrixZ"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'RotMatrixZ' (psyq_sig), 100 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:edeb1844fb2b
+[[func]]
+pc = 0x8009AD38
+name = "_patch_gte"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_patch_gte' (psyq_sig), 104 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:498079261cc1
+[[func]]
+pc = 0x8009ADD8
+name = "LoadTPage"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'LoadTPage' (psyq_sig), 168 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:67519405abf9
+[[func]]
+pc = 0x8009AEC4
+name = "LoadClut"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'LoadClut' (psyq_sig), 104 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:95c3252820ae
+[[func]]
+pc = 0x8009AF2C
+name = "LoadClut2"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'LoadClut2' (psyq_sig), 104 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:89df85d24997
+[[func]]
+pc = 0x8009AF94
+name = "SetDefDrawEnv"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetDefDrawEnv' (psyq_sig), 120 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:56bf4b1b0d8d
+[[func]]
+pc = 0x8009B04C
+name = "SetDefDispEnv"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetDefDispEnv' (psyq_sig), 60 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:75307c232c29
+[[func]]
+pc = 0x8009B0B0
+name = "SetDumpFnt"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetDumpFnt' (psyq_sig), 64 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:c3966570ae08
+[[func]]
+pc = 0x8009B0F0
+name = "FntLoad"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'FntLoad' (psyq_sig), 164 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:d64c65a5153f
+[[func]]
+pc = 0x8009B194
+name = "FntOpen"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'FntOpen' (psyq_sig), 648 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:7a342f5b57fb
+[[func]]
+pc = 0x8009B44C
+name = "FntFlush"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'FntFlush' (psyq_sig), 408 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:b00ee2535f31
+[[func]]
+pc = 0x8009B764
+name = "FntPrint"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'FntPrint' (psyq_sig), 364 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:bf8a6e0404e0
+[[func]]
+pc = 0x8009BB44
+name = "GetTPage"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'GetTPage' (psyq_sig), 60 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:870a3619c892
+[[func]]
+pc = 0x8009BB80
+name = "GetClut"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'GetClut' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:688545da28e4
+[[func]]
+pc = 0x8009BB98
+name = "DumpTPage"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DumpTPage' (psyq_sig), 96 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:c47f87b25ff5
+[[func]]
+pc = 0x8009BBF8
+name = "DumpClut"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DumpClut' (psyq_sig), 64 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:011c57a4017d
+[[func]]
+pc = 0x8009BC38
+name = "NextPrim"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'NextPrim' (psyq_sig), 28 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:0b5149d5c871
+[[func]]
+pc = 0x8009BC54
+name = "IsEndPrim"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'IsEndPrim' (psyq_sig), 28 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:ac5ca81c66e9
+[[func]]
+pc = 0x8009BC70
+name = "AddPrim"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'AddPrim' (psyq_sig), 60 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:c21ec2736bc8
+[[func]]
+pc = 0x8009BCAC
+name = "AddPrims"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'AddPrims' (psyq_sig), 60 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:e7cf507d94eb
+[[func]]
+pc = 0x8009BCE8
+name = "CatPrim"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CatPrim' (psyq_sig), 36 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:69285d403797
+[[func]]
+pc = 0x8009BD0C
+name = "TermPrim"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'TermPrim' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:42caa41cdf60
+[[func]]
+pc = 0x8009BD24
+name = "SetSemiTrans"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetSemiTrans' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:3937748eebaa
+[[func]]
+pc = 0x8009BD4C
+name = "SetShadeTex"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetShadeTex' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:189210578af5
+[[func]]
+pc = 0x8009BD74
+name = "SetPolyF3"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetPolyF3' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:554c474fb03a
+[[func]]
+pc = 0x8009BD88
+name = "SetPolyFT3"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetPolyFT3' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:3a222e730a8e
+[[func]]
+pc = 0x8009BD9C
+name = "SetPolyG3"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetPolyG3' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:4aabb38b36fe
+[[func]]
+pc = 0x8009BDB0
+name = "SetPolyGT3"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetPolyGT3' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:469191cdff00
+[[func]]
+pc = 0x8009BDC4
+name = "SetPolyF4"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetPolyF4' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:07314f6faa7f
+[[func]]
+pc = 0x8009BDD8
+name = "SetPolyFT4"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetPolyFT4' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:9f610d73242b
+[[func]]
+pc = 0x8009BDEC
+name = "SetPolyG4"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetPolyG4' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:f30e30877544
+[[func]]
+pc = 0x8009BE00
+name = "SetPolyGT4"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetPolyGT4' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:276f3902138c
+[[func]]
+pc = 0x8009BE14
+name = "SetSprt8"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetSprt8' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:132997666d81
+[[func]]
+pc = 0x8009BE28
+name = "SetSprt16"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetSprt16' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:7e643606faec
+[[func]]
+pc = 0x8009BE3C
+name = "SetSprt"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetSprt' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:dc6918a27667
+[[func]]
+pc = 0x8009BE50
+name = "SetTile1"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetTile1' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:60a1e1f46527
+[[func]]
+pc = 0x8009BE64
+name = "SetTile8"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetTile8' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:809afa2bf84b
+[[func]]
+pc = 0x8009BE78
+name = "SetTile16"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetTile16' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:de2229f169fb
+[[func]]
+pc = 0x8009BE8C
+name = "SetTile"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetTile' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:0e870775cf9c
+[[func]]
+pc = 0x8009BEA0
+name = "SetLineF2"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetLineF2' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:1a0c3621a6b8
+[[func]]
+pc = 0x8009BEB4
+name = "SetLineG2"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetLineG2' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:0800f7b31f3e
+[[func]]
+pc = 0x8009BEC8
+name = "SetLineF3"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetLineF3' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:849dc2ef4edc
+[[func]]
+pc = 0x8009BEE8
+name = "SetLineG3"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetLineG3' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:d5cd1485aa83
+[[func]]
+pc = 0x8009BF08
+name = "SetLineF4"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetLineF4' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:5a34a5a52a04
+[[func]]
+pc = 0x8009BF28
+name = "SetLineG4"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetLineG4' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:201e0b5c86bd
+[[func]]
+pc = 0x8009BF48
+name = "SetDrawTPage"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetDrawTPage' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:6500963ca5d3
+[[func]]
+pc = 0x8009BF74
+name = "SetDrawMove"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetDrawMove' (psyq_sig), 96 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:9af0b7f403d0
+[[func]]
+pc = 0x8009BFD4
+name = "SetDrawLoad"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetDrawLoad' (psyq_sig), 108 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:6ba4edebb158
+[[func]]
+pc = 0x8009C040
+name = "MargePrim"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MargePrim' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:001f0389b3c5
+[[func]]
+pc = 0x8009C078
+name = "DumpDrawEnv"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DumpDrawEnv' (psyq_sig), 276 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:03b7c2afe569
+[[func]]
+pc = 0x8009C18C
+name = "DumpDispEnv"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DumpDispEnv' (psyq_sig), 172 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:be7a02a3d18a
+[[func]]
+pc = 0x8009C238
+name = "ResetGraph"
+emit = false
+status = "confirmed"
+note = "PsyQ SDK name 'ResetGraph' (psyq_sig), 284 bytes; seeded from T1.6 symbols_sdk.json; evidence: string 'ResetGraph:jtb=' (docs/SYMBOLS.md, T1.6)"
+
+# seed_symbols:3db08bb41ece
+[[func]]
+pc = 0x8009C3BC
+name = "SetGraphReverse"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetGraphReverse' (psyq_sig), 140 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:da131cd1376a
+[[func]]
+pc = 0x8009C4D0
+name = "SetGraphDebug"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetGraphDebug' (psyq_sig), 100 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:2ba8db847b5b
+[[func]]
+pc = 0x8009C534
+name = "SetGraphQueue"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetGraphQueue' (psyq_sig), 172 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:f17f39ae16f2
+[[func]]
+pc = 0x8009C5E0
+name = "GetGraphType"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'GetGraphType' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:938e224cce37
+[[func]]
+pc = 0x8009C5F0
+name = "GetGraphDebug"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'GetGraphDebug' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:eda6bea9f5b4
+[[func]]
+pc = 0x8009C600
+name = "DrawSyncCallback"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DrawSyncCallback' (psyq_sig), 92 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:ac4d69f79a5c
+[[func]]
+pc = 0x8009C65C
+name = "SetDispMask"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetDispMask' (psyq_sig), 156 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:bd3cac666fdb
+[[func]]
+pc = 0x8009C6F8
+name = "DrawSync"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DrawSync' (psyq_sig), 108 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:b586f28bca0d
+[[func]]
+pc = 0x8009C764
+name = "checkRECT"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'checkRECT' (psyq_sig), 216 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:6512ac244900
+[[func]]
+pc = 0x8009C88C
+name = "ClearImage"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'ClearImage' (psyq_sig), 148 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:4cf8cc88542d
+[[func]]
+pc = 0x8009C920
+name = "ClearImage2"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'ClearImage2' (psyq_sig), 156 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:0963e2982649
+[[func]]
+pc = 0x8009C9BC
+name = "LoadImage"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'LoadImage' (psyq_sig), 100 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:89eecd7c93ac
+[[func]]
+pc = 0x8009CA20
+name = "StoreImage"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'StoreImage' (psyq_sig), 100 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:0302ea8a67b7
+[[func]]
+pc = 0x8009CA84
+name = "MoveImage"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MoveImage' (psyq_sig), 168 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:c927d436568e
+[[func]]
+pc = 0x8009CB48
+name = "ClearOTag"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'ClearOTag' (psyq_sig), 184 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:39c7e61a343c
+[[func]]
+pc = 0x8009CC00
+name = "ClearOTagR"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'ClearOTagR' (psyq_sig), 152 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:b416e3054f44
+[[func]]
+pc = 0x8009CC98
+name = "DrawPrim"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DrawPrim' (psyq_sig), 96 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:812390486197
+[[func]]
+pc = 0x8009CCF8
+name = "DrawOTag"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DrawOTag' (psyq_sig), 116 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:100ac168e807
+[[func]]
+pc = 0x8009CD6C
+name = "PutDrawEnv"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'PutDrawEnv' (psyq_sig), 260 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:f0c02e167e68
+[[func]]
+pc = 0x8009CE70
+name = "DrawOTagEnv"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DrawOTagEnv' (psyq_sig), 284 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:d20efbe5f0f7
+[[func]]
+pc = 0x8009CF8C
+name = "GetDrawEnv"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'GetDrawEnv' (psyq_sig), 56 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:4f938b42b5c6
+[[func]]
+pc = 0x8009CFC4
+name = "PutDispEnv"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'PutDispEnv' (psyq_sig), 168 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:6e758c019b83
+[[func]]
+pc = 0x8009D46C
+name = "GetDispEnv"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'GetDispEnv' (psyq_sig), 56 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:0e12b2f0eff5
+[[func]]
+pc = 0x8009D4A4
+name = "GetODE"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'GetODE' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:14dc5e0dac3f
+[[func]]
+pc = 0x8009D4D4
+name = "SetTexWindow"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetTexWindow' (psyq_sig), 60 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:740c9a774ad5
+[[func]]
+pc = 0x8009D510
+name = "SetDrawArea"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetDrawArea' (psyq_sig), 132 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:82d12896a8a7
+[[func]]
+pc = 0x8009D594
+name = "SetDrawOffset"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetDrawOffset' (psyq_sig), 68 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:f2c0f2ca3e5b
+[[func]]
+pc = 0x8009D5D8
+name = "SetPriority"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetPriority' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:8f4d3390183d
+[[func]]
+pc = 0x8009D604
+name = "SetDrawMode"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetDrawMode' (psyq_sig), 88 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:51efb53ea72c
+[[func]]
+pc = 0x8009D65C
+name = "SetDrawEnv"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetDrawEnv' (psyq_sig), 340 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:a01564a4f1d9
+[[func]]
+pc = 0x8009D874
+name = "SetDrawEnv2"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetDrawEnv2' (psyq_sig), 340 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:ef8b854efc23
+[[func]]
+pc = 0x8009DB04
+name = "get_mode"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'get_mode' (psyq_sig), 80 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:ff99a7d1ac40
+[[func]]
+pc = 0x8009DB5C
+name = "get_cs"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'get_cs' (psyq_sig), 64 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:5791da051a46
+[[func]]
+pc = 0x8009DC28
+name = "get_ce"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'get_ce' (psyq_sig), 64 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:67d6220b9787
+[[func]]
+pc = 0x8009DCF4
+name = "get_ofs"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'get_ofs' (psyq_sig), 52 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:906a40cf33b3
+[[func]]
+pc = 0x8009DD38
+name = "get_tw"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'get_tw' (psyq_sig), 120 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:42a39765376e
+[[func]]
+pc = 0x8009DDBC
+name = "get_dx"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'get_dx' (psyq_sig), 64 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:7e417822e207
+[[func]]
+pc = 0x8009DE6C
+name = "_status"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_status' (psyq_sig), 24 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:7cade2d32cc3
+[[func]]
+pc = 0x8009DE84
+name = "_otc"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_otc' (psyq_sig), 232 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:b2cf9b8c0250
+[[func]]
+pc = 0x8009DF6C
+name = "_clr"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_clr' (psyq_sig), 80 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:cd9c8275d3c6
+[[func]]
+pc = 0x8009E1C8
+name = "_dws"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_dws' (psyq_sig), 100 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:2e70310c86be
+[[func]]
+pc = 0x8009E404
+name = "_drs"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_drs' (psyq_sig), 96 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:3a87ff55baee
+[[func]]
+pc = 0x8009E688
+name = "_ctl"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_ctl' (psyq_sig), 40 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:e51cd093fdb9
+[[func]]
+pc = 0x8009E6B0
+name = "_getctl"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_getctl' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:5209137694a0
+[[func]]
+pc = 0x8009E6C4
+name = "_cwb"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_cwb' (psyq_sig), 80 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:8a88972e7be6
+[[func]]
+pc = 0x8009E714
+name = "_cwc"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_cwc' (psyq_sig), 76 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:1d17f8840d50
+[[func]]
+pc = 0x8009E760
+name = "_param"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_param' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:20d7071af938
+[[func]]
+pc = 0x8009E790
+name = "_addque"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_addque' (psyq_sig), 36 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:e4a680cb397c
+[[func]]
+pc = 0x8009E7B4
+name = "_addque2"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_addque2' (psyq_sig), 76 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:3e1b4f391048
+[[func]]
+pc = 0x8009EA94
+name = "_exeque"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_exeque' (psyq_sig), 748 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:58594a7d335d
+[[func]]
+pc = 0x8009ED80
+name = "_reset"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_reset' (psyq_sig), 292 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:b2769c7990d7
+[[func]]
+pc = 0x8009EEDC
+name = "_sync"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_sync' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:6f05ebbb3e97
+[[func]]
+pc = 0x8009F024
+name = "set_alarm"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'set_alarm' (psyq_sig), 52 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:c0e4f4d8cb4c
+[[func]]
+pc = 0x8009F058
+name = "get_alarm"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'get_alarm' (psyq_sig), 348 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:5c39c2a2ab9e
+[[func]]
+pc = 0x8009F1C4
+name = "_version"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_version' (psyq_sig), 212 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:843218551254
+[[func]]
+pc = 0x8009F2A0
+name = "sdk_memset_8009F2A0"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'memset' (psyq_sig), 44 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:f0aec5f7642b
+[[func]]
+pc = 0x8009F2EC
+name = "sdk_setjmp"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'setjmp' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:d02aeaa8cfb5
+[[func]]
+pc = 0x8009F2FC
+name = "sdk_strlen"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'strlen' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:fae339f3eff2
+[[func]]
+pc = 0x8009F30C
+name = "sdk_bzero"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'bzero' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:b9072fe1a784
+[[func]]
+pc = 0x8009F31C
+name = "sdk_memcpy"
+emit = false
+status = "confirmed"
+note = "PsyQ SDK name 'memcpy' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json; evidence: BIOS trampoline A(0x2a) (docs/SYMBOLS.md, T1.6)"
+
+# seed_symbols:536cc7f8a829
+[[func]]
+pc = 0x8009F32C
+name = "sdk_memset_8009F32C"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'memset' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:5fd56ed59d60
+[[func]]
+pc = 0x8009F33C
+name = "sdk_malloc"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'malloc' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:e1e5904976f1
+[[func]]
+pc = 0x8009F34C
+name = "sdk_printf"
+emit = false
+status = "confirmed"
+note = "PsyQ SDK name 'printf' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json; evidence: BIOS trampoline A(0x3f) (docs/SYMBOLS.md, T1.6)"
+
+# seed_symbols:036b6d8dd14b
+[[func]]
+pc = 0x8009F35C
+name = "sdk_sprintf"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'sprintf' (psyq_sig), 144 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:8fae4c45ef6a
+[[func]]
+pc = 0x8009FBB8
+name = "sdk_memchr"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'memchr' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:81b17144a70d
+[[func]]
+pc = 0x8009FBC8
+name = "sdk_memmove"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'memmove' (psyq_sig), 100 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:cd2e1d846856
+[[func]]
+pc = 0x8009FC34
+name = "InitHeap"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'InitHeap' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:bbaa94e95939
+[[func]]
+pc = 0x8009FC44
+name = "FlushCache"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'FlushCache' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:ae2df7e9fa82
+[[func]]
+pc = 0x8009FC54
+name = "GPU_cw"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'GPU_cw' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:d39f7b7ff04b
+[[func]]
+pc = 0x8009FC84
+name = "DeliverEvent"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DeliverEvent' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:e709c2f1cd4e
+[[func]]
+pc = 0x8009FC94
+name = "OpenEvent"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'OpenEvent' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:26b263bfb554
+[[func]]
+pc = 0x8009FCA4
+name = "CloseEvent"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'CloseEvent' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:aad03d262231
+[[func]]
+pc = 0x8009FCB4
+name = "WaitEvent"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'WaitEvent' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:3a543e31f8ae
+[[func]]
+pc = 0x8009FCC4
+name = "TestEvent"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'TestEvent' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:5976baac21d3
+[[func]]
+pc = 0x8009FCD4
+name = "EnableEvent"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'EnableEvent' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:fa3b8c192514
+[[func]]
+pc = 0x8009FCE4
+name = "DisableEvent"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DisableEvent' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:6e19316010bc
+[[func]]
+pc = 0x8009FCF4
+name = "PAD_dr"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'PAD_dr' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:d1c88f67c22f
+[[func]]
+pc = 0x8009FD04
+name = "ReturnFromException"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'ReturnFromException' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:51ec2ed20c69
+[[func]]
+pc = 0x8009FD14
+name = "ResetEntryInt"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'ResetEntryInt' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:f9a7ee78dbd9
+[[func]]
+pc = 0x8009FD24
+name = "HookEntryInt"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'HookEntryInt' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:2595aa8b04e4
+[[func]]
+pc = 0x8009FD54
+name = "ChangeClearPAD"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'ChangeClearPAD' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:005b91202776
+[[func]]
+pc = 0x8009FD64
+name = "SysEnqIntRP"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SysEnqIntRP' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:fe2d38799ccc
+[[func]]
+pc = 0x8009FD74
+name = "SysDeqIntRP"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SysDeqIntRP' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:be1836c7fd73
+[[func]]
+pc = 0x8009FD84
+name = "ChangeClearRCnt"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'ChangeClearRCnt' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:e94f4853fba0
+[[func]]
+pc = 0x8009FD94
+name = "SetRCnt"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetRCnt' (psyq_sig), 116 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:6b332fbe833d
+[[func]]
+pc = 0x8009FE30
+name = "GetRCnt"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'GetRCnt' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:ab1a7ea90b48
+[[func]]
+pc = 0x8009FE68
+name = "StartRCnt"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'StartRCnt' (psyq_sig), 52 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:82825e59aac5
+[[func]]
+pc = 0x8009FE9C
+name = "StopRCnt"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'StopRCnt' (psyq_sig), 56 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:e3618c66a481
+[[func]]
+pc = 0x8009FED4
+name = "ResetRCnt"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'ResetRCnt' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:a5f135ccc1ad
+[[func]]
+pc = 0x8009FF0C
+name = "MemCardInit"
+emit = false
+status = "confirmed"
+note = "PsyQ SDK name 'MemCardInit' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json; evidence: calls _card_open at 0x800A1B10 (docs/SYMBOLS.md, T1.6)"
+
+# seed_symbols:b3c4b844d86b
+[[func]]
+pc = 0x8009FF3C
+name = "MemCardEnd"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MemCardEnd' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:de26aa373394
+[[func]]
+pc = 0x8009FF5C
+name = "MemCardStart"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MemCardStart' (psyq_sig), 96 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:6a21f888716a
+[[func]]
+pc = 0x8009FFBC
+name = "MemCardStop"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MemCardStop' (psyq_sig), 64 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:1d15632e019e
+[[func]]
+pc = 0x8009FFFC
+name = "MemCardExist"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MemCardExist' (psyq_sig), 108 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:de530f69dc92
+[[func]]
+pc = 0x800A0078
+name = "_card_exist_back"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_card_exist_back' (psyq_sig), 376 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:fe6661fef0da
+[[func]]
+pc = 0x800A0258
+name = "MemCardAccept"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MemCardAccept' (psyq_sig), 108 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:55497b7c91e7
+[[func]]
+pc = 0x800A02D4
+name = "_card_accept_back"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_card_accept_back' (psyq_sig), 60 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:826d440083ea
+[[func]]
+pc = 0x800A04E0
+name = "MemCardOpen"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MemCardOpen' (psyq_sig), 264 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:4fed45964097
+[[func]]
+pc = 0x800A0660
+name = "MemCardClose"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MemCardClose' (psyq_sig), 72 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:710bf2d6c498
+[[func]]
+pc = 0x800A06A8
+name = "MemCardReadData"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MemCardReadData' (psyq_sig), 164 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:cb1a10aab373
+[[func]]
+pc = 0x800A0768
+name = "_card_read_data"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_card_read_data' (psyq_sig), 308 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:54f09aaf3fdb
+[[func]]
+pc = 0x800A08B8
+name = "MemCardWriteData"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MemCardWriteData' (psyq_sig), 164 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:fcb8fc838d11
+[[func]]
+pc = 0x800A0978
+name = "_card_write_data"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_card_write_data' (psyq_sig), 308 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:92b5d339985c
+[[func]]
+pc = 0x800A0AC8
+name = "MemCardReadFile"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MemCardReadFile' (psyq_sig), 212 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:0c9be186c116
+[[func]]
+pc = 0x800A0BD4
+name = "_card_read_file"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_card_read_file' (psyq_sig), 64 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:c094c5c14f20
+[[func]]
+pc = 0x800A0D84
+name = "MemCardWriteFile"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MemCardWriteFile' (psyq_sig), 212 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:0e673c2514fe
+[[func]]
+pc = 0x800A0E90
+name = "_card_write_file"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_card_write_file' (psyq_sig), 64 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:4c0786d88d47
+[[func]]
+pc = 0x800A1040
+name = "MemCardGetDirentry"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MemCardGetDirentry' (psyq_sig), 336 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:62eacc0f8dac
+[[func]]
+pc = 0x800A12B4
+name = "MemCardCallback"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MemCardCallback' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:21abc0a06b68
+[[func]]
+pc = 0x800A12C8
+name = "MemCardSync"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MemCardSync' (psyq_sig), 164 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:b659dae9d23b
+[[func]]
+pc = 0x800A13B8
+name = "MemCardCreateFile"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MemCardCreateFile' (psyq_sig), 320 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:6d64b3101cb3
+[[func]]
+pc = 0x800A15E8
+name = "MemCardDeleteFile"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MemCardDeleteFile' (psyq_sig), 260 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:af25c95f4024
+[[func]]
+pc = 0x800A17C8
+name = "MemCardFormat"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MemCardFormat' (psyq_sig), 136 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:fd4c2e9ce477
+[[func]]
+pc = 0x800A1860
+name = "MemCardUnformat"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'MemCardUnformat' (psyq_sig), 164 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:8a71c64ddc64
+[[func]]
+pc = 0x800A191C
+name = "_rslt_to_code"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_rslt_to_code' (psyq_sig), 80 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:3e730865e3a1
+[[func]]
+pc = 0x800A1974
+name = "_callback_handler"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_callback_handler' (psyq_sig), 160 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:1b95fbe6a0b1
+[[func]]
+pc = 0x800A1A14
+name = "_make_file_discrpt"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_make_file_discrpt' (psyq_sig), 92 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:b55388ca7db1
+[[func]]
+pc = 0x800A1A70
+name = "funcEvSpIOE"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'funcEvSpIOE' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:8e0499885882
+[[func]]
+pc = 0x800A1A84
+name = "funcEvSpError"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'funcEvSpError' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:3e2146662faa
+[[func]]
+pc = 0x800A1A98
+name = "funcEvSpTimeout"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'funcEvSpTimeout' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:11b36fccb6a4
+[[func]]
+pc = 0x800A1AAC
+name = "funcEvSpNewcard"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'funcEvSpNewcard' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:f5277d464c17
+[[func]]
+pc = 0x800A1AC0
+name = "funcEvSpIOEx"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'funcEvSpIOEx' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:6b2695cb228e
+[[func]]
+pc = 0x800A1AD4
+name = "funcEvSpErrorx"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'funcEvSpErrorx' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:e54b2cee37a3
+[[func]]
+pc = 0x800A1AE8
+name = "funcEvSpTimeoutx"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'funcEvSpTimeoutx' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:3817e67d1f5f
+[[func]]
+pc = 0x800A1AFC
+name = "funcEvSpNewcardx"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'funcEvSpNewcardx' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:12f896e35f6a
+[[func]]
+pc = 0x800A1B10
+name = "_card_open"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_card_open' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:bec2287a7680
+[[func]]
+pc = 0x800A1B40
+name = "_card_start"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_card_start' (psyq_sig), 484 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:95d9f633e55d
+[[func]]
+pc = 0x800A1D24
+name = "_card_close"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_card_close' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:7e658ab26195
+[[func]]
+pc = 0x800A1D44
+name = "_card_stop"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_card_stop' (psyq_sig), 184 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:ab051ae040ee
+[[func]]
+pc = 0x800A1DFC
+name = "_clr_card_event"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_clr_card_event' (psyq_sig), 264 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:ecc6d8f682ae
+[[func]]
+pc = 0x800A1F04
+name = "_get_card_event"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_get_card_event' (psyq_sig), 220 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:6c56c828ad1f
+[[func]]
+pc = 0x800A1FE0
+name = "_get_card_event_x"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_get_card_event_x' (psyq_sig), 220 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:7f84ee2367ae
+[[func]]
+pc = 0x800A20BC
+name = "_chk_card_event"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_chk_card_event' (psyq_sig), 60 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:a8bf061972a5
+[[func]]
+pc = 0x800A20F8
+name = "_chk_card_event_x"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_chk_card_event_x' (psyq_sig), 60 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:c5c49e3e1f88
+[[func]]
+pc = 0x800A2134
+name = "sdk_strcat"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'strcat' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:126e0b7abb2c
+[[func]]
+pc = 0x800A2144
+name = "_bu_init"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_bu_init' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:b4d274ff428e
+[[func]]
+pc = 0x800A2154
+name = "sdk_open"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'open' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:845c8235a7cc
+[[func]]
+pc = 0x800A2164
+name = "sdk_lseek"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'lseek' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:f2f4840ac3eb
+[[func]]
+pc = 0x800A2174
+name = "sdk_read"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'read' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:389ab4788b7a
+[[func]]
+pc = 0x800A2184
+name = "sdk_write"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'write' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:c44d1899286a
+[[func]]
+pc = 0x800A2194
+name = "sdk_close"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'close' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:f837dc14cafd
+[[func]]
+pc = 0x800A21A4
+name = "sdk_format"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'format' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:56536c4ed1e1
+[[func]]
+pc = 0x800A21B4
+name = "firstfile"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'firstfile' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:19575759788c
+[[func]]
+pc = 0x800A21C4
+name = "nextfile"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'nextfile' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:affad29c898c
+[[func]]
+pc = 0x800A21D4
+name = "sdk_erase"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'erase' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:ea16f2b566d1
+[[func]]
+pc = 0x800A21E4
+name = "_card_info"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_card_info' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:2775165616cc
+[[func]]
+pc = 0x800A21F4
+name = "_card_load"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_card_load' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:b1fe3256c3ae
+[[func]]
+pc = 0x800A2204
+name = "_card_write"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_card_write' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:9f4f0c2afe76
+[[func]]
+pc = 0x800A2214
+name = "_new_card"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_new_card' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:f06ba6a69d49
+[[func]]
+pc = 0x800A2224
+name = "_card_clear"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_card_clear' (psyq_sig), 56 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:122ea9970c3d
+[[func]]
+pc = 0x800A2314
+name = "SetInitPadFlag"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetInitPadFlag' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:8c7c95dc060b
+[[func]]
+pc = 0x800A2324
+name = "ReadInitPadFlag"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'ReadInitPadFlag' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:6fbad6bf4b58
+[[func]]
+pc = 0x800A2334
+name = "PAD_init"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'PAD_init' (psyq_sig), 156 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:b97dd6dbb38f
+[[func]]
+pc = 0x800A23D0
+name = "InitPAD"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'InitPAD' (psyq_sig), 156 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:49a1557056f7
+[[func]]
+pc = 0x800A246C
+name = "StartPAD"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'StartPAD' (psyq_sig), 48 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:c19f9cd150b4
+[[func]]
+pc = 0x800A249C
+name = "StopPAD"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'StopPAD' (psyq_sig), 56 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:dceb21748dae
+[[func]]
+pc = 0x800A24D4
+name = "SetPatchPad"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SetPatchPad' (psyq_sig), 128 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:44db76630490
+[[func]]
+pc = 0x800A2554
+name = "RemovePatchPad"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'RemovePatchPad' (psyq_sig), 56 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:30cbd8711194
+[[func]]
+pc = 0x800A258C
+name = "_Pad1"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_Pad1' (psyq_sig), 104 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:6fd575df5b24
+[[func]]
+pc = 0x800A25F4
+name = "_IsVSync"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_IsVSync' (psyq_sig), 64 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:a447beb07b46
+[[func]]
+pc = 0x800A2634
+name = "InitPAD2"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'InitPAD2' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:974e49ce95b9
+[[func]]
+pc = 0x800A2644
+name = "StartPAD2"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'StartPAD2' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:65b4f368fe92
+[[func]]
+pc = 0x800A2654
+name = "StopPAD2"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'StopPAD2' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:a8b062ce278a
+[[func]]
+pc = 0x800A2664
+name = "PAD_init2"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'PAD_init2' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:d05e965b1b1f
+[[func]]
+pc = 0x800A2674
+name = "EnablePAD"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'EnablePAD' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:22e47ace3349
+[[func]]
+pc = 0x800A2688
+name = "DisablePAD"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'DisablePAD' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:de93176e1721
+[[func]]
+pc = 0x800A269C
+name = "_patch_pad"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_patch_pad' (psyq_sig), 104 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:ca49f11fd8ac
+[[func]]
+pc = 0x800A2704
+name = "_SendPAD"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_SendPAD' (psyq_sig), 40 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:6bf9467101ec
+[[func]]
+pc = 0x800A272C
+name = "_send_pad"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_send_pad' (psyq_sig), 124 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:4797e19884a0
+[[func]]
+pc = 0x800A27C4
+name = "_remove_ChgclrPAD"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_remove_ChgclrPAD' (psyq_sig), 92 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:5ab8e89f5f27
+[[func]]
+pc = 0x800A2824
+name = "InitCARD2"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'InitCARD2' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:0579e8aeeba7
+[[func]]
+pc = 0x800A2834
+name = "StartCARD2"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'StartCARD2' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:bdbb89ad135c
+[[func]]
+pc = 0x800A2844
+name = "StopCARD2"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'StopCARD2' (psyq_sig), 12 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:8d091304bd2f
+[[func]]
+pc = 0x800A28D4
+name = "UserFuncInit"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'UserFuncInit' (psyq_sig), 20 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:152e505c8507
+[[func]]
+pc = 0x800A28E8
+name = "UserFuncOpen"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'UserFuncOpen' (psyq_sig), 112 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:98f8673d1093
+[[func]]
+pc = 0x800A2968
+name = "UserFuncExecute"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'UserFuncExecute' (psyq_sig), 108 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:eaf424b58ef7
+[[func]]
+pc = 0x800A29D4
+name = "UserFuncComplete"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'UserFuncComplete' (psyq_sig), 16 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:91966002eb24
+[[func]]
+pc = 0x800A43AC
+name = "sdk___udivdi3"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '__udivdi3' (psyq_sig), 32 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:100019c1a7d9
+[[func]]
+pc = 0x800A8258
+name = "SpuSetVoiceAttr"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SpuSetVoiceAttr' (psyq_sig), 40 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:56d0069c41b6
+[[func]]
+pc = 0x800A8280
+name = "SpuSetReverbVoice"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SpuSetReverbVoice' (psyq_sig), 36 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:3a9b46ed41da
+[[func]]
+pc = 0x800A82A4
+name = "_SpuSetAnyVoice"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_SpuSetAnyVoice' (psyq_sig), 56 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:a48de1d5e55d
+[[func]]
+pc = 0x800A84AC
+name = "SpuSetKey"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SpuSetKey' (psyq_sig), 492 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:090a0d35c8e4
+[[func]]
+pc = 0x800A86A8
+name = "SpuSetKeyOnWithAttr"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SpuSetKeyOnWithAttr' (psyq_sig), 52 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:0153f499c56a
+[[func]]
+pc = 0x800A86DC
+name = "_SpuRSetVoiceAttr"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_SpuRSetVoiceAttr' (psyq_sig), 492 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:b9409e6389da
+[[func]]
+pc = 0x800A8D18
+name = "_spu_2pitch"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_spu_2pitch' (psyq_sig), 144 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:25c98c995c10
+[[func]]
+pc = 0x800A8DA8
+name = "_spu_note2pitch"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_spu_note2pitch' (psyq_sig), 140 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:69f6616f5392
+[[func]]
+pc = 0x800A8EE4
+name = "_spu_pitch2note"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name '_spu_pitch2note' (psyq_sig), 60 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:11d07a1ae8a2
+[[func]]
+pc = 0x800A900C
+name = "SpuRGetAllKeysStatus"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SpuRGetAllKeysStatus' (psyq_sig), 180 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:d8b409ddb17f
+[[func]]
+pc = 0x800A90DC
+name = "SpuGetAllKeysStatus"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SpuGetAllKeysStatus' (psyq_sig), 112 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:aa402a2596d8
+[[func]]
+pc = 0x800A989C
+name = "SpuInitMalloc"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SpuInitMalloc' (psyq_sig), 76 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:e050530a6194
+[[func]]
+pc = 0x800A98F0
+name = "SpuSetTransferMode"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SpuSetTransferMode' (psyq_sig), 28 bytes; seeded from T1.6 symbols_sdk.json"
+
+# seed_symbols:93aab73d4d4b
+[[func]]
+pc = 0x800A9924
+name = "SpuSetCommonAttr"
+emit = false
+status = "guessed"
+note = "PsyQ SDK name 'SpuSetCommonAttr' (psyq_sig), 92 bytes; seeded from T1.6 symbols_sdk.json"

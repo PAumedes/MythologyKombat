@@ -1050,3 +1050,101 @@ The script `tools\overlay_facts.py` reads the boot EXE and the eight `.OVR` file
 - It is deterministic. Running it again gives the same output.
 - The results are in `docs/EXE_OVERLAYS.md`, under "Static overlay facts (T2.12)". That page holds addresses, sizes and 16-hex hash prefixes only.
 - The checks are static. They are strong consistency evidence, not proof. The runtime check is T2.13. See `docs/OPEN_QUESTIONS.md`, questions 130 to 139.
+
+## Seeding symbols.toml (T2.21)
+
+The script `tools\seed_symbols.py` fills `symbols.toml` from `work\symbols_sdk.json`. The script `tools\sync_symbols.py` then regenerates `psx_symbols.h`. Run both from the repo root.
+
+### Seed step
+
+```
+<RETRO_TOOLS_DIR>\python\python.exe -I tools\seed_symbols.py [--sdk-json PATH] [--symbols PATH] [--include-suspects] [--dry-run]
+```
+
+| Option | Meaning |
+|--------|---------|
+| `--sdk-json PATH` | Input file. The default input is `work\symbols_sdk.json` from T1.6. A missing file gives a raw traceback (question 140) |
+| `--symbols PATH` | Target `symbols.toml`. Test on copies, not on the real file |
+| `--include-suspects` | Also add the 3 suspects, as `guessed`, with the note "probably false positive" |
+| `--dry-run` | Dry run. Its exact effect is not recorded here (question 147) |
+
+### Sync step
+
+```
+<RETRO_TOOLS_DIR>\python\python.exe tools\sync_symbols.py [--check]
+```
+
+- Do not pass `-I` to this script.
+- It regenerates `psx_symbols.h`.
+- `--check` verifies the files.
+
+### Counts
+
+| Item | Count |
+|------|-------|
+| Functions in `work\symbols_sdk.json` | 931 |
+| Excluded `gte_macro` | 153 |
+| Excluded `obj_label` | 335 |
+| Kind `sdk` | 443 |
+| Omitted loader-named `main` at `0x80020474` | 1 |
+| Omitted loader-named `start` at `0x80090E70` (held by the hand-owned BootEntry) | 1 |
+| Omitted suspects (default) | 3 |
+| Seeded entries | 438 |
+| Hand-owned BootEntry | 1 |
+| `[[func]]` entries, default run | 439 |
+| `[[func]]` entries, with `--include-suspects` | 442 |
+
+- The 3 suspects are `SsUtReverbOn` at `0x80053AD0`, `SsUtReverbOff` at `0x8005E1B0` and `_SsSndPlay` at `0x8008387C`.
+- Status counts recorded: 8 `confirmed` and 431 `guessed`. These add to 439, one more than the 438 seeded entries. See question 146.
+
+### Status
+
+| Name | Address | Status |
+|------|---------|--------|
+| VSync | `0x800945E4` | `confirmed` (see question 142) |
+| ResetGraph | `0x8009C238` | `confirmed` |
+| CdInit | `0x800952D8` | `confirmed` |
+| memcpy | `0x8009F31C` | `confirmed`. Emitted as `sdk_memcpy` |
+| printf | `0x8009F34C` | `confirmed`. Emitted as `sdk_printf` |
+| RotTransPers | `0x8009A618` | `confirmed` |
+| MemCardInit | `0x8009FF0C` | `confirmed` |
+| SpuIsTransferCompleted | `0x80093D68` | `confirmed` |
+
+- Confirmed means the name has recorded evidence in `docs/SYMBOLS.md`. All other seeded names are `guessed`.
+- DrawSync (`0x8009C6F8`), StartPAD (`0x800A246C`), DecDCTReset (`0x80098C5C`) and InitPAD (`0x800A23D0`) stay `guessed`. They become `confirmed` only after their evidence is recorded in `docs/SYMBOLS.md` (question 144).
+
+### Rules for the file
+
+- Every entry has `emit = false`.
+- Entries are keyed by address.
+- All addresses lie in `[0x80010000, 0x800D8000)`.
+- Each seeded block starts with a marker line, `# seed_symbols:<sha1>`. The hash is of the block body.
+- If a block body no longer matches its hash, someone hand-edited it. The script keeps the block.
+- Entries with no marker (BootEntry) are hand-owned. The script keeps their name and address reserved.
+- The script is idempotent. A second run reports `unchanged`. `cmp` shows `symbols.toml` and `psx_symbols.h` are identical after the second run.
+
+### Names that clash with C library names
+
+`psx_symbols.h` emits `#define func_XXXXXXXX <name>` and `PSX_FN_<name>` for each entry.
+
+| Rule | Result |
+|------|--------|
+| Name matches a hand-picked libc, POSIX or runtime list, or starts with `__` | Gets the prefix `sdk_`. The original name is kept in the note. 26 entries |
+| Duplicate names | Get the address as a suffix |
+
+- The 26 prefixed names are: memcpy, memmove, memchr, printf, sprintf, malloc, strlen, strcat, bzero, open, read, write, close, lseek, format, erase, setjmp, csin, csincos, catan, `__main`, `__divdi3`, `__udivdi3`, `__udivmoddi4`, and memset (2 entries).
+- The suffixed duplicates are: `memclr_80094EAC`, `memclr_80094FD4`, `memclr_8009527C`, `sdk_memset_8009F2A0` and `sdk_memset_8009F32C`.
+- The list of prefixed names is hand-picked. It is not exhaustive (question 141).
+
+### Checks
+
+| Check | Result |
+|-------|--------|
+| `psx_symbols.h` compiled with clang as C and as C++, with stdio, string, stdlib, math, setjmp, time, io, fcntl and windows.h, in both include orders | No clashes (reviewer) |
+| Overlap with a broad libc list | `callback` at `0x80097268` and `timeout` at `0x8009928C`. Not in the risky list. Harmless unless a `func_XXXXXXXX` alias is used for them (question 145) |
+| Generated C | 61 of 61 SHA-256 values match `work\generate_run1.sha256.txt`. Generate was not re-run |
+| Include check | `psx_symbols.h` is not referenced by `codegen_setup.c`, `CMakeLists.txt` or `generated\` |
+
+- `psx_symbols.h` must never be included from generated C.
+- Other open items for T2.21 are in `docs/OPEN_QUESTIONS.md`, questions 140 to 147.
+- The decision to commit these derived files is in `docs/DECISIONS.md` (D8).
