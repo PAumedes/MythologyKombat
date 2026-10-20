@@ -1879,3 +1879,130 @@ The analyzer needs no game launch.
 - A `PSX_PUBLIC_RELEASE=ON` configure. The public-build result is read from the script only.
 - The reviewer's CMake no-op rebuild check.
 - The on-screen input display was not checked on screen (question 212).
+
+## Seed growth from dispatch misses (T2.8)
+
+This step adds function starts to the seed file, `seeds\ghidra_funcs.txt`. Each new start comes from a runtime dispatch miss. Each candidate is vetted before it is added.
+
+Status: the main part passed review. The manual follow-up (batch T2.8-2, the `--manual` option and the rebuild) was checked by the implementer only. No reviewer has checked it. See `docs/OPEN_QUESTIONS.md` (213) and `docs/DECISIONS.md` (D15).
+
+### Routes and collection
+
+The runs used the debug build, `work\build-dbg\MythologyKombat.exe`, headless on port 4386, with its own PID.
+
+| Route | Frames | Result |
+|-------|--------|--------|
+| Boot route | to frame 5016 | 1 miss address, `0x80032760` (4604 hits) |
+| `work\t28\route_temple.json` | to about 11231 | 2 miss addresses (below) |
+
+The longer route is the boot route, then button mashing every 17 frames from frame 6200 to 11000. The TEMPLE load is at about frame 5200. The first fight is at about frame 6000.
+
+| Address | Hits | Instructions | Overlay window |
+|---------|------|--------------|----------------|
+| `0x80032760` | 10825 | 108250 | No |
+| `0x8003A674` | 286 | 858 | No |
+
+- Both are interpreter entries from dirty RAM.
+- On the same run, the dispatch counts were: static hits 5,128,302, miss total 0, segment miss total 0. So the static dispatch saw no misses.
+
+Collection command:
+
+```
+collect_game_misses.py --game-toml game.toml 0x80010000 0x800D8000
+```
+
+The report does not say which folder this script is in. See `docs/OPEN_QUESTIONS.md` (218).
+
+### Vetting
+
+Command, run from the repo root:
+
+```
+work\py-psxrecomp\python.exe psxrecomp\tools\vet_seeds.py --game game.toml work\dirty_ram_misses.txt
+```
+
+| Address | Vet result | Reason |
+|---------|------------|--------|
+| `0x8003A674` | ACCEPT | A function boundary and a stack prologue at instruction 3. The analyzer start was `0x8003A680`, 12 bytes later. The seed sits after a `jr ra` and its delay-slot nop. No static references. |
+| `0x80032760` | WARN | "frameless; manual Ghidra check required". Seven instructions come before the stack prologue at `0x80032788`. That is past the 4-instruction window of `vet_seeds`. No `jal`, `j` or branch targets it. It is reached through a function pointer. |
+| Any | REJECT | None |
+
+### Growth tool
+
+`tools\grow_seeds.py` is new. It uses only the standard library, so run it with `python -I`.
+
+1. It runs `vet_seeds` as a child process.
+2. It reads the ACCEPT, WARN and REJECT lines.
+3. It appends only ACCEPT addresses. Each one must be word-aligned, inside the EXE text range from the PS-X EXE header, and not already in the file.
+4. It writes one comment line per batch, `# batch ID: source ...`.
+5. It keeps the CRLF line endings. It never edits an existing line.
+
+| Option | Meaning |
+|--------|---------|
+| `--dry-run` | Shows what would change. Changes nothing |
+| `--manual ADDR` | Adds an address that vet did not accept. Repeatable. Skips vet. Alignment, range and duplicate checks still apply |
+| `--reason TEXT` | Text for the manual comment line, `# manual ID: TEXT` |
+
+- With `--manual`, the miss file is optional, because vet is skipped.
+- The summary line counts manual addresses under "ACCEPT". This is cosmetic. See `docs/OPEN_QUESTIONS.md` (217).
+
+### Seed batches
+
+| Batch | Change | Seed count | Seed file | SHA-256 |
+|-------|--------|------------|-----------|---------|
+| T2.8-1 | `0x8003A674` added (vet ACCEPT) | 1175 to 1176 | | `058637987b613a62...e038` (abbreviated in the report) |
+| T2.8-2 | `0x80032760` added (manual) | 1176 to 1177 | 1182 lines | `114bb1056a45aa8486c062e5432a4903c88185cee04ae5fa4b45ed1fd96cd351` |
+
+- The comment for batch T2.8-2 records the WARN, the two independent disassemblies, the 10825 runtime dispatch misses, and that the address is a pre-prologue entry of analyzer function `func_80032788`.
+- The manual seed follows D15 (`docs/DECISIONS.md`).
+
+### Regeneration
+
+After batch 1 (`work\t28` run 10 listing: `work\generate_run10_seed_t28.sha256.txt`):
+
+- 1 of 58 shards updated. The dispatch table has 2891 entries. The static route was reused.
+- Files changed against the run 4 baseline: `SLUS_004.76_decls.h`, `SLUS_004.76_dispatch.c`, `SLUS_004.76_full.ranges` and `SLUS_004.76_full_11.c`.
+- `AOT_STATIC_AUDIT.json` also changed. It is not reproducible. See `docs/OPEN_QUESTIONS.md` (195).
+
+After batch 2 (log `work\t28\generate2.txt`):
+
+- It loaded 1177 extra function addresses (0 interior, 0 hosted-interior).
+- The forced entry `0x80032760` was added.
+- 1 of 58 shards updated. No overlap, interior or duplicate warnings.
+- `func_80032760` is its own function in `SLUS_004.76_full_09.c`. It ends with a fall-through call to `func_80032788`.
+- Exactly four files changed against run 10: `decls.h`, `dispatch.c`, `full.ranges` and `full_09.c`. The audit JSON did not change.
+- The new baseline listing is `work\generate_run11_seed_t28b.sha256.txt` (71 entries). This is the current baseline.
+
+### Builds
+
+Both builds were made with nobody running the game.
+
+| Exe | Size | SHA-256 |
+|-----|------|---------|
+| `build\MythologyKombat.exe` (Release, FINAL) | 51,759,616 bytes | `b5573bbe586f7669f3dfad11d3ca3a6f8888f8e37eb47eccdffbb8f201a7856b` |
+| `work\build-dbg\MythologyKombat.exe` (debug, FINAL) | 35,525,632 bytes | `e9936464c03f6b78c697b1cf2642cbbf4597b7832b5838d0256c8af98891e01e` |
+
+- The Release hash replaces the T2.4 hash `66fdb5...` as the current shipping exe.
+- Any further relink changes the Release hash. Record the hash of the exe the user will record on. See D15.
+
+### Checks
+
+| Check | Result |
+|-------|--------|
+| `run_boot_route --expect boot_to_menu` | MATCH, 7 checkpoints. All judge columns match. Warnings only: locator (wr/pc) at frames 4300 and 5000, because code layout changed; and a stale `exe_sha256`. The expected file was not re-recorded (question 173) |
+| Re-collection on the TEMPLE route, frame about 11212 | No new addresses. Miss total 0. Segment miss total 0 |
+| `overlay_static_probe` | Static hits went from 0 to 2865 |
+| `overlay_runtime_check` | PROOF HOLDS |
+| `tools\check_seeds.py`, full run | 1177 seeds. 0 duplicates. 0 invalid. The analyzer starts a function at every seed, with `in_no_analyzer_function` 0 and `inside_other` 0. Analyzer functions 2322 (was 2320). 108 seeds are analyzer-only starts, equal to the not-Ghidra-start count (108) |
+
+### Coverage caveat
+
+- Coverage is one TEMPLE fight with mashed buttons.
+- Other levels, characters, menus and FMVs were not run.
+- More seeds may appear with user play. See `docs/OPEN_QUESTIONS.md` (215).
+
+### Tool notes
+
+- `psxrecomp-analyze.exe` was missing from `psxrecomp\recompiler\build` at one point. The command `cmake --build psxrecomp/recompiler/build --target psxrecomp-analyze` rebuilt it. The cause of the disappearance is not known (question 216).
+- `psxrecomp.exe` and `psxrecomp-toml.exe` are also absent here. The T0.5 section says the recompiler build makes them.
+- `psxrecomp` shows ` m` in git status. This is the old CRLF noise (question 13). Do not commit inside the submodule.

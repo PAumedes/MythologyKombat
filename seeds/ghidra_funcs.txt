@@ -1176,3 +1176,7 @@
 0x800ABE34
 0x800C0034
 0x800C182C
+# batch T2.8-1: source 'dispatch misses T2.8', 1 address(es)
+0x8003A674
+# manual T2.8-2: 0x80032760 frameless function head (vet_seeds WARN), confirmed by two independent disassemblies; reached via function pointer (10825 runtime dispatch misses); pre-prologue entry of analyzer func_80032788
+0x80032760

@@ -179,3 +179,18 @@ _Filled in by the doc-writer as tasks pass review._
 - Rule for the user's recordings: the Release exe, `build\MythologyKombat.exe`, is the one the user plays on. Any further rebuild (for example T2.8 seed growth) must happen before the user records. A relink changes the exe SHA-256 and breaks strict replay (T2.20).
 - Recordings are private. Never share or commit a session folder. See `docs/SETUP.md` (T2.19) and `docs/OPEN_QUESTIONS.md` (204).
 - Open items are in `docs/OPEN_QUESTIONS.md` (203 to 212). Details are in `docs/SETUP.md` (T2.19).
+
+## D15 Manual seed policy: WARN addresses need two independent checks, and the exe is frozen before user recording (T2.8)
+
+- Context: `tools\grow_seeds.py` adds only ACCEPT addresses from `psxrecomp\tools\vet_seeds.py`. At T2.8, `0x8003A674` was ACCEPT and `0x80032760` was WARN. A WARN means the vet tool could not decide. The `0x80032760` head has seven instructions before its stack prologue. That is past the tool's 4-instruction window.
+- Decision:
+  1. The tool adds only ACCEPT addresses.
+  2. A WARN address is added only with `--manual`, and only after a manual review by two independent disassemblies. The reason goes in the seed file as a `# manual ID: TEXT` comment.
+  3. The exe is frozen before the user records. Any relink after that changes the exe SHA-256 and breaks strict replay (T2.20). Seed growth must happen before recording, as D14 says.
+- Not chosen, and why:
+  - Adding WARN addresses automatically. The tool cannot decide them.
+  - Adding a WARN address on one disassembly. The policy needs two.
+- Reason: `0x80032760` has 10,825 runtime dispatch misses on the test route, so it is reached on the test route. The vet tool cannot confirm it alone.
+- Status: the manual seed `0x80032760` and the `--manual` option were checked by the implementer only. No reviewer has checked them (question 213).
+- The current Release exe SHA-256 is `b5573bbe586f7669f3dfad11d3ca3a6f8888f8e37eb47eccdffbb8f201a7856b` (`docs/SETUP.md`, T2.8). Any relink before the user's recording changes it.
+- Open items are in `docs/OPEN_QUESTIONS.md` (213 to 219). Details are in `docs/SETUP.md` (T2.8).

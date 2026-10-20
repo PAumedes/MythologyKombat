@@ -149,11 +149,11 @@
 
 | # | Question | Notes |
 |---|----------|-------|
-| 81 | Are the 106 seeds that are not Ghidra function starts real functions? | They are analyzer function starts. Most are low or medium class. Addresses are in `work\seed_report.json` under `seed_classification.anomalies`. Needs review. See `docs/COVERAGE.md`. |
+| 81 | Are the 108 seeds that are not Ghidra function starts real functions? | They are analyzer function starts. Most are low or medium class. Addresses are in `work\seed_report.json` under `seed_classification.anomalies`. Partly answered at T2.8: the two added seeds, `0x8003A674` (vet ACCEPT) and `0x80032760` (manual, question 213), are among the 108. The other 106 still need review. See `docs/COVERAGE.md`. |
 | 82 | Are the 325 Ghidra-only entries labels, not function boundaries? | All 325 carry PsyQ-style or OBJ label names. They are probably labels. Not confirmed. |
 | 83 | What are the 2 Ghidra symbols that lie in no analyzer function? | `cb_data` at `0x8009761C` and `_spu_2pitch` at `0x800A8D18`. Possibly data. Not checked. |
 | 84 | How many of the 1093 analyzer-only starts are real functions? | Most are orphans or low and medium prologue scans. The real count is unknown. |
-| 85 | What are the 133 unresolved indirect transfers (129 `jalr`, 4 `jr`)? | This is the dispatch-miss worklist for T2.8. Not resolved. |
+| 85 | What are the 133 unresolved indirect transfers (129 `jalr`, 4 `jr`)? | T2.8 used runtime dispatch misses as its worklist (`docs/SETUP.md`). The static count of 133 was not re-run. Not resolved. |
 | 86 | What is the 25.4% of the image outside any code function? | Possibly data or overlay tables. Unverified. |
 | 87 | Does the invalid-seed exit code of `tools\check_seeds.py` work? | The script has no `--seeds` option, so the seed path cannot be changed. The exit 1 path for invalid seeds is untested. |
 | 88 | What does `tools\check_seeds.py --no-run` skip? | The usage line lists the flag. The effect is not described in the T2.2 report. Not checked. |
@@ -296,7 +296,7 @@ See `docs/SETUP.md` ("Boot-to-menu replay route (T2.18)") and `docs/DECISIONS.md
 |---|----------|-------|
 | 171 | Should the final line of `tools\run_boot_route.py` say how many RAM and VRAM checks ran? | With `--runs 1`, a MATCH says "MATCH" but compares RAM and VRAM only where they are exact. The reviewer run skipped the hash at frame 1800, with a warning. The final line should print `RAM/VRAM compared at k/7`. Not done. |
 | 172 | Can the pause land on the exact frame? | `host_pause` lands one frame early or late (+-1). Commands are served once per vblank. Upstream removed `pause`, `run_to_frame` and `step`. A framework-level "pause at frame N" would make the RAM and VRAM hashes exact at every checkpoint. Not decided. |
-| 173 | When should the expected digests be re-recorded? | The expected digests are tied to one exe build (its SHA-256 is in `tests\replays\expected\boot_to_menu.json`). The script only warns when the exe differs. The policy for re-recording after a rebuild is not decided. At T2.16 the replay gave MATCH (7 checkpoints) on the new exe, with the exe SHA-256 warning only. The recorded `exe_sha256` is now stale, and it was not re-recorded. |
+| 173 | When should the expected digests be re-recorded? | The expected digests are tied to one exe build (its SHA-256 is in `tests\replays\expected\boot_to_menu.json`). The script only warns when the exe differs. The policy for re-recording after a rebuild is not decided. At T2.16 the replay gave MATCH (7 checkpoints) on the new exe, with the exe SHA-256 warning only. The recorded `exe_sha256` is now stale, and it was not re-recorded. At T2.8 the replay gave MATCH (7 checkpoints) again, with the same warnings. Still not re-recorded. |
 | 174 | What caused the one earlier mid-run process death? | One earlier run died partway through. The cause is unknown. It did not come back in 8 runs. It may have been an external `taskkill`. Not checked. |
 | 175 | Does attract mode start at about frame 6500 on every run? | Seen once, in an agent screenshot. Not checked on other runs. |
 | 176 | Which exit code does a setup error give? | The docstring and README of `tools\run_boot_route.py` say exit 2. A `SystemExit` with a string exits 1. Either the docs or the code must change. Not changed. |
@@ -371,3 +371,17 @@ See `docs\SETUP.md` ("Playtest diagnostics recorder (T2.19)") and `docs\DECISION
 | 210 | What does the sample number `N` in the first field of each row count? | The field holds `N` and a sequence number. The report does not say what `N` counts. Not checked. |
 | 211 | Are the fields of `session.json`, `telemetry.csv` and `mods-state.toml` documented? | The T2.19 report does not describe them. Not checked. |
 | 212 | Does the on-screen input display show the right buttons? | The `osd` feature was staged on, but the display was not checked on screen. Not checked. |
+
+## Seed growth (from T2.8)
+
+See `docs/SETUP.md` ("Seed growth from dispatch misses (T2.8)") and `docs/DECISIONS.md` (D15).
+
+| # | Question | Notes |
+|---|----------|-------|
+| 213 | Has anyone reviewed the manual seed `0x80032760` and the `--manual` option? | The main part of T2.8 passed review. The manual follow-up (batch T2.8-2, the option and the rebuild) was checked by the implementer only. The seed comment says two independent disassemblies confirmed it. No reviewer has checked this. |
+| 214 | Does `tools\vet_seeds.py` miss function heads that sit more than 4 instructions before the prologue? | Its 4-instruction window gave WARN for `0x80032760`, which has seven instructions before its prologue. `0x8003A674`, with three, was accepted. Not checked whether other heads are missed, or whether the window should be wider. |
+| 215 | How many dispatch misses appear with other levels, characters, menus and FMVs? | The coverage is one TEMPLE fight with mashed buttons. Other levels, characters, menus and FMVs were not run. The seed count may grow with user play. |
+| 216 | Why did `psxrecomp-analyze.exe` go missing, and why are `psxrecomp.exe` and `psxrecomp-toml.exe` absent? | `psxrecomp-analyze.exe` was rebuilt with `cmake --build psxrecomp/recompiler/build --target psxrecomp-analyze`. The cause of its disappearance is not known. `docs/SETUP.md` (T0.5) says the recompiler build makes all three exes. Not checked. |
+| 217 | Should `tools\grow_seeds.py` count manual addresses under their own label? | Its summary line counts manual addresses under "ACCEPT". The seed file itself is correct. Cosmetic. Not changed. |
+| 218 | Where is `collect_game_misses.py`, and is it kept under `tools\`? | The T2.8 report gives the command but not its folder. `CLAUDE.md` requires disc claims to come from scripts in `tools\`. Not checked. |
+| 219 | Which exe will the user record on, and is it frozen? | The Release exe SHA-256 is `b5573bbe...` (`docs/SETUP.md`, T2.8). D14 and D15 say the exe must be frozen before recording. The T2.8 report does not say which exe the user will use. Not decided. |

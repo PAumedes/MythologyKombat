@@ -2,7 +2,7 @@
 
 Static coverage of the boot EXE (`SLUS_004.76`). This page holds counts and addresses only. It was made in T2.2.
 
-The numbers come from `tools\check_seeds.py` and `tools\ghidra_sdk_names.py --all-funcs`. The commands are in `docs/SETUP.md` (T2.2). Open items are in `docs/OPEN_QUESTIONS.md` (questions 81 to 90).
+The numbers come from `tools\check_seeds.py` and `tools\ghidra_sdk_names.py --all-funcs`. The commands are in `docs/SETUP.md` (T2.2). Open items are in `docs/OPEN_QUESTIONS.md` (questions 81 to 90 and 213 to 219). Counts marked T2.8 are after seed growth (`docs/SETUP.md`, "Seed growth from dispatch misses (T2.8)"). Other counts are from T2.2.
 
 ## Text range
 
@@ -15,19 +15,21 @@ The numbers come from `tools\check_seeds.py` and `tools\ghidra_sdk_names.py --al
 
 | Item | Value |
 |------|-------|
-| Lines in seed file | 1175 |
-| Unique seeds | 1175 |
+| Lines in seed file | 1182 (T2.8). 1175 at T2.2 |
+| Unique seeds | 1177 (T2.8). 1175 at T2.2 |
 | Unaligned or out of range | 0 |
 | Entry `0x80090E70` in the seeds | Yes |
-| Seed classes | verified 453, high 485, medium 86, low 149, data 2 |
-| Seeds that are also Ghidra function starts | 1069 |
-| Seeds that are not Ghidra function starts | 106 |
+| Seed classes | verified 453, high 485, medium 86, low 149, data 2 (T2.2; not re-counted at T2.8) |
+| Seeds that are also Ghidra function starts | 1069 (T2.2) |
+| Seeds that are not Ghidra function starts | 108 (106 at T2.2) |
 
-- The 106 seeds that are not Ghidra starts are: low 56, medium 43, high 4, data 2, verified 1.
+- At T2.2, the 106 seeds that were not Ghidra starts were: low 56, medium 43, high 4, data 2, verified 1. T2.8 added two more. Their classes are not recorded here.
 - Their addresses are in `work\seed_report.json` under `seed_classification.anomalies`.
-- All 1175 seeds are analyzer function starts.
+- All 1177 seeds are analyzer function starts (T2.8 `check_seeds` run).
 
 ## Analyzer (`psxrecomp-analyze`)
+
+Only the function count was re-checked at T2.8. The other rows are T2.2 values.
 
 Command form:
 
@@ -37,7 +39,7 @@ psxrecomp-analyze <EXE> --out DIR --emit-tsv F --seeds F --quiet
 
 | Item | Value |
 |------|-------|
-| Functions | 2320 |
+| Functions | 2322 (T2.8; was 2320) |
 | Function classes | verified 565, high 893, medium 418, low 441, data 3 |
 | Partial decodes | 4 |
 | Instructions decoded | 152797 |
@@ -59,6 +61,8 @@ Indirect sites by kind:
 | Jump tables | 29 |
 
 ## Ghidra against the analyzer
+
+The counts in this section are T2.2 values. T2.8 did not re-run them.
 
 Ghidra export: `work\ghidra_funcs_all.txt`, 1730 entries (1552 CODE, 153 GTEMAC, 25 RAM).
 
@@ -90,3 +94,15 @@ Window: `0x80130FF8` to `0x8013C720`. See `docs/EXE_OVERLAYS.md` for the overlay
 | `lui` plus `addiu` or `ori` sites that point into the window | 29 (23 distinct constants) |
 
 - The last row is informational. The reviewer found it by hand. It is not part of the analyzer count.
+
+## Seed growth (T2.8)
+
+See `docs/SETUP.md` ("Seed growth from dispatch misses (T2.8)").
+
+| Item | T2.2 | T2.8 |
+|------|------|------|
+| Seeds | 1175 | 1177 |
+| Analyzer functions | 2320 | 2322 |
+
+- Two seeds were added: `0x8003A674` (vet ACCEPT) and `0x80032760` (manual, D15 in `docs/DECISIONS.md`).
+- Both lie in the text range, below the overlay window.
