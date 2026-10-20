@@ -115,7 +115,7 @@ The result is in `work\symbols_sdk.json`. That folder is git-ignored. This page 
 | Record addresses | `0x80099D98`, `0x8009F2CC`, `0x8009FC64`, `0x800BEB44`, `0x800BEBE0`, `0x800BF360`, `0x800C054C`, `0x800C0A78`, `0x800D71CC`, `0x800D7360`, `0x800D7378` |
 | Ghidra PS1 loader | `ghidra_psx_ldr` `DetectPsyQ` maps the EXE to the signature set `data\psyq\400`. Program Information shows `PsyQ Version` = `4.0.0`. |
 | Best fit | PsyQ 4.0 signature set. Not an exact SDK identity. |
-| Control driver | Text `PS-X Control TAP Driver Ver 3.0` at `0x800BEB50`. |
+| Control driver | The string `PS-X Control TAP Driver Ver 3.0` is at `0x800BEB50`. The function that references it is at `0x80091F64` (`TAP_OBJ_1038`). |
 
 Object-signature match counts per set, from `tools\psyq_version_scan.py`:
 
@@ -206,7 +206,7 @@ These string references point at likely names. No name was applied.
 | `SPU:T/O [%s]` | `0x80092648` | SPU function (`SPU_OBJ_3AC`) |
 | `CdRead: sector error` | `0x800973F0` | CdRead (`CDREAD_OBJ_A4`) |
 | `MDEC_rest:bad option(%d)` | `0x80099000` | Probably `MDEC_rest` (`LIBPRESS_OBJ_3A4`) |
-| `PS-X Control TAP Driver Ver 3.0` | `0x80091F64` | TAP driver (`TAP_OBJ_1038`) |
+| `PS-X Control TAP Driver Ver 3.0` | String at `0x800BEB50`. Referencing function at `0x80091F64` | TAP driver (`TAP_OBJ_1038`, the function at `0x80091F64`) |
 | `ResetGraph(%d)...` | `0x8009C354` | ResetGraph (`SYS_OBJ_11C`) |
 | `CDROM: unknown intr` | none | No code reference. Probably the CD interrupt handler, called through a pointer table. |
 

@@ -16,7 +16,7 @@ The repo lives at `<REPO_ROOT>`.
 
 No `.bin` or `.cue` file is tracked.
 
-No git user name is set on this machine. The first commit used a per-command author. See `docs/OPEN_QUESTIONS.md`.
+The git user name is set in this repo's config to Patricio Aumedes. The first commit used the author `localuser`. History was not rewritten. See `docs/OPEN_QUESTIONS.md`, question 1.
 
 ## Prerequisite check (T0.2)
 
@@ -113,6 +113,14 @@ $env:PATH = '<RETRO_TOOLS_DIR>\cmake-clang\bin;' + $env:PATH
 ### Uninstall
 
 Delete the folder `<RETRO_TOOLS_DIR>`.
+
+## Reference emulator check (T0.7, Phase 0 gate)
+
+This check is user-reported. No agent ran it, and no artifact was saved.
+
+- Emulator: DuckStation 0.1.12083, portable, at `<RETRO_TOOLS_DIR>\duckstation`.
+- Patricio booted the disc in DuckStation and confirmed it reaches gameplay.
+- The first run needs the user's own PS1 BIOS dump. The BIOS file is not in this repo and must not be committed.
 
 ## Disc identity (T0.4)
 

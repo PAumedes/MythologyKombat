@@ -4,7 +4,7 @@
 
 | # | Question | Notes |
 |---|----------|-------|
-| 1 | What git user name should commits use? | No git user identity is set on this machine. The first commit used a per-command author. The user is to choose the name. |
+| 1 | What git user name should commits use? | Resolved at the T1.7 gate. The git identity is now set in this repo's config to Patricio Aumedes. The first commit `fa5df2b` was authored as `localuser`. History was not rewritten. |
 | 2 | Should `.claude/settings.json` also deny `Write` to `ps1_game/**`? | The current deny rule covers `Edit(ps1_game/**)` only. Reviewer suggestion. |
 | 3 | Should `.gitignore` stop ignoring `*.exe` and `*.dll` everywhere? | A global ignore could hide legitimate tool binaries added later. Reviewer suggestion. |
 
@@ -74,7 +74,7 @@
 | 38 | Why does `/LEVELS/WIND/WIND.TSQ` score 0.999 on the code test, yet tag as unknown? | Reviewer note. Not checked. |
 | 39 | Is the comment at `tools\disc_classify.py` line 51 correct? | The comment says the non-code max score is below 0.65. The recorded max is 0.8676, for `/OVERLAYS/WINDDEMO.BIN`. Reviewer note. The comment needs fixing. |
 | 40 | Why is the STR video submode bit `0x02` never set, and why are video sectors submode `0x48`? | The layout differs from the textbook STR layout. Cause not checked. Reviewer note. |
-| 41 | Is there any TIM, VAB, VAG, SEQ or SEP data on this disc? | None is tagged. 233 TIM-like byte patterns were found, and all failed the block-size check. |
+| 41 | Is there any TIM, VAB, VAG, SEQ or SEP data on this disc? | None is tagged. No file passes the structural TIM test in `tools\disc_classify.py`, and `work\disc_classes.json` has no TIM entries. The script does not report rejected TIM candidates (question 73). |
 | 42 | Do later tools handle the `.raw2352` suffix on STR files? | Reviewer note. Not checked. |
 | 43 | Does `tools\disc_classify.py` handle a wrong-region disc, a multi-track cue, or a missing file? | These paths are untested. Reviewer note. What `/NOXCUSES.BIN` (filler) and `/DOZER.BIN` (text, ends with `0x1A`) are for is also not known. |
 
@@ -126,3 +126,13 @@
 | 70 | Should `tools\ghidra_sdk_names.py` and `tools\psyq_version_scan.py` be fixed? | `psyq_version_scan.py` ignores `GHIDRA_HOME`, has no existence checks, and does not close its file handles. Both scripts hard-code default paths for this machine. Both can be overridden. Not changed by T1.6. |
 | 71 | What are the 335 `obj_label` placeholders? | Names such as `TAP_OBJ_C8` and `LIBMCRD_OBJ_xx` are not real SDK names. They are not resolved. |
 | 72 | Which string hints should be applied as names? | The string hints in `docs/SYMBOLS.md` (for example `SPU:T/O [%s]` and `MDEC_rest:bad option`) are not applied as names. Not decided. The `__main` comment from Ghidra is also unreliable. |
+
+## Phase 2 carry-over (from the T1.7 gate)
+
+| # | Question | Notes |
+|---|----------|-------|
+| 73 | Should `tools\disc_classify.py` report rejected TIM candidates? | The script tags no file as TIM. It does not list the byte patterns it rejected, so a reader cannot check the TIM result. Not changed at the T1.7 gate. |
+| 74 | Is there a script for the T1.5 Ghidra import checks? | The checks (CODE block, BSS range, heap arguments, entry point) are a manual `analyzeHeadless` command. See `docs/SETUP.md` (T1.5). No `tools\` script runs them. |
+| 75 | Should these files be committed? | `seeds\ghidra_funcs.txt` (1175 JAL targets from the boot EXE, address list only, no bytes), `catalog_identity.json`, `game.toml`, and `.recomp.json` (disc digests). Not decided. |
+| 76 | Should the docs and tools stop hard-coding `%USERPROFILE%\...` paths? | Committed docs and tools use this machine's absolute paths. Not changed at the T1.7 gate. |
+| 77 | Should the stale comment at `tools\disc_classify.py` line 51 be fixed? | Same issue as question 39. Not changed at the T1.7 gate. |

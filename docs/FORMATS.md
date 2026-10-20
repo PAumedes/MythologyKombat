@@ -259,7 +259,8 @@ Each note records what the tools measured. Meanings are not claimed unless state
 ### Not found
 
 - No TIM, VAB, VAG, SEQ or SEP file is on the disc.
-- The classifier found 233 TIM-like byte patterns. None passed the block-size check.
+- No file passes the structural TIM test in `tools\disc_classify.py`. `work\disc_classes.json` has no TIM entries.
+- The script does not report rejected TIM candidates. See `docs/OPEN_QUESTIONS.md`, question 73.
 
 ## Notes
 
