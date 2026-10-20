@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "deny": [
+      "Edit(ps1_game/**)"
+    ]
+  }
+}

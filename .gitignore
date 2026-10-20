@@ -1,0 +1,33 @@
+# Game data: never commit
+ps1_game/
+work/
+generated/
+*.bin
+*.cue
+*.iso
+*.chd
+*.img
+*.exe
+*.mcd
+*.mcr
+overlay_captures.json
+*.SYM
+*.sym
+
+# Build output
+build/
+out/
+*.obj
+*.o
+*.dll
+*.pdb
+
+# Tools
+.ghidra/
+*.gpr
+*.rep/
+__pycache__/
+.venv/
+.vscode/
+.vs/
+.claude/settings.local.json
