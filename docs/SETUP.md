@@ -85,7 +85,7 @@ Git was already PRESENT and was not changed.
 
 ### Download list
 
-These are the downloads used. The zips are kept in `<RETRO_TOOLS_DIR>\_downloads`.
+These are the downloads used. The zips were kept in `<RETRO_TOOLS_DIR>\_downloads`. They were deleted after Phase 1 (see Notes).
 
 | Download | Source |
 |----------|--------|
@@ -108,7 +108,7 @@ $env:PSXRECOMP_TOOLCHAIN_DIR = '<RETRO_TOOLS_DIR>\cmake-clang'
 $env:PATH = '<RETRO_TOOLS_DIR>\cmake-clang\bin;' + $env:PATH
 ```
 
-- The `_downloads` folder is outside the repo. It is safe to delete.
+- The `_downloads` folder is outside the repo. On the user's request, the downloaded zips in `_downloads` (about 1.2 GB) were deleted after Phase 1. To reinstall a tool, download its zip again from the sources in the table above.
 
 ### Uninstall
 
@@ -160,6 +160,7 @@ The script `tools\disc_classify.py` gives each disc file a format tag. It also e
 
 - It writes `work\disc_classes.json`. The `work\` folder is git-ignored.
 - It extracts files to `work\extracted\`. Extraction takes about 530 MB.
+- On the user's request, `work\extracted\` (about 530 MB) was deleted after Phase 1. Run this script again, without `--no-extract`, to regenerate it.
 - STR video files are extracted as raw 2352-byte sectors. Their names end in `.raw2352`.
 - All other files are extracted as their Form 1 user data, cut to the ISO size.
 - `--no-extract` skips the extraction step and writes the JSON only.
@@ -268,6 +269,7 @@ The script `tools\exe_overlays.py` reads the boot EXE and the overlay files. It 
 
 - It needs `work\extracted\SLUS_004.76` and `work\extracted\OVERLAYS\*.OVR` from T1.3.
 - It needs `work\disc_classes.json` from T1.3.
+- `work\extracted\` was deleted after Phase 1. Run `tools\disc_classify.py` (without `--no-extract`) first. It writes `work\disc_classes.json` and regenerates `work\extracted\`.
 - It reads `ps1_game\*.bin` for the independent header parse. It only reads the disc. It does not change anything in `ps1_game\`. If the disc image is missing, the header is still written, and the independent parse is marked "not run".
 - It writes `work\exe_header.json` and `work\overlay_candidates.json`. Both folders and files are git-ignored.
 - It uses only the Python standard library.
@@ -378,7 +380,11 @@ The configure step set these options:
 
 ## Ghidra + PS1 loader + REA (T1.5)
 
-Ghidra opens the boot EXE with the PS1 loader. The headless run matches the EXE header and crt0 values from T1.4. REA could not open the EXE, so it is not registered. See `docs/DECISIONS.md` (D4).
+Headless Ghidra (`analyzeHeadless`) opens the boot EXE with the PS1 loader. The headless run matches the EXE header and crt0 values from T1.4. REA could not open the EXE, so it is not registered. See `docs/DECISIONS.md` (D4).
+
+- The PS1 loader was verified only with `analyzeHeadless`. The run is reproducible, and the reviewer re-ran it.
+- The Ghidra GUI has NOT been opened by anyone. No agent and no user has checked the GUI. An earlier note that the GUI works was an automatic reply, not an observation. It is wrong and is withdrawn.
+- A GUI check is an optional user step. See "Optional GUI check" below. It is question 62 in `docs/OPEN_QUESTIONS.md`.
 
 ### Tools
 
@@ -408,7 +414,7 @@ Ghidra uses two folders for extensions. Put the files in the right one.
 | Folder | What it holds | Loaded by Ghidra? |
 |--------|---------------|-------------------|
 | `<RETRO_TOOLS_DIR>\ghidra\ghidra_12.1.4_PUBLIC\Ghidra\Extensions\ghidra_psx_ldr\` | The unpacked extension. `extension.properties` says version 12.1.4 | Yes |
-| `<RETRO_TOOLS_DIR>\ghidra\ghidra_12.1.4_PUBLIC\Extensions\Ghidra\` | The zip, kept here. The GUI's Install Extensions dialog lists it | No |
+| `<RETRO_TOOLS_DIR>\ghidra\ghidra_12.1.4_PUBLIC\Extensions\Ghidra\` | The zip, kept here. Not checked in the GUI, which was not opened | No |
 
 A first attempt unpacked the zip into the wrong folder. Headless Ghidra then failed with "No load spec". The fix was to unpack into `Ghidra\Extensions\`.
 
@@ -458,7 +464,16 @@ analyzeHeadless <project folder> <project name> -import work\disc\SLUS_004.76 -o
 ### Other loader results
 
 - A raw binary import (BinaryLoader, `MIPS:LE:32:default`, base `0x80010000`, file offset `0x800`) found 1934 functions. The PS1 loader is the better path, so it is used.
-- The Ghidra GUI was reported by the user to open the EXE with the PS1 loader. This was not checked here. No GUI project was found under `%USERPROFILE%`.
+- The Ghidra GUI has not been opened. Nothing shows that it opens the EXE with the PS1 loader. No GUI project was found under `%USERPROFILE%`.
+
+### Optional GUI check (user step, not done)
+
+Only the user can do this. It is not needed for Phase 1.
+
+1. Run `<RETRO_TOOLS_DIR>\ghidra\ghidra_12.1.4_PUBLIC\ghidraRun.bat`.
+2. Create a Ghidra project outside the repo, for example under `%USERPROFILE%\ghidra-projects`.
+3. Import `work\disc\SLUS_004.76` into that project. Ghidra should pick the PS1 loader.
+4. Record the result in `docs/OPEN_QUESTIONS.md` (question 62).
 
 ### REA result
 

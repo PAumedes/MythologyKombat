@@ -28,7 +28,7 @@ _Filled in by the doc-writer as tasks pass review._
 ## D4 Do not register REA. Use Ghidra headless instead (T1.5)
 
 - Context: REA (`rea-agents` 6.7.0) was tested to open the boot EXE through Ghidra. Its inspect command fails with `unsupported binary format`. REA does not list MIPS as a raw-binary architecture. Its Windows Ghidra support is documented as experimental for x86, x64 and ARM PE files.
-- Decision: do not register REA. Do not run `rea-agents setup`. Use Ghidra directly, through `analyzeHeadless` and any post-scripts, and through the Ghidra GUI.
+- Decision: do not register REA. Do not run `rea-agents setup`. Use Ghidra directly, through `analyzeHeadless` and any post-scripts. The Ghidra GUI has not been opened by anyone. Using it is an optional user step (see `docs/SETUP.md`, T1.5).
 - Not chosen, and why:
   - Registering REA with `setup`. Setup writes to `~/.claude.json` and `~/.claude/skills`, and REA cannot open this EXE.
   - Registering REA at project scope with `claude mcp add --scope local`. This was not tested.

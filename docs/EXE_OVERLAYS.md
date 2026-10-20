@@ -7,7 +7,7 @@ Source: `work\exe_header.json` and `work\overlay_candidates.json`, written by `t
 Status words used here:
 
 - **confirmed by independent parse**: a second parser read the raw disc sectors and got the same value.
-- **confirmed by Ghidra headless**: Ghidra 12.1.4 with the PS1 loader gave the same value (T1.5). Used for the entry point, text address and size, BSS range and heap values only. See `docs/SETUP.md`.
+- **confirmed by Ghidra headless**: Ghidra 12.1.4 with the PS1 loader, run through `analyzeHeadless`, gave the same value (T1.5). Used for the entry point, text address and size, BSS range and heap values only. The Ghidra GUI has not been opened. See `docs/SETUP.md`.
 - **pending Ghidra/emulator**: not yet compared with a debugger, and not checked in Ghidra. The emulator check is still pending.
 - **confirmed** (overlays): the overlay's own code fits the load address that the EXE's loader uses. This is a static check only. Ghidra has not checked the overlays yet. A runtime check is still pending.
 

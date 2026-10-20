@@ -110,7 +110,7 @@
 | 59 | Should REA be revisited? | REA cannot open the boot EXE. Its inspect command returns `unsupported binary format` for the Ghidra provider. REA does not list MIPS. The decision is in `docs/DECISIONS.md` (D4). Revisit if REA adds MIPS. |
 | 60 | Should a community Ghidra MCP server be used instead? | Named candidates are ReVa and GhidraMCP. Neither was researched. Not decided. |
 | 61 | Is REA safe to install? | REA is from one maintainer and was first published on 2026-07-12. Its prebuilt Windows native addon was not audited. Setup was not run. Not decided. |
-| 62 | Does the Ghidra GUI open the EXE with the PS1 loader? | The user reported this. It was not checked here. No GUI project was found. |
+| 62 | Does the Ghidra GUI open the EXE with the PS1 loader? | Not checked. The Ghidra GUI has not been opened by anyone. An earlier note saying it works was an automatic reply, not an observation, and is withdrawn. The PS1 loader was verified only with `analyzeHeadless` (reproducible). Optional user step: see `docs/SETUP.md` (T1.5, "Optional GUI check"). |
 | 63 | Is the `ghidra_psx_ldr` zip the upstream file? | Its SHA-256 is recorded in `docs/SETUP.md`. It was not compared with a published hash. |
 | 64 | Should the Ghidra check be a script in `tools\`? | Addressed for T1.6: `tools\ghidra_sdk_names.py` runs Ghidra for the SDK names. Whether it also covers the T1.5 import checks is not checked. See `docs/SETUP.md` (T1.6). |
 | 65 | Should the RAM block be marked initialised? | The loader leaves `0x800D8000` to `0x801FFFFF` uninitialised. This causes about 460 "Unable to read bytes" warnings. Not decided. |
