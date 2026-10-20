@@ -1144,6 +1144,13 @@ This is an agent measurement under T2.10. It is not a user test. The runs used a
 - The movie file is not identified. The Release build prints no LBAs. The earlier guess of 7100 sectors and `FMV3B.STR` is withdrawn.
 - To identify it, the debug build needs `fmv_state` or `cdrom_sector_history`.
 
+### User and session results (T2.10, from T2.20)
+
+- User-reported: with vsync off the audio was clean. With vsync on the audio was glitchy.
+- Telemetry, measured by `tools\session_fps.py` on the T2.20 recording (exe SHA-256 `b5573bbe...7856b`, rows with `cd_xa` not 0): the vsync-off session averages 59.9 Hz and the vsync-on session averages 51.9 Hz.
+- Which session had vsync on or off is user-reported. `session.json` does not record it (question 222). The movie is not identified (question 162).
+- Details and the other session figures are in `docs/OPEN_QUESTIONS.md`, questions 220 to 224.
+
 ### Next steps
 
 1. The user runs a visible-window test with vsync off. In PowerShell:

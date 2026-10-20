@@ -56,3 +56,7 @@ starvation_dump.jsonl
 
 # Machine-specific disc probe output (absolute path)
 disc_probe.json
+
+# --- Added in T2.20: replay recordings / diagnostics sessions (hold memory-card copies and RAM digests) ---
+/tests/replays/local/
+session-*/

@@ -194,3 +194,9 @@ _Filled in by the doc-writer as tasks pass review._
 - Status: the manual seed `0x80032760` and the `--manual` option were checked by the implementer only. No reviewer has checked them (question 213).
 - The current Release exe SHA-256 is `b5573bbe586f7669f3dfad11d3ca3a6f8888f8e37eb47eccdffbb8f201a7856b` (`docs/SETUP.md`, T2.8). Any relink before the user's recording changes it.
 - Open items are in `docs/OPEN_QUESTIONS.md` (213 to 219). Details are in `docs/SETUP.md` (T2.8).
+
+## D16 Replay recordings stay local and git-ignored (T2.20)
+
+- Context: a recording folder holds `card1.mcd`, `card2.mcd` (copies of the starting cards), `inputs.csv` with a RAM digest per vblank, and `telemetry.csv`.
+- Decision: copy sessions to `tests\replays\local\` and never commit them. `tests\replays\.gitignore` and the root `.gitignore` both ignore that folder. `tools\run_replays.ps1` replays them into `work\replay_out\`. Whether recordings are ever committed stays the user's decision (TASKS open question 3).
+- Derived route metadata with no game data (button names, frame numbers) may be committed under D8. Nothing of that kind was added by T2.20.

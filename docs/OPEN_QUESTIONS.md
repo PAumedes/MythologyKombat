@@ -366,7 +366,7 @@ See `docs\SETUP.md` ("Playtest diagnostics recorder (T2.19)") and `docs\DECISION
 | 205 | When is the `%TEMP%` fallback folder used? | `docs\SETUP.md` gives the fallback path. The condition is not recorded. Not checked. |
 | 206 | What is lost if the game crashes or is killed, instead of quitting normally? | The writer drains its data on a normal quit. What is lost on a crash or a kill is not checked. |
 | 207 | What does a `PSX_PUBLIC_RELEASE=ON` build ship with? | The defaults script fails a public build unless the source says false, and the source says false. A configure with the option ON was not run. The public output is not checked. |
-| 208 | Does the Release exe replay its own recording? | Strict replay is T2.20. Not run. The same-exe rule comes from the build id. Not tested. |
+| 208 | Does the Release exe replay its own recording? | Answered by measurement (agent, T2.20): yes, twice, plus once through `tools\run_replays.ps1`. See the T2.20 section below. |
 | 209 | Does the CMake no-op rebuild check pass after the diagnostics package was added? | The reviewer did not run it. Not checked. |
 | 210 | What does the sample number `N` in the first field of each row count? | The field holds `N` and a sequence number. The report does not say what `N` counts. Not checked. |
 | 211 | Are the fields of `session.json`, `telemetry.csv` and `mods-state.toml` documented? | The T2.19 report does not describe them. Not checked. |
@@ -385,3 +385,15 @@ See `docs/SETUP.md` ("Seed growth from dispatch misses (T2.8)") and `docs/DECISI
 | 217 | Should `tools\grow_seeds.py` count manual addresses under their own label? | Its summary line counts manual addresses under "ACCEPT". The seed file itself is correct. Cosmetic. Not changed. |
 | 218 | Where is `collect_game_misses.py`, and is it kept under `tools\`? | The T2.8 report gives the command but not its folder. `CLAUDE.md` requires disc claims to come from scripts in `tools\`. Not checked. |
 | 219 | Which exe will the user record on, and is it frozen? | The Release exe SHA-256 is `b5573bbe...` (`docs/SETUP.md`, T2.8). D14 and D15 say the exe must be frozen before recording. The T2.8 report does not say which exe the user will use. Not decided. |
+
+## Strict replay and recorded fps (from T2.20)
+
+Measured by `build\replay-diagnostics.py` (upstream) and `tools\session_fps.py`. Session `session-1792525023167056`, exe SHA-256 `b5573bbe...7856b` (frozen Release build, same hash as the build id in `session.json`).
+
+| # | Question | Notes |
+|---|----------|-------|
+| 220 | Does strict replay of the user's recording succeed? | Yes, measured (agent): two runs and one run through `tools\run_replays.ps1`, each "Replay verified", 23155 inputs verified, exit 0. A wall-clock run takes about 400 s (404 s via the wrapper). The user recorded the session (user-reported); what was played is user-reported (title to new game to first fight). |
+| 221 | Does a changed input make replay fail? | Yes, measured (agent). Changing the button field of row 9510 (65527 to 65535) gave "first divergence at sequence 9527: RAM digest expected 243767509 got 3054881060"; the wrapper reported FAIL, exit 1. The divergence shows 17 vblanks after the edit, not at the edited row. A different-exe control was not run (the exe is frozen). |
+| 222 | Does `session.json` record the vsync setting? | No such field was found in either session's `session.json`. That session 1792525023167056 had vsync on and 1792524829517909 had vsync off is user-reported, not read from the files. |
+| 223 | What are the guest vblank rates in the two sessions? | Measured (agent, `tools\session_fps.py`, rows with `cd_xa` != 0): vsync-on session mean 51.9 Hz, median 57.4 Hz (n=5669); vsync-off session mean 59.9 Hz, median 78.7 Hz (n=4551). Rows with `cd_xa` == 0: 60.2 Hz mean (vsync on), 69.6 Hz mean (vsync off, n=1266). The high vsync-off median means the intervals are bursty, so the median alone is not a rate. These are host intervals between guest VBlanks, not unique game frames. Which movie played is not identified. Whether this is the visible-window result asked for in 155 and 163 depends on how the user ran it (user-reported: visible window, not checked here). |
+| 224 | Are the user's recordings ever committed? | Not decided. They hold memory-card copies and RAM digests. They stay in `tests\replays\local\` and are git-ignored (user decision pending, TASKS open question 3). |

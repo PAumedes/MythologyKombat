@@ -50,3 +50,26 @@ Steps must not overlap. The first step must be later than the frame at which the
 
 See `docs\SETUP.md` for the debug build. Replays here are tied to one exe build (`exe_sha256`); after a rebuild that changes
 generated code, re-record and review the diff.
+
+## Strict replay of recorded sessions (T2.20)
+
+Separate from the debug-port routes above. A session folder written by the playtest diagnostics recorder (T2.19) is
+replayed by the upstream `build\replay-diagnostics.py` against the SAME Release exe (the tool checks the build id and the
+guest-RAM digest on every vblank, and stops at "first divergence at sequence N").
+
+Put sessions in `tests\replays\local\<session>\` (copy, so the tool never writes into the original). Then:
+
+```
+powershell -ExecutionPolicy Bypass -File tools\run_replays.ps1                     # every session under tests\replays\local\
+powershell -ExecutionPolicy Bypass -File tools\run_replays.ps1 -Session <dir>      # one session, any location
+```
+
+It prints `PASS` or `FAIL` per session (exit 0 if all pass, 1 if any fail, 2 if none found). A 6.4 minute recording takes about 400 s.
+Output goes to `work\replay_out\<session>-<timestamp>` and its `.log` (git-ignored).
+The exe must be the frozen build the session was recorded on (`build\MythologyKombat.exe`, SHA-256 starting `b5573bbe` for
+session 1792525023167056); a rebuild makes old recordings fail on purpose. Negative control: copy a session, change a button
+field in one `N` row of `inputs.csv`, and run with `-Session`; it must report FAIL.
+
+`tools\session_fps.py <session>...` prints guest vblank rates from `telemetry.csv`.
+
+`tests\replays\local\`, `session-*\`, `*.mcd` are git-ignored. Recordings hold memory-card copies and RAM digests; never commit them.
