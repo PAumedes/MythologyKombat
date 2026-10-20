@@ -31,3 +31,28 @@ __pycache__/
 .vscode/
 .vs/
 .claude/settings.local.json
+
+# --- Added in T0.6 (scaffold) ---
+# generated/ stays IGNORED here on purpose (CLAUDE.md hard rule: never commit
+# generated game C). Upstream's scaffold commits it; we diverge.
+/build-*/
+/disc/
+/saves/
+/bios/
+/isos/
+/prepared_disc/
+/.cache/
+/release-stage/
+/dist/
+*.zip
+SCPH*.BIN
+psx_crash.txt
+psx_last_run_report.json
+psx_screenshot.bmp
+psx_freeze_heartbeat.json
+.psxrecomp_last_generate
+.psxrecomp_write_probe
+starvation_dump.jsonl
+
+# Machine-specific disc probe output (absolute path)
+disc_probe.json

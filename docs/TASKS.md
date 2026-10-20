@@ -10,9 +10,9 @@ The orchestrator updates the Status column; nobody else edits this table.
 | T0.3 | Install missing prerequisites | T0.2 | USER | done |
 | T0.4 | Identify and fingerprint the disc | T0.1 | agents | done |
 | T0.5 | Add PSXRecomp and build the framework | T0.3 | agents | done |
-| T0.6 | Decide how to scaffold the game project | T0.5 | agents | in-progress |
+| T0.6 | Decide how to scaffold the game project | T0.5 | agents | done |
 | T0.7 | Reference emulator check (Phase 0 gate) | T0.3 | USER | done |
-| T1.1 | List every file on the disc | T0.4 | agents | todo |
+| T1.1 | List every file on the disc | T0.4 | agents | in-progress |
 | T1.2 | Hunt for leftover debug symbols | T1.1 | agents | todo |
 | T1.3 | Classify every file by format | T1.1 | agents | todo |
 | T1.4 | Main EXE header and overlay candidates | T1.3 | agents | todo |

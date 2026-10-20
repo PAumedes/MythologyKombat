@@ -205,3 +205,104 @@ Use the explicit targets above instead. No upstream source was changed. It is no
 ### Commit note
 
 `.gitmodules` and the `psxrecomp` gitlink were committed in the "T0.7: ..." commit (`beee35b`). They were staged in that commit by accident of staging order.
+
+## Game project scaffold (T0.6)
+
+The game project was made with the upstream setup script, `setup_project.ps1`. The script was run in a temp folder. Its output was then copied into the repo root. See `docs\DECISIONS.md` (D3).
+
+### Scaffold command
+
+Run from the repo root. The `-Disc` path and the `-Dir` folder are relative.
+
+```
+powershell -NoProfile -ExecutionPolicy Bypass -File <path to setup_project.ps1> -Disc "ps1_game\Mortal Kombat Mythologies - Sub-Zero.cue" -Dir work\scaffold-test -Name MythologyKombat -Players 1 -Yes -EnableRecompUi -NoNetplay -NoCi -NoFetchBoxart -NoGenerate -NoBuild -NoGithub -Description "Sub-Zero PS1 static recomp" -Publisher TBD -Year TBD -PsxrecompUrl https://github.com/RetroPortingToolKit/psxrecomp
+```
+
+- `-Publisher TBD` and `-Year TBD` are placeholders. Empty values made the disc probe fail, so real values were passed.
+- `-NoGenerate` and `-NoBuild` mean nothing was generated from the disc and nothing was built by the script.
+
+### Python workaround
+
+The embeddable Python from T0.3 ignores `PYTHONPATH`. It reads its `._pth` file instead. The fix is a private copy of Python at `work\py-scaffold`. The script directory was added to its `python312._pth` file. The script finds this copy through the environment variable `PSXRECOMP_PYTHON`.
+
+```
+$env:PSXRECOMP_PYTHON = '<REPO_ROOT>\work\py-scaffold\python.exe'
+```
+
+### Disc probe result
+
+| Item | Value |
+|------|-------|
+| Serial | SLUS-00476 |
+| Boot file | `SLUS_004.76` |
+| Track count | 1 |
+| Entry point | `0x80090E70` |
+| Seed addresses | 1175 |
+
+### Files copied to the repo root
+
+| File or folder | Purpose |
+|----------------|---------|
+| `CMakeLists.txt` | Project build file |
+| `game.toml` | Game settings |
+| `game_options.toml` | Game options |
+| `codegen_setup.c`, `codegen_setup.h` | Code generation setup |
+| `VERSION` | Version, `0.1.0` |
+| `symbols.toml` | Symbol names |
+| `psx_symbols.h` | Symbol header |
+| `seeds\ghidra_funcs.txt` | 1175 function addresses, taken from the boot EXE's JAL targets |
+| `catalog_identity.json` | Catalog identity |
+| `.recomp.json` | Recompiler settings |
+| `framework_pins.txt` | Framework pins |
+| `assets\` | Asset folder |
+| `scripts\package_release.sh` | Release script |
+| `mods\preloaded\` | Preloaded mods folder |
+| `tools\sync_symbols.py` | Symbol sync script |
+| `.gitignore` | Extra lines added. Existing lines are kept |
+
+- The name `seeds\ghidra_funcs.txt` is a misnomer. The addresses come from the boot EXE, not from Ghidra. See `docs/OPEN_QUESTIONS.md`.
+- `disc_probe.json` holds an absolute path on this machine. It is git-ignored and is not committed.
+
+### Edits made to `game.toml`
+
+| Key | Value |
+|-----|-------|
+| disc | `ps1_game\Mortal Kombat Mythologies - Sub-Zero.cue` (relative) |
+| exe | `work\disc\SLUS_004.76` |
+| `[prepare_disc]` `out_dir` | `work\disc` |
+
+Extracted disc data stays under `work\`, as `CLAUDE.md` requires.
+
+### Submodule and generated code
+
+| Item | Value |
+|------|-------|
+| Submodule | `recomp-ui\` |
+| Source | `https://github.com/RetroPortingToolKit/recomp-ui.git` |
+| Pinned commit | `7c635c6b366a6e0d5d3c913a7fce6ec04dd9f256` |
+| `generated\` | Git-ignored on purpose. Not committed |
+
+- Do not run `git add psxrecomp`. The submodule shows as modified because of CRLF line endings. See `docs/OPEN_QUESTIONS.md`, question 13.
+
+### Configure check
+
+```
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+```
+
+Result: exit code 0.
+
+The configure step set these options:
+
+| Option | Value |
+|--------|-------|
+| SDL3 | On |
+| `PSX_NETPLAY` | OFF |
+| OpenBIOS | Linked |
+| `PSX_MAX_PLAYERS` | 1 |
+| `PSX_SETUP_WIZARD` | ON (default) |
+| recomp-ui backend | SDL3 |
+
+### Leftover folders
+
+`work\scaffold-test\` and `work\py-scaffold\` are scratch. They are safe to delete. They are git-ignored.

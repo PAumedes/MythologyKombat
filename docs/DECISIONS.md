@@ -13,3 +13,14 @@ _Filled in by the doc-writer as tasks pass review._
 
 - Decision: the `psxrecomp\` submodule is pinned to `449c31e5029f3a3281fa15060105928d2b3b13f7`.
 - Reason: the task asks for a pinned submodule commit. The exact hashes are in `docs/SETUP.md`.
+
+## D3 Scaffold the game project in a temp folder, then copy (T0.6)
+
+- Context: the upstream PSXRecomp setup script creates a new project folder. This repo already exists.
+- Decision: run the upstream `setup_project.ps1` in `work\scaffold-test\`. Then copy its output into the repo root. The copy does not overwrite existing files.
+- Not chosen, and why:
+  - Running the script in place. It always creates a new folder. It runs `git init`, makes its own commit and adds submodules. Those would fight the existing history.
+  - Writing the files by hand. That would drift from the upstream templates and lose the values read from the disc.
+- Reason: the copy gets the upstream templates and the disc-derived values, and keeps the repo history clean.
+- Divergence from upstream: `generated\` stays git-ignored. Upstream commits `generated\` for its release CI. `CLAUDE.md` forbids committing generated C, so the upstream release CI templates will not work as-is. Decide later. See `docs/OPEN_QUESTIONS.md`.
+- Details of the run are in `docs/SETUP.md`.

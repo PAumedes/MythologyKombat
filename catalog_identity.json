@@ -1,0 +1,48 @@
+{
+  "format_version": 1,
+  "game": {
+    "name": "MythologyKombat",
+    "id": "SLUS-00476",
+    "boot_exe": "SLUS_004.76"
+  },
+  "marketing": {
+    "description": "Sub-Zero PS1 static recomp",
+    "publisher": "TBD",
+    "year": "TBD",
+    "region": "USA",
+    "players": 1
+  },
+  "rom_identity": {
+    "cue_name": "Mortal Kombat Mythologies - Sub-Zero.cue",
+    "bin_name": "Mortal Kombat Mythologies - Sub-Zero.bin",
+    "track_counts": [
+      1
+    ],
+    "require_cue": true,
+    "data_track": {
+      "size": 538586832,
+      "md5": "8a75edba7855618f8f61338daef1be1d",
+      "sha1": "bf5803d35aa7f55dc60bebbac645fc0d4e99c978",
+      "crc32": "83988529"
+    },
+    "disc_fp": "dc720debe84dfa01f5db57b27835d96e654764ced5b726219881bc835c510b15"
+  },
+  "exe": {
+    "load_address": "0x80010000",
+    "entry_pc": "0x80090E70",
+    "text_size": "0x000C8000",
+    "stack_base": "0x801FFFF0"
+  },
+  "seeds": {
+    "count": 1175,
+    "source": "boot_exe_jal"
+  },
+  "warnings": [
+    "cue has only 1 TRACK \u2014 Track-01-only dumps fail multi-track netplay/catalog gates; prefer a full Redump cue."
+  ],
+  "notes": [
+    "entry_pc/load_address/text_size/stack_base taken from PS-X EXE header.",
+    "seeds are first-pass boot-EXE JAL targets (+ entry); expect to grow as overlays / runtime paths are discovered.",
+    "required_disc_fp is psxrecomp-toc-v1 (matches runtime DiscIdentity)."
+  ]
+}
