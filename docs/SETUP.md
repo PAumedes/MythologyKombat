@@ -2338,3 +2338,85 @@ Agent-run, 2026-10-20, from the repo root, against the T3.1 debug build `work\bu
 ### Files
 
 `tests\replays\expected\boot_to_menu.json` (changed, committable), `tests\replays\README.md`, `docs\SETUP.md`, `docs\CHANGELOG.md`, `docs\OPEN_QUESTIONS.md`. The negative-control route and result are under `work\route_neg\` (git-ignored). No screenshots or recordings were made.
+
+## Perf measurement tools (T3.6)
+
+Run these from the repo root. `tools\perf_run.ps1` is a PowerShell script. The two Python tools use only the standard library.
+
+### Run and meta file
+
+```
+powershell -ExecutionPolicy Bypass -File tools\perf_run.ps1 -Name X
+```
+
+- It writes the settings block into `work\perf\run_X.meta.txt`. The `work\` folder is git-ignored.
+- The settings are not added to `session.json`. That file is written by the exe, so the meta file is the place for them. See `docs/OPEN_QUESTIONS.md`, question 222, which stays open.
+- In the meta, `video.supersampling` shows the raw key from `settings.toml`. The game log reports the preset-derived value. For example, the meta shows 4 and the log says 9x. Read both before you compare runs.
+
+### Print the settings block
+
+```
+python -I tools\perf_summarize.py X
+```
+
+- It prints the settings block from `work\perf\run_X.meta.txt`.
+- If the meta file is missing, it says so. The run then predates T3.6 or was not made with `perf_run.ps1`.
+
+### Vblank percentiles
+
+```
+python -I tools\perf_telemetry.py <session-dir> [<session-dir> ...]
+```
+
+- It reads `telemetry.csv` in each session folder. The session folders are under `build\saves\diagnostics\`.
+- It prints the vblank interval at p50, p90, p99, p99.9 and max, in milliseconds.
+- It prints the share of intervals above 33 ms. The share is split in three groups: all rows, `cd_xa != 0` and `cd_xa == 0`.
+- It replaces the scratch script `work\scratch\tele.py`.
+- The same telemetry folder gives the same output on every run.
+
+### Measured on this machine (2026-10-20)
+
+| Item | Value | Note |
+|------|-------|------|
+| `build\settings.toml` video | `internal_resolution = "4k"`, `supersampling = 4`, `antialiasing = true`, `vsync = "immediate"` | Read from the file. It overrides `game.toml` |
+| GPU | Intel HD 630, driver 22.20.16.4708 (dated 2017). NVIDIA MX150 | |
+| Power plan | Ultimate Performance | |
+| Display scale | DPI 120 (125% scale) | User-reported. Not measured by an agent |
+
+## Guard for game data in the repo (T3.16)
+
+The guard checks that no game data is in the git index. Run it from the repo root:
+
+```
+python tools\check_no_game_data.py [--repo DIR] [--list FILE|- [--root DIR]] [--max-mb N]
+```
+
+| Option | Meaning |
+|--------|---------|
+| `--repo DIR` | Repo to check. Defaults to the folder above `tools\` |
+| `--list FILE` or `--list -` | Check the paths in a file, or read them from stdin, instead of the index. `-` reads stdin |
+| `--root DIR` | Folder that the `--list` paths are relative to. It also turns on the content checks |
+| `--max-mb N` | Size limit for a staged file. Default 32 MB |
+
+| Exit code | Meaning |
+|-----------|---------|
+| 0 | Clean |
+| 1 | Violations. Each one prints as `FAIL <path>: <reason>` |
+| 2 | Usage or git error |
+
+- It checks the staged index blobs, not the files in the work tree.
+- Extra checks: a raw CD sector (the 12-byte CD sync pattern), a file over the size limit, the `PS-X EXE` header, and the nested `ps1_game/`, `work/` and `generated/` folders.
+- For CI (T3.17): run the guard on a checkout without submodules.
+
+### Tests
+
+```
+python tests\test_check_no_game_data.py
+```
+
+- 19 tests. They take about 25 s.
+- `python -I -m unittest` does not work for this. Use the file path, as above, or `python -m unittest discover -s tests -p "test_check*"`.
+
+### Known minor issue
+
+- A file path with non-ASCII characters prints as mojibake in its `FAIL` line on the Windows console.

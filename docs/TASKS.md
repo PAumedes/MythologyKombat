@@ -63,7 +63,7 @@ Gate notes:
 | T3.3 | Record a new session on the new exe | T3.1 | USER (deferred, only needed for T3.4 replay) | todo |
 | T3.4 | Strict replay of the new recording, twice, with negative control | T3.3 | agents | todo |
 | T3.5 | Phase 3 gate review (runs last) | T3.1, T3.2, T3.4, T3.6 to T3.25 | agents | todo |
-| T3.6 | Perf measurement hygiene | T3.1 | agents | todo |
+| T3.6 | Perf measurement hygiene | T3.1 | agents | done |
 | T3.7 | 1x vs 4K resolution A/B (visible window) | T3.6 | USER + agents | todo |
 | T3.8 | Vsync and window mode A/B (visible window) | T3.6 | USER + agents | todo |
 | T3.9 | Sampling profile of the Release exe during the FMV | T3.6 | USER + agents | todo |
@@ -73,7 +73,7 @@ Gate notes:
 | T3.13 | Box art and disc icon source and licence | T3.11 | USER | todo |
 | T3.14 | Licence for this repo's own files (LICENSE and NOTICE) | — | USER + agents | todo |
 | T3.15 | Path, email and derived-data decisions, then the scrub | T3.14 | USER + agents | todo |
-| T3.16 | No-game-data guard script | — | agents | todo |
+| T3.16 | No-game-data guard script | — | agents | done |
 | T3.17 | CI workflow (guard, emitters-test, setup-host) | T3.16, T3.18 | agents | todo |
 | T3.18 | Setup-host build in the repo, and the first wizard run | T3.1 | agents + USER | todo |
 | T3.19 | Kit packager, content check and checksums | T3.12, T3.14, T3.16, T3.18 | agents | todo |
@@ -283,6 +283,8 @@ Adversarial reviewer only, as in T2.23. Check that no game data is tracked (`git
 Depends on: T3.1. Owner: agents. Source: `docs\PERF_AND_ENGINEERING_IDEAS.md` section 1 (items 1, 2, 5), section 6, and question 222.
 `tools\perf_run.ps1` writes a `run_<name>.meta.txt` with: the effective video settings from `build\settings.toml` (`internal_resolution`, `supersampling`, `antialiasing`, `dynamic_resolution`, `vsync`, and the fullscreen key if present), the power plan (`powercfg /getactivescheme`), the GPU and driver (`Get-CimInstance Win32_VideoController`), the psxrecomp and recomp-ui pins with their dirty state, and the exe SHA-256. Add `vsync` and `internal_resolution` to the session metadata too. Turn the scratch script `work\scratch\tele.py` into a stdlib tool under `tools\` that prints the vblank percentiles and the share above 33 ms.
 **Accept when:** a run writes the meta file; two runs with the same settings give the same meta lines, except the run name and time; the meta matches `build\settings.toml`; the new tool gives the same output twice on the same telemetry folder.
+
+Done note: the "session metadata" part is implemented in the run meta file (`work\perf\run_<name>.meta.txt`), not in `session.json`, because `session.json` is written by the exe. Question 222 stays open. In the meta, `video.supersampling` shows the raw key from `settings.toml`, while the game log reports the preset-derived value (for example 4 against 9x). Read both. Usage is in `docs/SETUP.md` (T3.6).
 
 ## T3.7 1x vs 4K resolution A/B (USER + agents)
 Depends on: T3.6. Owner: USER + agents. Source: `docs\PERF_AND_ENGINEERING_IDEAS.md` section 1 item 2 and section 3.1.
