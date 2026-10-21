@@ -2485,7 +2485,7 @@ A Windows Python text-mode write added CR bytes to a patch header. `patches\laun
 
 The setup host is the exe that runs the setup wizard. It is built with no game C. Its build folder is `build-setup\`, which is git-ignored.
 
-Agent part measured on 2026-10-20 by the implementer. The first wizard run is a user step (see below). Logs are under `work\`: `build_setup_run.txt`, `build-setup.configure.log` and `clone_test_build.txt`.
+Agent part measured on 2026-10-20 by the implementer. The first wizard run was observed by agents (see First wizard run below). Patricio's own run is still open. Logs are under `work\`: `build_setup_run.txt`, `build-setup.configure.log` and `clone_test_build.txt`.
 
 ### Environment
 
@@ -2556,9 +2556,86 @@ git -C psxrecomp add generated/OpenBIOS.emitter.sha generated/OpenBIOS_dispatch.
 
 - The setup-host configure log prints `BIOS backends linked: OpenBIOS`. A setup host should link no game C. The cause is not investigated.
 
-### User step: first wizard run (T3.18, not done)
+### First wizard run (T3.18): agent-observed on 2026-10-21
 
-Only you can do this. It is the first run of the wizard on this machine. Use the fresh clone, so the exe has no game C.
+- Not user-run. The agents ran this test. Patricio did not click anything.
+- The result is agent-observed, not user-reported.
+- Exe: `build-setup\MythologyKombat.exe` in the fresh clone `work\clone-test`, SHA-256 `b4e9d186...` (see Exe hashes above).
+- Wizard state was kept inside the clone. `RETCOMM_DATA_HOME`, `TEMP` and `TMP` pointed into it.
+- Clicks came from recomp-ui's `LNG_SCRIPT` hook. Screenshots were saved as PNG files. The native file dialog was driven with Windows UI Automation and SendKeys.
+
+#### Wizard pages
+
+| Page | What it showed | What happened |
+|------|----------------|---------------|
+| 1. Build tools | "Download latest portable toolchain", checked by default. The link text names `TechnicallyComputers/retcomm-toolchains` | Clicking Next started the download at once. No confirmation was asked |
+| 2. Setup required | BIOS optional (the bundled OpenBIOS was used). Disc image, with Browse | The `.cue` was picked. The wizard showed "Disc verified", SLUS-00476, NTSC-U and "ISO header OK" |
+| 3. Generate and rebuild | "Generate & rebuild..." | Ran with no confirmation |
+
+Page 1 details:
+
+- Asset `cmake-clang-v1-windows-x64.zip`, 209,497,009 bytes. The latest release was v1.0.14 at the time.
+- The zip unpacked to `retcomm-data\toolchains\cmake-clang\1.0.14` (about 798 MB).
+- A second copy went to `<REPO_ROOT>\toolchain\` (798,317,234 bytes). Together the two copies use about 1.6 GB.
+- The link text is stale. The repo redirects (HTTP 301) to `RetroPortingToolKit/RetroPorting-Toolchains`. The name is set in `psxrecomp\host\psxrecomp_codegen_host.c` at line 2005 (`k_tc_repo`). See question 270.
+
+Page 3 steps, in the order they ran:
+
+1. Built the emitters with `ninja -j4`.
+2. Ran the pack's own Python: `psxrecomp_cli.py generate --project-root ... --config game.toml --disc ... --gen-marker ... --json-progress`.
+3. The static overlay step ran with the pack's bundled Python. The D13 error "No module named compile_overlays" did not appear. The reason was not checked.
+4. The setup exe quit. It started `build-release\recomp_deferred_rebuild.cmd`.
+5. That script ran `ensure-toolchain`, then `rebuild --build-dir build-release --target psx-runtime --exe-basename MythologyKombat --no-pgo --prune-after build-intermediates`, then started the exe with `--launcher`.
+
+#### Timings
+
+| Step | Time |
+|------|------|
+| Toolchain download | about 110 s |
+| Toolchain step, whole | 3 to 4 min |
+| Generate, cold emitter build included | about 1 min |
+| Rebuild (`psx-runtime`, 451 ninja log lines) | 5 min 20 s |
+| First run, total | about 10 min on this machine |
+
+#### Results
+
+| Item | Result |
+|------|--------|
+| `build-release\MythologyKombat.exe` | 51,759,616 bytes. SHA-256 `17ca5c784e1bed9d47492651ef53c92eefe85e98c2cfaeecb59b9c0d2c6b4a8a` |
+| `build\MythologyKombat.exe` (T3.1 exe) | Same size. SHA-256 starts `ff813773`, so the hash differs. Cause not checked (question 274) |
+| `generated\` in the clone | 71 files, 100,583,108 bytes. 70 of 70 match `work\generate_run11_seed_t28b.sha256.txt` byte for byte. `AOT_STATIC_AUDIT.json` differs, as expected |
+| Window | Windowed boot reached the title screen (START, OPTIONS). Window title "MythologyKombat Recompiled" |
+| `tools\smoke_boot.py` | Fails on the release build. A release build has no TCP debug server. Expected |
+| Build string | Says `-dirty`, because the wizard changed `game.toml` |
+
+#### What the user sees
+
+- Next on page 1 starts a 209 MB download. Nothing asks first.
+- The disc pick on page 2 is not remembered on the next launch. The wizard writes `disc.cfg` and `rom.cfg` into the project root.
+- "Generate & rebuild" runs with no prompt.
+- The game window opens on the title screen.
+
+#### Toolchain pin
+
+- The wizard fetches the latest toolchain. It does not pin one. This run got v1.0.14.
+- Not tested: the variable `RETCOMM_TOOLCHAIN_SKIP_UPDATE` is said to change only the update prompt. See questions 247 and 276.
+
+#### Fixes made after the run
+
+These are uncommitted until the orchestrator commits them.
+
+- `.gitignore` now ignores `/toolchain/`, `/disc.cfg`, `/rom.cfg`, `/build-release/`, `/build-setup/` and `/build-setup.configure.log`.
+- `game.toml` now has `multitap_analog = true` under `[controller]`, right after `default_mode`. The launcher writer adds a key after the last line of `[controller]`, before the next header. Before the fix, the key landed below the `[netplay]` comment block. Keep the key where it is. Do not put a comment directly above a header that follows `[controller]` keys. The writer was not tested by a run. The writer rewrites LF line endings. See question 279.
+
+#### Not verified
+
+- Wizard error paths, for example no network or antivirus blocking.
+- The automatic relaunch with `--launcher` after the rebuild, as a separate check. The title screen was reached (see Results).
+- Why the two exe hashes differ.
+
+### User step: first wizard run (T3.18, user run still open)
+
+Only you can do this. Your run is still open. The agent run above does not replace it. Use the fresh clone, so the exe has no game C.
 
 ```
 cd <REPO_ROOT>\work\clone-test
@@ -2566,8 +2643,8 @@ Start-Process -FilePath .\build-setup\MythologyKombat.exe
 ```
 
 1. In the wizard, pick the disc: `<REPO_ROOT>\ps1_game\Mortal Kombat Mythologies - Sub-Zero.cue`.
-2. Before you approve any download, write down what the wizard asks you. Copy the exact text. Note any size or address it shows. The report does not say what it asks yet (question 268).
+2. Before you approve any download, write down what the wizard asks you. Copy the exact text. Note any size or address it shows. The agent run recorded the pages (question 268). Compare your text with them.
 3. Go on step by step. For each step, note what happened, how long it took, and any error text. Copy error text word for word.
 4. Send the list back to the orchestrator. The wizard may generate and compile, which takes several minutes.
 
-The result is user-reported. It is not verified by an agent until it is recorded in this file.
+Your run is user-reported. The agent run above is agent-observed and does not replace it.

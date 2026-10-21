@@ -447,6 +447,8 @@ Start-Process -FilePath .\build-setup\MythologyKombat.exe
 Pick the disc in the wizard, then tell the orchestrator each step and any error text. The wizard may generate and compile, which takes several minutes.
 **Accept when:** the configure log has no "linking generated game C"; `build-setup\MythologyKombat.exe` exists; a fresh clone in `work\clone-test` (with `--recurse-submodules`, no `generated\`) configures and builds it; the exe hash is recorded in `docs\SETUP.md`; question 258 is closed; the wizard run is recorded as user-reported.
 
+**Status note 2026-10-21 (wizard run agent-observed, not user-reported):** The first wizard run was done by agents in `work\clone-test`, with the clone exe `b4e9d186...`. Patricio did not take part. The run is in `docs\SETUP.md` (First wizard run). Met: exe built (`build-release\MythologyKombat.exe`, SHA-256 `17ca5c78...`), fresh clone builds, hash recorded, question 258 closed. Not met as written: the run is recorded as agent-observed, not user-reported. Patricio's own run is still open. The orchestrator sets the status; this note does not change the status column.
+
 ## T3.19 Kit packager, content check and checksums (agents)
 Depends on: T3.12, T3.14, T3.16, T3.18. Owner: agents. Source: `docs\LAUNCHER_DESIGN.md` sections 2 (option A) and 5 (`kit` row).
 Build the kit zip from an allow-list: the setup-host exe, the filtered `psxrecomp\` tree the CLI needs, `game.toml`, `seeds\`, `aot\overlays.json`, `symbols.toml`, the licences from T3.14, and a version file. Whether the toolchain is in the kit is open (question 253). Do not call `scripts\package_release.sh` (bundled packager). Do not call `psxrecomp\tools\package_setup_host.sh` unmodified (retired, not read in full).

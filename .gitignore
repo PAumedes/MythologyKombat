@@ -60,3 +60,11 @@ disc_probe.json
 # --- Added in T2.20: replay recordings / diagnostics sessions (hold memory-card copies and RAM digests) ---
 /tests/replays/local/
 session-*/
+
+# --- Added after wizard run: setup-wizard artifacts (798 MB toolchain copy, local disc/rom paths, build dirs) ---
+/toolchain/
+/disc.cfg
+/rom.cfg
+/build-release/
+/build-setup/
+/build-setup.configure.log
