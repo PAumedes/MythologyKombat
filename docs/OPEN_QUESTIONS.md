@@ -511,3 +511,20 @@ See `docs/DECISIONS.md` (D25) and `docs/TASKS.md` (T3.17 to T3.26).
 | 294 | Should `-Ref` and `-Repo` be validated in `tools\release.ps1`? | Only `-Version` is checked, by a regex. `-Ref` and `-Repo` are not validated. The risk is low. Owner: agents. Task T3.19 follow-up. |
 | 295 | Is the release exe reproducible? | Closed for the same-PC case (2026-10-21, T3.26, D27). Five clean-clone builds of one throwaway commit (`bde0bd7`) gave one exe SHA-256 (`fea0f713...`), with the same hash under different `-Version` labels. The causes were the PE COFF timestamp, `__DATE__` and `__TIME__` in the build id, and the `git describe` string. All three are fixed (`docs/SETUP.md`, "Reproducibility (T3.26)"). Limits: one PC and one toolchain (clang pack 1.0.14); the exe changes with each commit, by design; the CMake change was checked by reading, with no full configure diff; the fix takes effect only once `CMakeLists.txt` is committed. Cross-machine is open. Owner: agents. Task T3.26. |
 | 296 | Should the reproducibility fixes go upstream to PSXRecomp? | Open. T3.26 did not edit `psxrecomp\`. The fixes are local: the `-Wl,--no-insert-timestamp` link flag, the `mk_reproducible.h` force-include that replaces `__DATE__` and `__TIME__`, and `release.ps1` deleting tags so `git describe` gives the commit hash. The fix for `__DATE__` and `__TIME__` in `psxrecomp\runtime\src\crash_trace.c` (`kBuildId`, lines 59 to 61) and the describe in `psxrecomp\cmake\psx_build_revision.cmake` are framework code. Upstream has no `SOURCE_DATE_EPOCH` support (grep). CLAUDE.md asks for upstream first. Owner: agents. Task T3.26 follow-up. |
+
+## Release repository (from the 2026-10-21 decision)
+
+| # | Question | Notes |
+|---|----------|-------|
+| 301 | Which GitHub `owner/repo` hosts the releases? | Answered by the user on 2026-10-21: `PAumedes/MythologyKombat` (D28, `docs/DECISIONS.md`). The repo is not created yet. Creation and the first push wait for the user's explicit yes at T3.23. Owner: USER and agents. Task T3.23. |
+
+## Midway logo audio on the release zip (from the 2026-10-21 investigation)
+
+See `docs/SETUP.md` ("Known issue: Midway logo audio on the release zip"). The first broken run is user-reported. The repeat runs with logs are user-reported. The 14-run and 20-run measurements are agent-observed.
+
+| # | Question | Notes |
+|---|----------|-------|
+| 297 | What causes the intermittent audio stall at FMV start in the release? | Not found. Seen in 2 of 14 release runs and in 3 of 3 dev-exe runs in the release layout without a toolchain. Not seen in the one `build\` control run. The symptom is audio output that does not drain (fill pinned, many overflows). A possible upstream cause is `psxrecomp\runtime\src\main.cpp` near line 4855. Unverified. Owner: agents. |
+| 298 | Does the Midway audio failure recur under CPU contention, and on the user's PC with logs? | The first broken user run was made while agents ran `tools\release.ps1` and CMake builds. The agent did not reproduce it with 4 busy processes. The first broken run has no log. The two logged runs were clean. Needs a reproduction under contention, and new user logs. Owner: USER and agents. Task T3.22. |
+| 299 | Is the 2 to 3 s stall at frame 0 (`psx_freeze_dump` `hard_freeze`) a false positive, or a real slow boot? | The user's boot wrote the freeze dump, and its heartbeats are all at frame 0. No agent run wrote one in about 20 runs. Related to question 291. Not decided. Owner: agents. |
+| 300 | Does raising `[audio] buffer_ms` to 250 to 300 stop the stall? | Not run. The default is 180 ms, and the valid range is 30 to 500 ms. This is a candidate only. No release change is made. Needs a decision before any `game.toml` change, and a repeat of question 298 first. See also questions 120 and 156. Owner: agents. |

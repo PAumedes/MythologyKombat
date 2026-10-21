@@ -385,3 +385,14 @@ _Filled in by the doc-writer as tasks pass review._
 - Not chosen: a stable build id without the commit hash. It would hide which commit made the exe.
 - Open items: cross-machine check (question 295). Upstream first for the framework fixes (question 296). The T3.1 and wizard exe pair (question 274) was not rebuilt.
 - Status: T3.26 is `done` in `docs/TASKS.md`. The released exe hash is recorded at release time.
+
+## D28 Release GitHub repository: PAumedes/MythologyKombat (2026-10-21)
+
+- Context: the updater needs one `owner/name` constant (`docs/UPDATER_DESIGN.md`, section 10, item 1). The repo had no remote, so the value was open.
+- Decision (user, 2026-10-21): the release repository is `PAumedes/MythologyKombat`. The user said "MythologyKombat is a good name I think. Use that".
+- The owner is the GitHub login `PAumedes`, user id 12850986. The agent looked this up with `gh api users/paumedes`.
+- The repo does not exist yet. Nothing is pushed or created. It must be created at T3.23, and only with the user's explicit confirmation in chat.
+- Where the value is used: the release metadata, the updater's single constant, and the `-Repo` default in `tools\release.ps1`. Other places that name the repo follow this decision.
+- Until T3.23, the updater's network path can only be tested against a local test server.
+- Not chosen: a placeholder that refuses to run until the value is set.
+- Status: decided. Creation is open until T3.23.

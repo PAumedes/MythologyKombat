@@ -540,6 +540,8 @@ Get-ChildItem "$env:USERPROFILE\MythologyKombat" -Recurse -Include *.bin,*.cue,*
 6. Report: the Windows version (`(Get-CimInstance Win32_OperatingSystem).Caption`), each step and its result, whether the game reaches the title screen, the time from PLAY to the title screen, and any Smart App Control message.
 **Accept when:** the user confirms the game starts from the zip on the test machine; agents record the steps, times and errors as user-reported; the check in step 5 finds nothing; each failure becomes a question or a task.
 
+Added 2026-10-21 (audio check, questions 297 to 298): during step 4, play to the Midway logo and listen to its audio. Report whether the audio is broken. If it is, also give the time, and the `.out` and `.err` logs of a run made with `PSX_RUNTIME_PERF_DIAG=1` (steps in `docs\SETUP.md`, "Known issue: Midway logo audio on the release zip"). If it recurs on the clean machine, report it in the T3.22 result. Agents record the result as user-reported.
+
 ## T3.23 First push to GitHub, history rewrite (D22) and first CI run (USER + agents)
 Depends on: T3.15, T3.17, T3.19. Owner: USER + agents. Source: `docs\PUBLISHING_AUDIT.md` sections 1 and 8, D22, D25.
 A push is hard to undo, because the author email is in the history. The order is fixed by D22: all other commits first, then a backup bundle, then the history rewrite only after the user's final yes, then the push. The repo has no remote today.

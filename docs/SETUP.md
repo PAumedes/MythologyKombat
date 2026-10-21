@@ -2866,3 +2866,58 @@ Limits:
 - T3.26 is done (agent part and review). Reproducibility holds on this PC for one commit. See D27.
 - The draft upload is still to do. It needs your typed `UPLOAD`.
 - Decisions: `docs/DECISIONS.md` (D26).
+
+## Known issue: Midway logo audio on the release zip (2026-10-21)
+
+Status: not reproduced on a quiet machine. Root cause not found. No release change is made. Open items: questions 297 to 300 in `docs/OPEN_QUESTIONS.md`.
+
+### What was seen
+
+- User-reported: the first run of the freshly unzipped release (`work\release\eyes\MythologyKombat-test`, built from commit `717ee78` by `tools\release.ps1`, run with `--disc` and `--no-launcher`) had broken Midway-logo audio. That run has no log.
+- User-reported: the user then ran it twice on a quiet machine with `PSX_RUNTIME_PERF_DIAG=1`. Logs: `work\release\run1.out`, `work\release\run1.err`, `work\release\run2.out` and `work\release\run2.err`. Both runs played the audio correctly.
+
+### Agent investigation
+
+Agent-measured, about 20 runs under `work\release\audio-test`.
+
+| Hypothesis | Result |
+|------------|--------|
+| H1: the bundled tcc autocompile stalls the audio | Not supported. Each cold run compiles once: a 4100-byte block at `0x80002000`, in BIOS-region code. With autocompile on and with `PSX_OVERLAY_AUTOCOMPILE_OFF=1`, 3 cold runs each were clean |
+| H2: the release settings differ from the dev build | Cleared. The release has no `settings.toml`, so `game.toml` applies: vsync off, OpenGL, 1x. The dev `build\` run used 4K, 9x supersampling and vsync immediate. The audio defaults match: 44.1 kHz, `buffer_ms` 180 |
+| H3: `PSX_PUBLIC_RELEASE` | Cleared. It changes only the playtest diagnostics defaults |
+| H4: first run against second run | No systematic difference |
+| H5: hidden window | Clean |
+
+The failure was seen only in these runs:
+
+| Run set | Result |
+|---------|--------|
+| Release runs (2 of 14) | Audio failure at FMV start. One run: audio fill pinned at 218.3 ms for 9 s, about 44.1k overflows a second, so the output was not draining. The other: fill pinned at 257 to 260 ms, about 1.3k overflows a second, about 3% dropped for the whole FMV |
+| Dev exe in the release layout, no toolchain (3 of 3) | Failed. 92,493 underruns in total, with stalls |
+| Dev exe in `build\` (one control run) | Clean |
+
+- The failure did not follow CPU load (4 busy processes), compiles or window visibility.
+- During the user's broken run, agents were running `tools\release.ps1` and CMake builds on the same PC.
+- The user's boot had a 2 to 3 s stall at frame 0. A `psx_freeze_dump` `hard_freeze` file is in the `eyes` folder, and its heartbeat entries are all at frame 0. This fits a contended start, but it is not proven.
+- None of the agent's runs wrote a freeze dump.
+
+### Candidate fix, not tested
+
+- Raise `[audio] buffer_ms` in `game.toml` from 180 to 250 to 300 ms. The valid range is 30 to 500 ms. Not run. See question 300.
+- A possible upstream cause is the audio output stats and the sink at FMV start, `psxrecomp\runtime\src\main.cpp` near line 4855. Not verified. See question 297.
+
+### How to capture a log (user step)
+
+Use this if the Midway logo audio is broken again. Run the commands in one PowerShell window, from the folder that holds the unzipped release.
+
+1. Set the diagnostics variable in that window:
+```
+$env:PSX_RUNTIME_PERF_DIAG = '1'
+```
+2. Start the game with its output sent to files. `-Wait` holds the window until the game closes:
+```
+Start-Process -FilePath ".\MythologyKombat.exe" -ArgumentList '--disc', '<path to your .cue>', '--no-launcher' -RedirectStandardOutput "work\release\runN.out" -RedirectStandardError "work\release\runN.err" -Wait
+```
+3. Note the time, whether the Midway logo audio was broken, and anything else running. Send the `.out` and `.err` files to the agents, and say whether a `psx_freeze_dump` file was written in the game folder.
+
+Without the redirect, the output is not kept. The first broken run had no log, so the cause is still unknown.

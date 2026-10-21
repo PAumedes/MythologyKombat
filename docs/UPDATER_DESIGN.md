@@ -239,7 +239,7 @@ Use a throwaway install folder under `work\` and a local test server on `127.0.0
 
 ## 10. Open items to add to `docs\OPEN_QUESTIONS.md`
 
-1. Which GitHub `owner/repo` hosts the releases? This repo has no remote in the session's status. The updater needs the constant.
+1. Which GitHub `owner/repo` hosts the releases? Answered on 2026-10-21: `PAumedes/MythologyKombat` (D28 in `docs\DECISIONS.md`, question 301 in `docs\OPEN_QUESTIONS.md`). The repo is not created yet, so the network path can only be tested against a local server until T3.23.
 2. Does the launcher write into `game.toml` or `game_options.toml` in a release folder? (Test 7.) Decides keep-or-merge.
 3. Is `cache\SLUS-00476` valid across exe versions, or must the updater clear it? Not traced.
 4. Which file does the runtime write when it starts (to detect "the new build has run once")? `psx_last_run_report.json` is a candidate; not traced.
