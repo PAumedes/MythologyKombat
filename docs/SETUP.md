@@ -2820,12 +2820,49 @@ Not in the zip:
 
 ### Known limits
 
-- Reproducibility (T3.26, question 295): three runs of one commit gave three different exes. Two of them differed in 70 bytes. The bytes are the PE COFF timestamp, the `__DATE__ __TIME__` string, the build-id string `SLUS-00476/0.1.0+<git describe>/...` and a size field tied to that string. The zip is deterministic when the exe is identical, because the entries are sorted and the timestamps are fixed. A double build has not verified this.
+- Reproducibility: fixed on this PC for one commit (see "Reproducibility (T3.26)" below). Cross-machine is open (question 295).
 - Runtime files appear in an unzipped folder: `input.ini`, `keybinds.ini`, `overlay_captures.json`, `saves\*.mcd`, `mods\state.toml` and the freeze dump. The updater (T3.21) must keep `saves\`, the settings and the input files (question 293).
 - `-Ref` and `-Repo` are checked only by the regex on `-Version` (question 294).
+
+### Reproducibility (T3.26)
+
+Questions 274 and 295. Decision D27.
+
+Before the fix, builds of one commit gave different exes. Two of them differed in 70 bytes. The causes, all fixed:
+
+| Cause | Where | Fix |
+|-------|-------|-----|
+| PE COFF timestamp, set by the linker | `CMakeLists.txt` (`psx-runtime`), and the framework recompiler build in `tools\release.ps1` | `-Wl,--no-insert-timestamp`. `target_link_options` for the game. The `LDFLAGS` environment variable for the framework build |
+| `__DATE__` and `__TIME__` in the build id | `psxrecomp\runtime\src\crash_trace.c`, lines 59 to 61 (`kBuildId`) | A force-included header, `mk_reproducible.h`, redefines both from the commit time |
+| `git describe` in the build id | `psxrecomp\cmake\psx_build_revision.cmake` | `tools\release.ps1` sets `core.abbrev=12` and deletes all tags in the staging clone and its submodules. The describe string is the bare 12-character commit hash |
+| Build paths | Compiler flags | `-ffile-prefix-map`, as a guard |
+
+- The build id now has this form: `SLUS-00476/<VERSION>+<describe>/psxrecomp-<describe>/sha256-...`.
+- The game build date comes from the CMake cache variable `MK_SOURCE_DATE_EPOCH`. Empty means a normal build, unchanged. `tools\release.ps1` passes `--cmake-extra=-DMK_SOURCE_DATE_EPOCH=<commit time in Unix seconds>`.
+- `psxrecomp\` is not edited. Upstream has no `SOURCE_DATE_EPOCH` support (question 296).
+
+Measured (agent run, 2026-10-21): five full `tools\release.ps1` runs, each from a clean clone of one throwaway commit (`bde0bd7`).
+
+| Item | Result |
+|------|--------|
+| Exe SHA-256 | `fea0f713be1d4886a1b802812ba2267d13d78eacbe2b3dc20f99e957f3f6a7fb`, 51,762,176 bytes, in all five runs |
+| Different `-Version` labels | Same exe hash |
+| Zip SHA-256, two runs with the same label | `320821bfcf5e942f58a0c057b4c88428b6c962061475f6dcb7f09ebe0d82ed4e`, 27,120,365 bytes |
+
+- Three earlier runs had different zips. Some had a different label. Others had framework helper exes with link timestamps from before the `LDFLAGS` fix.
+- A different label changes the zip by design: `release_info.json`, the README, the folder prefix and the zip name. It does not change the exe.
+
+Limits:
+
+- It holds per commit. A new commit gives a new exe, because the build id holds the commit hash and the commit time.
+- Proven on this PC and this toolchain (clang pack 1.0.14). Cross-machine is not tested.
+- The CMake change was checked by reading. There was no full configure diff of `build.ninja`.
+- The fix takes effect only once `CMakeLists.txt` is committed, because `tools\release.ps1` builds committed state.
+- The T3.1 and wizard exe pair (question 274) was not rebuilt, so that pair is not explained here.
 
 ### Status
 
 - T3.19 is done (agent part and review). The user's own run with the real version is still to do.
+- T3.26 is done (agent part and review). Reproducibility holds on this PC for one commit. See D27.
 - The draft upload is still to do. It needs your typed `UPLOAD`.
 - Decisions: `docs/DECISIONS.md` (D26).

@@ -353,3 +353,35 @@ _Filled in by the doc-writer as tasks pass review._
 - Reason: the points above follow the implementer's test run and the reviewer's checks. The disc never leaves the user's PC, and the zip holds no disc, BIOS, memory card or recording.
 - Open items: question 280 (whether the exe holds game data bytes, not only code) stays open. The reproducibility gap (question 295, T3.26), the first GitHub run (question 290, T3.23) and the CI test-count question (question 288) are open.
 - Status: the two tasks are `done` in `docs/TASKS.md`. The user's own run and the draft upload are not done.
+
+## D27 Reproducible release exe: fixed build date, build id from the commit (T3.26, 2026-10-21)
+
+- Context: questions 274 and 295. Builds of one commit differed in the PE COFF timestamp, in the `__DATE__ __TIME__` text of the build id, and in the build-id string, which had the `git describe` output in it. The details are in `docs/SETUP.md` ("Reproducibility (T3.26)").
+- Decisions:
+  1. The game link uses `-Wl,--no-insert-timestamp`. In `CMakeLists.txt` it is set with `target_link_options` for `psx-runtime`. The framework recompiler build in `tools\release.ps1` gets it through the `LDFLAGS` environment variable.
+  2. `__DATE__` and `__TIME__` are not used. A force-included header, `mk_reproducible.h`, redefines them from the commit time.
+  3. The build-id git part is the commit hash. `tools\release.ps1` sets `core.abbrev=12` and deletes all tags in the staging clone and its submodules, so `git describe --always --dirty --tags` gives the bare 12-character hash.
+  4. `-ffile-prefix-map` is added as a guard.
+  5. A CMake cache variable, `MK_SOURCE_DATE_EPOCH`, sets the build date. Empty (the default) keeps the normal build unchanged. `tools\release.ps1` passes the commit time in Unix seconds.
+  6. No edit to `psxrecomp\`. Upstream has no `SOURCE_DATE_EPOCH` support.
+- What goes into the build id:
+
+| Part | In the id | Note |
+|------|-----------|------|
+| Commit hash | Yes | 12 characters |
+| PSXRecomp hash | Yes | |
+| `VERSION` file | Yes | |
+| `-Version` label | No | Changing the label does not change the exe |
+| Git tags | No | Tags are deleted in the staging clone |
+| Build date | Yes, as the commit time | |
+
+- Reason: replays are tied to one exe hash (D14, D15). A hash that moves with a label, a tag or a build time would make the hash useless for that.
+- Measured (agent run, this PC): five full `tools\release.ps1` runs, each from a clean clone of one throwaway commit (`bde0bd7`). The exe SHA-256 was `fea0f713be1d4886a1b802812ba2267d13d78eacbe2b3dc20f99e957f3f6a7fb` (51,762,176 bytes) in all five, also under different `-Version` labels. Two runs with the same label gave the same zip, SHA-256 `320821bfcf5e942f58a0c057b4c88428b6c962061475f6dcb7f09ebe0d82ed4e` (27,120,365 bytes). Three earlier runs gave different zips. Some had a different label, and some had framework helper exes with link timestamps from before the `LDFLAGS` fix. A different label changes the zip by design (`release_info.json`, README, folder prefix, zip name), not the exe.
+- Limits:
+  - It holds per commit. A new commit gives a new exe, because the build id holds the commit hash and the commit time.
+  - Proven on this PC and this toolchain (clang pack 1.0.14). Cross-machine is not tested.
+  - The CMake change was checked by reading. There was no full configure diff of `build.ninja`.
+  - The fix takes effect only once `CMakeLists.txt` is committed, because `tools\release.ps1` builds committed state.
+- Not chosen: a stable build id without the commit hash. It would hide which commit made the exe.
+- Open items: cross-machine check (question 295). Upstream first for the framework fixes (question 296). The T3.1 and wizard exe pair (question 274) was not rebuilt.
+- Status: T3.26 is `done` in `docs/TASKS.md`. The released exe hash is recorded at release time.

@@ -83,7 +83,7 @@ Gate notes:
 | T3.23 | First push to GitHub, history rewrite (D22) and first CI run | T3.15, T3.17, T3.19 | USER + agents | todo |
 | T3.24 | Code-signing decision for the release exe | T3.19 | USER | todo |
 | T3.25 | README rewrite and legal wording | T3.14, T3.15, T3.21, T3.22, T3.24 | agents + USER | todo |
-| T3.26 | Reproducibility of the release exe (Q274) | T3.19 | agents | todo |
+| T3.26 | Reproducibility of the release exe (Q274) | T3.19 | agents | done |
 
 Phase 3 notes:
 - T3.3 is deferred. It is the only recording step, and only T3.4 needs it.
@@ -589,6 +589,8 @@ Depends on: T3.19. Owner: agents. Source: question 274, D14, D15, D24, T2.20.
 Two exes of the same size had different hashes (question 274): `ff813773...` (T3.1, dev tree) and `17ca5c78...` (wizard build). The released exe needs a known hash, and the user's recordings are tied to one exe hash (D14, D15).
 Steps: build the same tag twice from two clean clones and compare the SHA-256 of the exe. Then compare a dev-tree build with a clean-clone build. Find the cause of any difference (for example timestamps, paths or the toolchain). Record the cause in `docs\SETUP.md`. Record the hash of the released exe in `docs\CHANGELOG.md` at release time.
 **Accept when:** two clean builds of the same tag give the same SHA-256, or each difference is explained and recorded with its cause; the released exe hash is recorded; any framework-level fix goes upstream first (`CLAUDE.md`), or is recorded as a question.
+
+**Status 2026-10-21 (done, partly):** five clean-clone builds of one throwaway commit (`bde0bd7`, not a tag) gave one exe SHA-256 on this PC. The causes are recorded and fixed (`docs/SETUP.md`, "Reproducibility (T3.26)"; D27). Not done: cross-machine check (question 295 stays open for that), and the released exe hash, which is recorded at release time (T3.19). The framework fixes are local, not upstream yet (question 296).
 
 ## Backlog (not scheduled, no task IDs yet)
 

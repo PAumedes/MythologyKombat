@@ -11,6 +11,41 @@ endif()
 
 project(MythologyKombat LANGUAGES C CXX)
 
+# --- Reproducible release build (T3.26) --------------------------------------
+# tools/release.ps1 passes -DMK_SOURCE_DATE_EPOCH=<commit time, unix seconds>.
+# With it set, two builds of one commit give a byte-identical exe:
+#  - __DATE__/__TIME__ (psxrecomp crash_trace.c build id) become the commit time,
+#    through a force-included header (only that one source uses them);
+#  - the PE COFF timestamp is dropped (lld --no-insert-timestamp);
+#  - build/source paths are mapped away (-ffile-prefix-map), so the staging
+#    folder name does not leak into the binary.
+# Unset (the default), nothing here changes. The psxrecomp submodule is not edited.
+set(MK_SOURCE_DATE_EPOCH "" CACHE STRING
+    "Unix time to use for __DATE__/__TIME__ and the PE timestamp (empty = normal build)")
+set(MK_REPRODUCIBLE FALSE)
+if(NOT MK_SOURCE_DATE_EPOCH STREQUAL "")
+    if(NOT MK_SOURCE_DATE_EPOCH MATCHES "^[0-9]+$")
+        message(FATAL_ERROR "MK_SOURCE_DATE_EPOCH must be unix seconds, got '${MK_SOURCE_DATE_EPOCH}'")
+    endif()
+    set(MK_REPRODUCIBLE TRUE)
+    set(ENV{SOURCE_DATE_EPOCH} "${MK_SOURCE_DATE_EPOCH}")
+    string(TIMESTAMP _mk_date "%b %d %Y" UTC)
+    string(TIMESTAMP _mk_time "%H:%M:%S" UTC)
+    unset(ENV{SOURCE_DATE_EPOCH})
+    # C __DATE__ pads the day with a space ("Oct  5 2026"), not a zero.
+    string(REGEX REPLACE "^([A-Za-z]+) 0" "\\1  " _mk_date "${_mk_date}")
+    file(WRITE "${CMAKE_BINARY_DIR}/mk_reproducible.h"
+        "#pragma clang diagnostic ignored \"-Wbuiltin-macro-redefined\"\n"
+        "#undef __DATE__\n#define __DATE__ \"${_mk_date}\"\n"
+        "#undef __TIME__\n#define __TIME__ \"${_mk_time}\"\n")
+    message(STATUS "reproducible build: __DATE__ '${_mk_date}' __TIME__ '${_mk_time}'")
+    add_compile_options(
+        "-ffile-prefix-map=${CMAKE_SOURCE_DIR}=/src"
+        "-ffile-prefix-map=${CMAKE_BINARY_DIR}=/build")
+    set_property(SOURCE "${PSXRECOMP_ROOT}/runtime/src/crash_trace.c" APPEND PROPERTY
+        COMPILE_OPTIONS "-include" "${CMAKE_BINARY_DIR}/mk_reproducible.h")
+endif()
+
 # --- Opt-in product surfaces (OFF by default in the framework) -------------
 # Scaffold prompts / flags fill these. Without recomp-ui, PSX_RECOMP_UI is OFF.
 # The wizard (WIZARD_CMAKE_BLOCK / ENABLE_SETUP_WIZARD) is the first-run disc
@@ -69,6 +104,11 @@ include("${PSXRECOMP_ROOT}/runtime/playtest_diagnostics.cmake")
 psxrecomp_add_playtest_diagnostics(psx-runtime
     GAME_ID "SLUS-00476"
     MOD_ID "mythologykombat.diagnostics")
+
+if(MK_REPRODUCIBLE)
+    # lld (MinGW driver): no link-time stamp in the PE header.
+    target_link_options(psx-runtime PRIVATE -Wl,--no-insert-timestamp)
+endif()
 
 # T2.4 workaround (upstream bug, see docs/OPEN_QUESTIONS.md): recomp-ui's
 # _recomp_ui_utf8_manifest() guard misses psxrecomp's manifest, which is added

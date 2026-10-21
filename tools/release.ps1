@@ -63,6 +63,11 @@ $env:GIT_CONFIG_COUNT = '1'
 $env:GIT_CONFIG_KEY_0 = 'core.autocrlf'
 $env:GIT_CONFIG_VALUE_0 = 'false'
 
+# Reproducible helper exes (T3.26): the framework builds psxrecomp-bios.exe and psxrecomp-game.exe (shipped in
+# overlay_toolchain\) in its own CMake build. CMake seeds CMAKE_EXE_LINKER_FLAGS from LDFLAGS on first configure, so
+# this drops the PE link timestamp there too. The game exe gets the same flag from the top-level CMakeLists.txt.
+$env:LDFLAGS = '-Wl,--no-insert-timestamp'
+
 $Timings = New-Object System.Collections.Specialized.OrderedDictionary
 function Measure-Step([string]$name, [scriptblock]$body) {
     Write-Host ''
@@ -213,6 +218,16 @@ Measure-Step '1 clone' {
     }
     if (Test-Path -LiteralPath (Join-Path $Src 'generated')) { throw 'the fresh checkout already has generated\ (D24)' }
     Write-Host 'checkout is clean; submodules match framework_pins.txt'
+
+    # Reproducible build id (T3.26, D27). The exe embeds `git describe --always --dirty --tags` of this
+    # repo and of psxrecomp. Tags (a temp test tag, a later release tag) would change that string between
+    # builds of one commit, so drop every tag in the staging clone and its submodules: describe then gives
+    # the bare commit hash, fixed to 12 characters. The -Version label never enters the build id.
+    & git -C $Src config core.abbrev 12
+    & git -C $Src submodule foreach --quiet --recursive 'git config core.abbrev 12'
+    foreach ($repoDir in @($Src) + @(Git-Out -C $Src submodule foreach --quiet --recursive 'echo $toplevel/$sm_path')) {
+        foreach ($t in @(Git-Out -C $repoDir tag --list)) { & git -C $repoDir tag -d $t | Out-Null }
+    }
 }
 $VerFile = (Get-Content -LiteralPath (Join-Path $Src 'VERSION') -Raw).Trim()
 if ($Version -match '^\d+\.\d+\.\d+') {
@@ -269,7 +284,9 @@ Measure-Step '3d rebuild' {
     $rb = @('rebuild', '--config', $Config, '--project-root', $Src, '--build-dir', $buildDir,
         '--target', 'psx-runtime', '--exe-basename', $ProductName,
         ('--cmake-extra=-DRECOMP_UI_ROOT=' + ($PatchedUi -replace '\\', '/')),
-        '--cmake-extra=-DPSX_PUBLIC_RELEASE=ON')
+        '--cmake-extra=-DPSX_PUBLIC_RELEASE=ON',
+        # Reproducible exe (T3.26): commit time for __DATE__/__TIME__, no PE timestamp, no path leakage.
+        ('--cmake-extra=-DMK_SOURCE_DATE_EPOCH=' + ([DateTimeOffset]$FixedTime).ToUnixTimeSeconds()))
     if ($Pgo) { $rb += @('--force-pgo', '--disc', $Disc) } else { $rb += '--no-pgo' }
     $null = Invoke-Cli 'rebuild' $rb
 }
