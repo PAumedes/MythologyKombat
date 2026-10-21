@@ -82,7 +82,7 @@ Gate notes:
 | T3.22 | Clean-machine test of the downloaded zip (disc only) | T3.19 | USER | done |
 | T3.23 | First push to GitHub, history rewrite (D22) and first CI run | T3.15, T3.17, T3.19 | USER + agents | todo |
 | T3.24 | Code-signing decision for the release exe | T3.19 | USER | done |
-| T3.25 | README rewrite and legal wording | T3.14, T3.15, T3.21, T3.22, T3.24 | agents + USER | todo |
+| T3.25 | README rewrite and legal wording | T3.14, T3.15, T3.21, T3.22, T3.24 | agents + USER | done |
 | T3.26 | Reproducibility of the release exe (Q274) | T3.19 | agents | done |
 
 Phase 3 notes:

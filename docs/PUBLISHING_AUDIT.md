@@ -205,6 +205,26 @@ Not verified in this audit: that a clean clone, with only a disc, completes step
 15. Create a GitHub release only after the model in item 1 is chosen; include `licenses/` per `BUNDLED_RELEASES.md` step 5. [S]
 16. Consider noting the framework dependency on upstream's reorganisation (`mstan/...` vs `RetroPortingToolKit/...` URLs in upstream docs). [S]
 
+## 9. Q280: does the release exe embed game data? (2026-10-21)
+
+Evidence: [M] `tools\exe_data_check.py` run with `<RETRO_TOOLS_DIR>\python\python.exe -I tools\exe_data_check.py` (about 5 minutes; default output `work\exe_data_check.json`). Unit test: `tests\test_exe_data_check.py` (synthetic data only). Open question 280 in `docs\OPEN_QUESTIONS.md`.
+
+Input: release exe 0.1.0, SHA-256 `86e02021338504a6e0263661e51bd2ece5493463cdd00cc6f771163c36a8ec50`. Compared with 11 disc files: boot `SLUS_004.76`, 8 `.OVR` and 2 `.BIN`, 1,043,994 bytes in total.
+
+| Check | Result |
+|-------|--------|
+| Exact contiguous copy of 64 bytes or more (non-trivial) | None found |
+| Exact copies of 32 bytes or more (window 24, stride 8) | One 56-byte run against `WIND.OVR` in `.rdata`. Not investigated (question 318) |
+| Disc strings of 8 characters or more (501 in total) found in the exe | 6. Three are generic (`0123456789ABCDEF`, `0123456789abcdef`, `PS-X EXE`). Three are not (`CONTINUE`, `PASSWORD`, `Complete`); origin not determined (question 320) |
+| Other zip members (`NotoSansSymbols2-Regular.ttf`, `libcrypto-3.dll`, `python3.dll`, `python313.dll`) | Each shares an 81-byte ascending 16-bit counter pattern with `WIND.OVR`. Described as a coincidental generic pattern |
+
+Limits:
+- Exact contiguous copies only. Transformed, compressed or split data is not detected.
+- Only the boot exe and the overlays were compared. Other disc files (for example `/LSDS`, data files and movies) were not compared. The `--all-disc` option exists and was not run (question 319).
+- 14.26% of disc bytes (148,826 bytes in 689 ranges) are not covered by the index. Trivial windows were skipped and 5 over-common keys were dropped. So "no run found" is not a proof.
+
+Result: by this method the exe embeds no meaningful game data tables. This is not a legal determination (question 285). The README legal wording (question 245) was approved on 2026-10-21 and is consistent with this result, subject to these limits.
+
 ## Commands used (reproducible)
 
 ```
