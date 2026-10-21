@@ -60,11 +60,37 @@ Gate notes:
 | --- | --- | --- | --- | --- |
 | T3.1 | Release rebuild with vsync-off default | T2.23 | agents | done |
 | T3.2 | Refresh replay baselines | T3.1 | agents | done |
-| T3.3 | Record a new session on the new exe | T3.1 | USER | in-progress |
+| T3.3 | Record a new session on the new exe | T3.1 | USER (deferred, only needed for T3.4 replay) | todo |
 | T3.4 | Strict replay of the new recording, twice, with negative control | T3.3 | agents | todo |
-| T3.5 | Phase 3 gate review | T3.1, T3.2, T3.3, T3.4 | agents | todo |
+| T3.5 | Phase 3 gate review (runs last) | T3.1, T3.2, T3.4, T3.6 to T3.25 | agents | todo |
+| T3.6 | Perf measurement hygiene | T3.1 | agents | todo |
+| T3.7 | 1x vs 4K resolution A/B (visible window) | T3.6 | USER + agents | todo |
+| T3.8 | Vsync and window mode A/B (visible window) | T3.6 | USER + agents | todo |
+| T3.9 | Sampling profile of the Release exe during the FMV | T3.6 | USER + agents | todo |
+| T3.10 | PGO and LTO trial (flag-only, only if T3.9 points at compiled code) | T3.6, T3.7, T3.8, T3.9 | agents | todo |
+| T3.11 | Launcher screenshots at default and user scale | T3.1 | USER | todo |
+| T3.12 | Launcher fixes as local patch files (D19) | T3.11, T3.13 | agents | todo |
+| T3.13 | Box art and disc icon source and licence | T3.11 | USER | todo |
+| T3.14 | Licence for this repo's own files (LICENSE and NOTICE) | — | USER + agents | todo |
+| T3.15 | Path, email and derived-data decisions, then the scrub | T3.14 | USER + agents | todo |
+| T3.16 | No-game-data guard script | — | agents | todo |
+| T3.17 | CI workflow (guard, emitters-test, setup-host) | T3.16, T3.18 | agents | todo |
+| T3.18 | Setup-host build in the repo, and the first wizard run | T3.1 | agents + USER | todo |
+| T3.19 | Kit packager, content check and checksums | T3.12, T3.14, T3.16, T3.18 | agents | todo |
+| T3.20 | Updater: check, verify, replace, roll back | T3.19 | agents | todo |
+| T3.21 | Release workflow (tag `v*`) | T3.15, T3.17, T3.19 | agents | todo |
+| T3.22 | Clean-machine test of the kit (disc only) | T3.19 | USER | todo |
+| T3.23 | First push to GitHub and first CI run | T3.15, T3.17, T3.21 | USER + agents | todo |
+| T3.24 | Code-signing decision for the kit exe | T3.19 | USER | todo |
+| T3.25 | README rewrite and legal wording | T3.14, T3.15, T3.20 | agents + USER | todo |
+| T3.26 | Optional: embedded Python and offline toolchain | T3.19, T3.22 | agents | todo |
 
-Phase 3 notes: T3.3 is the only USER step. The backlog after T3.5 is not scheduled and has no task IDs yet.
+Phase 3 notes:
+- T3.3 is deferred. It is the only recording step, and only T3.4 needs it.
+- T3.5 is the gate and runs last. Its number stays T3.5 because other docs cite it.
+- Any relink of `build\MythologyKombat.exe` changes its SHA-256 and breaks strict replay (T2.20). So the user recording (T3.3) must come after the last relink (D14, D15).
+- Release model: D18. Launcher fixes: D19 (patch files). Open questions 244 to 258 are in `docs\OPEN_QUESTIONS.md`.
+- Every USER step lists its exact commands in its task section.
 
 ---
 
@@ -229,17 +255,270 @@ Rebuild the Release exe from the current commit using the project's documented b
 Re-record the expected digests in `tests\replays\expected` against the T3.1 exe. The stored `exe_sha256` is stale (open question 173). Update `README.md` to match.
 **Accept when:** `exe_sha256` in the expected files equals the T3.1 exe hash; the boot route still gives MATCH against the new baseline; `README.md` states the new baseline.
 
-## T3.3 Record a new session on the new exe — USER
-Orchestrator: give Patricio the short steps. He starts the T3.1 exe with recording on, plays from the title screen through a new game, then about 1 minute of a fight, and tells the orchestrator when done. He decides nothing else.
+## T3.3 Record a new session on the new exe — USER (deferred)
+Depends on: T3.1. Owner: USER. Deferred: only T3.4 needs it, so the user records it when the rest of Phase 3 is ready. Record it on the final exe. If a later task relinks `build\MythologyKombat.exe`, record again (D14, D15).
+Orchestrator: give Patricio the short steps. He starts the exe with recording on (recording is on by default in non-public builds, D14), plays from the title screen through a new game, then about 1 minute of a fight, and tells the orchestrator when done. He decides nothing else.
+**What you do:**
+```
+cd <REPO_ROOT>
+Start-Process -FilePath .\build\MythologyKombat.exe -ArgumentList '--disc "<REPO_ROOT>\ps1_game\Mortal Kombat Mythologies - Sub-Zero.cue"'
+```
+When you are done, close the game and run:
+```
+Get-ChildItem build\saves\diagnostics -Directory | Sort-Object LastWriteTime | Select-Object -Last 1 | ForEach-Object FullName
+```
+Tell the orchestrator the folder name.
 **Accept when:** Patricio confirms the session is done; a new session folder exists under `tests\replays\local\` (git-ignored); the session is recorded as user-reported.
 
 ## T3.4 Strict replay of the new recording, twice, with negative control (agents)
 Run `replay_diagnostics.py <session> --exe <T3.1 exe> --disc <cue> --game game.toml --output <new private dir>` twice. Run `tools\run_replays.ps1` (with `-ExecutionPolicy Bypass`) on the recording. Run one negative control: a changed input row or a different exe build.
 **Accept when:** both strict replays succeed; the negative control reports a mismatch; `tools\run_replays.ps1` prints pass or fail for the recording; the recording stays git-ignored.
 
-## T3.5 Phase 3 gate review (agents)
+## T3.5 Phase 3 gate review (agents, runs last)
+Depends on: T3.1, T3.2, T3.4, T3.6 to T3.25 (T3.26 only if the user schedules it). T3.3 and T3.4 wait for the user's recording. If the user descopes them, the gate records that choice, as D17 did for T2.10.
 Adversarial reviewer only, as in T2.23. Check that no game data is tracked (`git ls-files`); the T3.1 hash in the docs matches the built exe; each doc claim maps to a `tools\` script; the T3.3 session is recorded as user-reported, not agent-observed.
 **Accept when:** PASS. Then stop and report to the user.
+
+## T3.6 Perf measurement hygiene (agents)
+Depends on: T3.1. Owner: agents. Source: `docs\PERF_AND_ENGINEERING_IDEAS.md` section 1 (items 1, 2, 5), section 6, and question 222.
+`tools\perf_run.ps1` writes a `run_<name>.meta.txt` with: the effective video settings from `build\settings.toml` (`internal_resolution`, `supersampling`, `antialiasing`, `dynamic_resolution`, `vsync`, and the fullscreen key if present), the power plan (`powercfg /getactivescheme`), the GPU and driver (`Get-CimInstance Win32_VideoController`), the psxrecomp and recomp-ui pins with their dirty state, and the exe SHA-256. Add `vsync` and `internal_resolution` to the session metadata too. Turn the scratch script `work\scratch\tele.py` into a stdlib tool under `tools\` that prints the vblank percentiles and the share above 33 ms.
+**Accept when:** a run writes the meta file; two runs with the same settings give the same meta lines, except the run name and time; the meta matches `build\settings.toml`; the new tool gives the same output twice on the same telemetry folder.
+
+## T3.7 1x vs 4K resolution A/B (USER + agents)
+Depends on: T3.6. Owner: USER + agents. Source: `docs\PERF_AND_ENGINEERING_IDEAS.md` section 1 item 2 and section 3.1.
+Question: does the 4K setting (9x) cause missed vblanks on this laptop? The evidence so far is a correlation across sessions, not a test. The test is one visible minute per variant, on the same route.
+**What you do:** from the repo root, save your current settings first:
+```
+cd <REPO_ROOT>
+Copy-Item build\settings.toml work\settings_before_ab.toml
+```
+1. Variant 1 (1x): open the launcher Settings, set the internal resolution to Native (1x), then close the launcher. Start the game:
+```
+Start-Process -FilePath .\build\MythologyKombat.exe -ArgumentList '--disc "<REPO_ROOT>\ps1_game\Mortal Kombat Mythologies - Sub-Zero.cue"'
+```
+Play the same route: title screen, a new game, then about 60 seconds of a fight. Close the game.
+2. Variant 2 (4K): set the internal resolution to 4K in the launcher. Start the game and play the same route. Close the game.
+3. Restore your settings:
+```
+Copy-Item work\settings_before_ab.toml build\settings.toml -Force
+```
+4. Find the two session folders (run once after each variant, or list them all):
+```
+Get-ChildItem build\saves\diagnostics -Directory | Sort-Object LastWriteTime | Select-Object -Last 2 | ForEach-Object FullName
+```
+Tell the orchestrator the folder names and say in one line each what you saw (stutter, tearing, picture). That is user-reported, not agent-observed.
+**Accept when:** both sessions exist with the T3.6 meta; agents report, per variant, the share of non-movie intervals above 33 ms; the rule in `PERF_AND_ENGINEERING_IDEAS.md` section 3.1 (highest setting with the share under 1%) is applied; a change to the default is written to `docs\DECISIONS.md` only if the user agrees; `build\settings.toml` matches `work\settings_before_ab.toml`.
+
+## T3.8 Vsync and window mode A/B (USER + agents)
+Depends on: T3.6. Owner: USER + agents. Source: `docs\PERF_AND_ENGINEERING_IDEAS.md` items 3 and 9, section 3.2, question 168. D9 keeps the vsync default. Do not change it without this visible test.
+Variants: `vsync = "off"` (the current default), `"adaptive"`, and `"on"`. If the launcher offers a fullscreen or borderless option, add it as a fourth variant (the key name is not verified).
+**What you do:** save your settings as in T3.7, then for each variant change `vsync` in the launcher, or edit it by hand:
+```
+cd <REPO_ROOT>
+Copy-Item build\settings.toml work\settings_before_ab.toml
+notepad build\settings.toml
+```
+In Notepad, set the `vsync` line in the `[video]` section, save and close. Then start the game as in T3.7 and play the same minute. Repeat for each variant. Restore with `Copy-Item work\settings_before_ab.toml build\settings.toml -Force`. Tell the orchestrator the session folder for each variant and one line on what you saw.
+**Accept when:** each variant has a session with the T3.6 meta; agents report p50, p90 and p99 of the host interval and the share above 33 ms per variant; any default change is proposed in `docs\DECISIONS.md` and made only with the user's yes; the settings file is restored.
+
+## T3.9 Sampling profile of the Release exe during the FMV (USER + agents)
+Depends on: T3.6. Owner: USER + agents. Source: `docs\PERF_AND_ENGINEERING_IDEAS.md` section 1 item 3, section 2 items 16 and 17. The 13 to 14 ms per FMV frame is in AOT code, and no profile shows where. Do this before any PGO, LTO or SIMD work.
+**What you do:** open PowerShell as Administrator (not verified that this is needed on this PC). Then:
+```
+cd <REPO_ROOT>
+New-Item -ItemType Directory -Force work\perf | Out-Null
+wpr -start CPU -filemode
+Start-Process -FilePath .\build\MythologyKombat.exe -ArgumentList '--disc "<REPO_ROOT>\ps1_game\Mortal Kombat Mythologies - Sub-Zero.cue"'
+```
+Let the first movie (LEGAL.STR) play for about 60 seconds, then close the game and run:
+```
+wpr -stop work\perf\fmv_cpu.etl
+```
+Tell the orchestrator when the trace is saved.
+**Accept when:** the trace is in `work\perf\` (git-ignored); agents report the top sampled code by count, with names only where `symbols.toml` or the generated code allows; the report says whether the cost is in AOT code, the interpreter, the GL driver or the audio path; question 256 is updated.
+
+## T3.10 PGO and LTO trial (agents)
+Depends on: T3.6, T3.7, T3.8, T3.9. Owner: agents. Source: `docs\PERF_AND_ENGINEERING_IDEAS.md` items 6, 7 and section 3.4. Only if T3.9 points at compiled code.
+PGO is a flag-only change. The profile is empty today (`docs\SETUP.md`). Training uses the disc, locally only. Upstream says not to set `PSX_PGO` in CI. LTO is tried only after PGO, and only if its gain is clear of the run-to-run spread.
+Measure with three runs per variant, all at the same settings from T3.6. Report the FMV `workG` median and the `host_interval_us` p99.
+Every relink changes the exe hash and breaks strict replay. Adopting either flag needs the replay baseline refresh (the T3.2 pattern) and the user recording on the final exe (T3.3, D14, D15).
+**Accept when:** three runs per variant, with meta; a `docs\DECISIONS.md` entry records adopt or reject, with the numbers; if adopted, the new exe hash is recorded and a baseline task is added to `docs\TASKS.md`; no generated C is edited (the hash list is unchanged).
+
+## T3.11 Launcher screenshots at default and user scale (USER)
+Depends on: T3.1. Owner: USER. Source: `docs\LAUNCHER_DESIGN.md` section 6. The five UX items are user-reported. Their causes are hypotheses until seen, so screenshots come first.
+**What you do:** first read your display scale. 96 means 100 percent:
+```
+(Get-ItemProperty 'HKCU:\Control Panel\Desktop\WindowMetrics').AppliedDPI
+```
+Then start the launcher the way you normally do, using the same command as before:
+```
+cd <REPO_ROOT>
+New-Item -ItemType Directory -Force work\screens | Out-Null
+Start-Process .\build\MythologyKombat.exe
+```
+After each view, run this in the same PowerShell window to save the whole screen as a PNG in `work\screens`:
+```
+Add-Type -AssemblyName System.Windows.Forms,System.Drawing
+$b = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+$bmp = New-Object System.Drawing.Bitmap $b.Width, $b.Height
+[System.Drawing.Graphics]::FromImage($bmp).CopyFromScreen($b.Location, [System.Drawing.Point]::Empty, $b.Size)
+$bmp.Save((Join-Path (Resolve-Path work\screens) ("shot_" + (Get-Date -Format HHmmss) + ".png")))
+```
+Views to capture: the main page with the game loaded, the main page scrolled to the bottom, the Settings page, the Analog/D-pad area, and the Renderer dropdown open. Tell the orchestrator the DPI number and the folder. The screenshots stay in `work\` and are not committed.
+**Accept when:** at least one screenshot for each of the five items in `docs\LAUNCHER_DESIGN.md` section 6; the DPI number is recorded; section 6 is updated from hypothesis to observed for each item.
+
+## T3.12 Launcher fixes as local patch files (agents)
+Depends on: T3.11, T3.13. Owner: agents. Source: D19, `docs\LAUNCHER_DESIGN.md` section 6 and section 8 item 6.
+Each fix is a patch file under `patches\launcher\`, applied at build time by a step the implementer adds (CMake or a script; record which). The `recomp-ui\` submodule is not edited. Fixes, after the screenshots:
+1. Scroll on the main section (design item 1).
+2. Disc or game icon in place of the calendar-like placeholder (item 2; uses the choice from T3.13).
+3. Filename wrap (item 3).
+4. Window size as a dropdown (item 5a).
+5. Renderer combo width so the OpenGL label fits (item 5b).
+6. Bottom padding for the Analog/D-pad area and the other padding items (item 4, item 5c), after the screenshots show which element is meant.
+Each fix has a before and after screenshot in `work\screens`. Each states whether it goes upstream; that is the user's call (`LAUNCHER_DESIGN.md` section 8 item 6). A relink changes the exe hash, so the user recording (T3.3) comes after this task.
+**Accept when:** the patches apply cleanly to the pinned submodule on a clean checkout of the pin; `git -C recomp-ui status --short` prints nothing after the build; the exe builds; before and after screenshots exist for each fix; no unrelated screen changes; section 6 of `docs\LAUNCHER_DESIGN.md` records the outcome.
+
+## T3.13 Box art and disc icon source and licence (USER)
+Depends on: T3.11. Owner: USER. Source: question 246, `docs\LAUNCHER_DESIGN.md` section 6 item 2.
+Two routes: (a) an image you own or may use, for the `LAUNCHER_BOXART` option in `CMakeLists.txt`, which is commented out now; or (b) a disc glyph drawn by a patch, using `recomp-ui\assets\consoles\psx\img\disc.tga` (its licence was not checked). Do not use a third-party box-art source without the rights to it.
+**What you do:**
+```
+cd <REPO_ROOT>
+Get-Item recomp-ui\assets\consoles\psx\img\disc.tga
+Get-ChildItem recomp-ui -Recurse -Filter NOTICE.md | Select-Object FullName
+```
+Then reply to the orchestrator with (a) the file you choose and the permission you have for it, or (b) "disc glyph".
+**Accept when:** the choice and its licence are recorded, and question 246 is closed. No image is committed unless the user approves it.
+
+## T3.14 Licence for this repo's own files (USER + agents)
+Depends on: none. Owner: USER + agents. Source: question 249, `docs\PUBLISHING_AUDIT.md` section 3 and blocker 2. No `LICENSE`, `NOTICE` or `COPYING` exists. psxrecomp is PolyForm Noncommercial, recomp-ui is MIT, and OpenBIOS is MIT. The audit read only the start of the psxrecomp licence.
+**What you do:** read the full licence files, then reply in chat with the licence you choose for this repo's own files (`tools\`, `docs\`, `symbols.toml`, `seeds\`, `aot\overlays.json`, tests):
+```
+cd <REPO_ROOT>
+Get-Content psxrecomp\LICENSE
+Get-Content recomp-ui\LICENSE -TotalCount 5
+Get-Content psxrecomp\THIRD_PARTY_ATTRIBUTION.md -TotalCount 40
+```
+Agents then add `LICENSE` for our files and `NOTICE`, which lists each third-party component the kit ships with its licence file, using the notices in `recomp-ui\assets\` and `psxrecomp\bios\OpenBIOS.LICENSE`.
+**Accept when:** the choice is recorded in `docs\DECISIONS.md`; `LICENSE` and `NOTICE` exist and are tracked by git; `NOTICE` names each third-party component the kit ships.
+
+## T3.15 Path, email and derived-data decisions, then the scrub (USER + agents)
+Depends on: T3.14. Owner: USER + agents. Must be done before T3.23. Source: questions 250 and 251, `docs\PUBLISHING_AUDIT.md` section 1a, section 2 and blockers 3 and 4.
+**What you do:** run these to see the facts:
+```
+cd <REPO_ROOT>
+git log --all --format="%an <%ae>" | Sort-Object -Unique
+git grep -c -F "%USERPROFILE%" -- . ":!psxrecomp" ":!recomp-ui"
+```
+Then reply in chat with three answers:
+1. Local paths: scrub them (agents replace them with relative paths or `%RETRO_TOOLS_DIR%`), or keep them.
+2. Author email: keep it; use a GitHub noreply address for future commits only; or rewrite the history before the first push. A rewrite cannot be undone after the push.
+3. Derived files `DISC_MAP.md`, `FORMATS.md`, `SYMBOLS.md`, `EXE_OVERLAYS.md`, `COVERAGE.md` and the replay digests: allow them in the public repo, or remove them from the public tree.
+Agents carry out the answers, then re-run the scans in `docs\PUBLISHING_AUDIT.md` section 1 and record the counts.
+**Accept when:** each of the three answers is recorded in `docs\DECISIONS.md`; the scans show the agreed result; no history rewrite happens without the user's explicit yes.
+
+## T3.16 No-game-data guard script (agents)
+Depends on: none. Owner: agents. Source: `docs\LAUNCHER_DESIGN.md` section 5 (`guard` row).
+Write `tools\check_no_game_data.py`. It is stdlib only and reads `git ls-files`. It fails on any tracked path under `generated/`, `ps1_game/` or `work/`; any `*.bin`, `*.cue`, `*.iso`, `*.exe`, `*.dll`, `*.zip`, `*.ovr`, `*.str` or `*.mcd`; `overlay_captures.json`; and any file whose first 8 bytes are `PS-X EXE`. It allows the derived files named in D8.
+**Accept when:** exit 0 on the current repo; a negative test in a temp git repo under `work\` with a planted `.bin` and a file with the `PS-X EXE` header each exits 1 and names the file; output is the same on two runs.
+
+## T3.17 CI workflow (agents)
+Depends on: T3.16, T3.18. Owner: agents. Source: `docs\LAUNCHER_DESIGN.md` section 5.
+Add `.github\workflows\ci.yml` with three jobs: `guard` (ubuntu-latest, runs T3.16); `emitters-test` (windows-latest, recursive submodules, the toolchain, build `psxrecomp\recompiler`, then `ctest`); `setup-host` (windows-latest, configure with the setup-host flags from T3.18, build `psx-runtime`, and fail if the configure log says "linking generated game C" or a `generated\` folder exists). Toolchain version: v1.0.14, as in `docs\SETUP.md`. How the pin is applied is open (question 247). Do not set `PSX_PGO` in CI. Do not `git add -f` any artifact.
+**Accept when:** the YAML parses, checked with a tool named in the report; the `guard` job gives the same result as T3.16 on the repo; the workflow runs green on the first push (T3.23), or each failure is listed as a new task.
+
+## T3.18 Setup-host build in the repo, and the first wizard run (agents + USER)
+Depends on: T3.1. Owner: agents + USER. Source: `docs\LAUNCHER_DESIGN.md` sections 2 and 5, `docs\PUBLISHING_AUDIT.md` section 4 and question 258.
+Agents build the setup-host exe (`PSXRECOMP_FORCE_SETUP_HOST=ON`, `PSX_SETUP_WIZARD=ON`, no game C) in `build-setup\`, which `.gitignore` already covers. Use the generator and commands in `docs\SETUP.md`. Also decide question 258 (fix the modified psxrecomp files or document them) and question 257 (keep the pin or bump it; a bump needs the T3.2 baseline refresh).
+**What you do** (when the agents ask, for the first wizard run on this machine):
+```
+cd <REPO_ROOT>
+Start-Process -FilePath .\build-setup\MythologyKombat.exe
+```
+Pick the disc in the wizard, then tell the orchestrator each step and any error text. The wizard may generate and compile, which takes several minutes.
+**Accept when:** the configure log has no "linking generated game C"; `build-setup\MythologyKombat.exe` exists; a fresh clone in `work\clone-test` (with `--recurse-submodules`, no `generated\`) configures and builds it; the exe hash is recorded in `docs\SETUP.md`; question 258 is closed; the wizard run is recorded as user-reported.
+
+## T3.19 Kit packager, content check and checksums (agents)
+Depends on: T3.12, T3.14, T3.16, T3.18. Owner: agents. Source: `docs\LAUNCHER_DESIGN.md` sections 2 (option A) and 5 (`kit` row).
+Build the kit zip from an allow-list: the setup-host exe, the filtered `psxrecomp\` tree the CLI needs, `game.toml`, `seeds\`, `aot\overlays.json`, `symbols.toml`, the licences from T3.14, and a version file. Whether the toolchain is in the kit is open (question 253). Do not call `scripts\package_release.sh` (bundled packager). Do not call `psxrecomp\tools\package_setup_host.sh` unmodified (retired, not read in full).
+The content check rejects any `.c` from `generated\`, any `.bin`, `.cue`, `.ovr`, and any `.exe` other than the setup exe. Output: `MythologyKombat-<version>-kit-windows-x64.zip` and `checksums.txt` (SHA-256).
+**Accept when:** the content check passes; the T3.16 guard passes on the zip's file list; `checksums.txt` matches the zip; the version is recorded in `docs\CHANGELOG.md` at release time.
+
+## T3.20 Updater: check, verify, replace, roll back (agents)
+Depends on: T3.19. Owner: agents. Source: D18, `docs\LAUNCHER_DESIGN.md` section 4 (the design is a proposal).
+The launcher calls `GET https://api.github.com/repos/<owner>/<repo>/releases/latest` and compares the tag with the local kit version. If newer, it downloads the zip and `checksums.txt`, checks the SHA-256, and extracts over the install folder. It keeps `build-release\`, `saves\`, `settings.toml` and `bios\`. It keeps the previous kit until the new one works (rollback). It warns when the data version changes and a regenerate is needed. The code is a launcher-side helper or a patch under `patches\` (D19). recomp-ui is not edited.
+**Accept when:** against a local test server or a test release: (1) a newer version is found and installed; (2) a checksum mismatch is refused and nothing is replaced; (3) saves and settings survive the update; (4) the previous kit stays until the new one has run.
+
+## T3.21 Release workflow (agents)
+Depends on: T3.15, T3.17, T3.19. Owner: agents. Source: `docs\LAUNCHER_DESIGN.md` section 5 (`release` row).
+Write `.github\workflows\release.yml`. It runs on a tag `v*` or by manual dispatch, needs `guard`, `emitters-test`, `setup-host` and `kit`, and uploads the kit zip and `checksums.txt` with `softprops/action-gh-release@v2` and `fail_on_unmatched_files`, with `permissions: contents: write`. Artifacts are never committed.
+**Accept when:** the YAML parses; a manual dispatch after T3.23 produces the zip and checksums as workflow artifacts, and the T3.16 check passes on them. No release is published without the user's yes (T3.23).
+
+## T3.22 Clean-machine test of the kit (USER)
+Depends on: T3.19. Owner: USER. Source: `docs\PUBLISHING_AUDIT.md` section 6 and blocker 12, `docs\LAUNCHER_DESIGN.md` section 3. The design calls this the acceptance test for the kit. It needs a second Windows machine or a VM with only your disc. The CLI needs Python 3 (`LAUNCHER_DESIGN.md` section 2). Record whether the kit installs it or you must (question 254, T3.26).
+**What you do:**
+1. Put your disc in a folder outside the repo. Copy the `.cue` and the `.bin` by hand, or:
+```
+New-Item -ItemType Directory -Force "$env:USERPROFILE\Discs\MK" | Out-Null
+Copy-Item "<path to your .cue>" "$env:USERPROFILE\Discs\MK\"
+Copy-Item "<path to your .bin>" "$env:USERPROFILE\Discs\MK\"
+```
+2. Copy the kit zip to the test machine (download from the release page, or USB). Then:
+```
+Expand-Archive -Path "$env:USERPROFILE\Downloads\MythologyKombat-<version>-kit-windows-x64.zip" -DestinationPath "$env:USERPROFILE\MythologyKombat-kit"
+Get-ChildItem "$env:USERPROFILE\MythologyKombat-kit" | Select-Object Name, Length
+```
+3. Start the setup exe:
+```
+Start-Process "$env:USERPROFILE\MythologyKombat-kit\MythologyKombat-setup.exe"
+```
+4. In the wizard, pick the `.cue` from `Discs\MK`. Let verify, generate, toolchain and rebuild run. Note how long each phase takes, and copy any error text.
+5. Check that no disc file reached the kit folder:
+```
+Get-ChildItem "$env:USERPROFILE\MythologyKombat-kit" -Recurse -Include *.bin,*.cue,*.ovr,*.str | Select-Object FullName
+```
+6. Report: the Windows version (`(Get-CimInstance Win32_OperatingSystem).Caption`), each wizard step and its result, the time per phase, any Smart App Control message, and whether `build-release\MythologyKombat.exe` starts.
+**Accept when:** the user confirms the wizard runs to the end on the test machine; agents record the steps, times and errors as user-reported; each failure becomes a question or a task; the check in step 5 finds nothing.
+
+## T3.23 First push to GitHub and first CI run (USER + agents)
+Depends on: T3.15, T3.17, T3.21. Owner: USER + agents. Source: `docs\PUBLISHING_AUDIT.md` section 1 and section 8.
+A push is hard to undo, because the author email is in the history. Push only after T3.14 and T3.15 are decided. The repo has no remote today.
+**What you do:** create an empty GitHub repo first, under a name you choose (public or private is your choice). Then:
+```
+cd <REPO_ROOT>
+git status --short
+git ls-files | Select-String -Pattern "^(ps1_game|work|generated|build)/"
+git remote add origin https://github.com/<your-github-user>/<repo-name>.git
+git push -u origin master
+```
+The `Select-String` line must print nothing. Then tell the orchestrator. Do not create a tag or a release until you say so.
+**Accept when:** the user confirms the push; agents report the first CI run, green or with each failure listed as a task; no tag or release exists without the user's yes.
+
+## T3.24 Code-signing decision for the kit exe (USER)
+Depends on: T3.19. Owner: USER. Source: question 244, `docs\LAUNCHER_DESIGN.md` sections 2, 5 and 8 item 3. Smart App Control may block an unsigned exe (question 255). A certificate costs money. Optional: the release can ship unsigned.
+**What you do:**
+```
+cd <REPO_ROOT>
+Get-Content docs\LAUNCHER_DESIGN.md | Select-String -Pattern "Smart App Control|signing"
+```
+Reply in chat: sign, or ship unsigned. If you sign, do not paste the certificate or its password in chat. Add the two secrets, `WINDOWS_SIGN_PFX_BASE64` and `WINDOWS_SIGN_PFX_PASSWORD`, in the GitHub repo settings, and agents wire them into the release.
+**Accept when:** question 244 is closed in `docs\OPEN_QUESTIONS.md`; if signing is chosen, the release signs the kit exe and `Get-AuthenticodeSignature` on the exe in the zip reports a valid signature.
+
+## T3.25 README rewrite and legal wording (agents + USER)
+Depends on: T3.14, T3.15, T3.20. Owner: agents (doc-writer) + USER review of the legal wording (question 245). Source: `docs\PUBLISHING_AUDIT.md` section 7.
+Rewrite `README.md` in the eleven parts listed in section 7 of the audit. Include the status (with D17), the requirements, the player steps for the kit, the developer build, the controls link (`docs\CONTROLS.md`), troubleshooting, the licence and credits, and the legal note.
+**What you do:** reply in chat with the legal wording you approve, or with changes. Check the draft with:
+```
+cd <REPO_ROOT>
+Get-Content README.md
+```
+**Accept when:** every section in the audit's section 7 exists, or is marked "not yet"; no `%USERPROFILE%` path appears; the legal note is the wording the user approved (question 245); each claim maps to a doc or a script; the player steps match the kit from T3.19 and the updater from T3.20.
+
+## T3.26 Optional: embedded Python and offline toolchain (agents)
+Depends on: T3.19, T3.22. Owner: agents. Optional: not part of the gate unless the user schedules it. Source: `docs\LAUNCHER_DESIGN.md` sections 2 and 7 (effort row for embedded Python), questions 247, 248 and 254.
+Options: ship an embedded Python 3 in the kit (licence check first); pin the toolchain so the wizard needs no network check; an offline kit variant. Option E (prebuilt framework libraries, question 248) is not scheduled. Start only after T3.22 shows which first-run step fails.
+**Accept when:** the user approves the option; T3.22 is repeated and the step that failed no longer fails; any licence added is listed in the T3.14 `NOTICE`.
 
 ## Backlog (not scheduled, no task IDs yet)
 
@@ -248,10 +527,8 @@ These are ideas only. Each needs its own task before work starts.
 | Item | Related |
 | --- | --- |
 | Further playtest of other levels and movies | Open questions 237, 238, 232 |
-| Smoothness work: PGO and LTO builds, overlay toolchain, Intel graphics driver | Q99 |
 | Enhancements | `docs\ENHANCEMENTS.md` |
-| Public release prep: README, PolyForm Noncommercial check, no disc data in the repo | `README.md`, `CLAUDE.md` (PSXRecomp licence) |
-| Launcher UX fixes (user-reported 2026-10-20): (1) scroll on the main section; (2) a big calendar icon where a disc or the game icon is expected; (3) filename cropped; (4) Analog/D-pad textbox lacks proper bottom padding; (5) Settings: Window size has no dropdown, Renderer: OpenGL option text does not fit, some textboxes have odd internal padding. The launcher is the upstream `recomp-ui` submodule (MIT), so the fix needs a patch or fork decision. | Q243 in `docs\OPEN_QUESTIONS.md`; `docs\LAUNCHER_DESIGN.md` (when written) |
+| Overlay toolchain and KUSEG shard (left for later, `docs\PERF_AND_ENGINEERING_IDEAS.md` item 5). Intel driver update and GPU choice (item 4) are USER system changes, not scheduled | Q99, Q190 |
 
 ## Decisions needing the user (before they block)
 
@@ -265,6 +542,12 @@ Hard to undo, so ask first:
 | Installing a full Python system-wide (only if the wrapper fails) | Q26 | T2.1 |
 | Pushing to a remote, or changing the generated-code policy | Q23 | Not needed in Phase 2 |
 | Deleting `work\` scratch or ghidra-* projects | Q67 | — |
+| Box art or icon source and its licence | Q246 | T3.12 (choose before patches) |
+| Repo licence for this repo's own files | Q249 | T3.14 |
+| Path and email scrub, history rewrite, derived-data scope | Q250, Q251 | T3.15 (before T3.23) |
+| Pushing the repo to GitHub, and any tag or release | — | T3.23 |
+| Code-signing certificate for the kit exe | Q244 | T3.24 |
+| Legal wording for the README and release page | Q245 | T3.25 |
 
 ### Open questions for the user
 

@@ -224,3 +224,33 @@ _Filled in by the doc-writer as tasks pass review._
 - Open questions that stay open: 148, 150, 162, 237, 238, 241 and 242. This decision closes none of them.
 - Effect: the status of T2.10 and T2.23 changes in `docs/TASKS.md`. The FMV evidence in `docs/SETUP.md` is unchanged.
 - Details are in `docs/SETUP.md` ("FMV check (T2.10) and first fight (T2.11)"). Open items are in `docs/OPEN_QUESTIONS.md`.
+
+## D18 Release model: setup-host kit (2026-10-20)
+
+- Context: `docs/LAUNCHER_DESIGN.md` (section 2, option A) and `docs/PUBLISHING_AUDIT.md` (section 8, blocker 1) left the release model open. Game C, any exe built from it, and disc-derived data may not be distributed (D8, `CLAUDE.md`).
+- Decision (Patricio, in chat, 2026-10-20):
+  - The release is a setup-host kit: a release zip with the launcher, the toolchain and the recompiler.
+  - The player's PC runs `verify-disc`, `generate` and the compile once, from the player's own disc.
+  - The launcher checks GitHub Releases for updates.
+  - No game-derived code or data is ever distributed.
+- Not chosen, and why:
+  - Upstream bundled release (`LAUNCHER_DESIGN.md` option X1). It ships generated game C and the compiled game. D8 forbids it.
+  - Source-only repo (option B). The design calls it the cheapest route with the worst player experience.
+  - Own thin launcher (option C). Kept in the design as the fallback if the recomp-ui wizard proves too rough.
+  - Retro Launcher catalogue entry (option D). Possible later. Retro's handling of setup-host kits is not verified.
+- Reason: the user's choice. The design gives this as the only route with a download-and-run feel that also keeps D8.
+- Open items (none decided yet): code signing (question 244), legal wording (245), box art licence (246), the toolchain pin at v1.0.14 (247), option E prebuilt framework libraries (248), and whether the toolchain ships inside the zip or is downloaded by the wizard (253). The design's option A has the wizard download it. D18 says the zip carries it. The two differ and are not reconciled.
+- Tasks: T3.6 to T3.26 in `docs/TASKS.md`.
+
+## D19 Launcher fixes are local patch files, applied at build time (2026-10-20)
+
+- Context: `CLAUDE.md` says "upstream first" and reserves `patches/` for hooks and enhancements. The launcher is the `recomp-ui` submodule (MIT). `docs/LAUNCHER_DESIGN.md` (section 6) lists five user-reported UX items. D1 and D6 already keep upstream source unmodified.
+- Decision (Patricio, in chat, 2026-10-20):
+  - Launcher fixes are patch files under `patches\`, applied at build time.
+  - The `recomp-ui\` submodule stays untouched.
+  - The patches can be sent upstream later.
+- Not chosen, and why:
+  - Editing `recomp-ui\` in place. It breaks the pin and the upstream-first rule.
+  - Forking `recomp-ui`. The fork-or-patch question (question 243) is answered by this decision as "patch".
+- Reason: the user's choice. The fixes stay separate from the upstream code and can be proposed upstream later.
+- Open items: which items come first, and the outcome after the screenshots (T3.11 and T3.12). The apply step (CMake or a script) and the upstream-or-local choice per item are set in T3.12. Question 243 is open for item order.

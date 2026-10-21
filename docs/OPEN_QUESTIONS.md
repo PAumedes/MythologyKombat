@@ -443,4 +443,26 @@ The launcher is the upstream `recomp-ui` submodule, which is MIT licensed (`reco
 
 | # | Question | Notes |
 |---|----------|-------|
-| 243 | Which launcher UX problems should be fixed, and should the fixes be a patch or a fork of `recomp-ui`? | User-reported on 2026-10-20: (1) scroll on the main section; (2) a big calendar icon where a disc or the game icon is expected; (3) filename cropped; (4) the Analog/D-pad textbox lacks proper bottom padding; (5) Settings: Window size has no dropdown, the Renderer OpenGL option text does not fit, and some textboxes have odd internal padding. Not decided: patch or fork, and which items come first. |
+| 243 | Which launcher UX problems should be fixed, and should the fixes be a patch or a fork of `recomp-ui`? | User-reported on 2026-10-20: (1) scroll on the main section; (2) a big calendar icon where a disc or the game icon is expected; (3) filename cropped; (4) the Analog/D-pad textbox lacks proper bottom padding; (5) Settings: Window size has no dropdown, the Renderer OpenGL option text does not fit, and some textboxes have odd internal padding. Patch or fork: decided as patches (D19). Still open: which items come first, and the outcome after the screenshots (T3.11, T3.12). |
+
+## Release and publishing (from the 2026-10-20 Phase 3 plan)
+
+Sources: `docs/LAUNCHER_DESIGN.md`, `docs/PUBLISHING_AUDIT.md`, `docs/PERF_AND_ENGINEERING_IDEAS.md`, D18 and D19. Each question is open until its task or decision closes it.
+
+| # | Question | Notes |
+|---|----------|-------|
+| 244 | Should the kit exe be code-signed, and who buys the certificate? | Not decided. Smart App Control may block an unsigned exe (question 255). A certificate costs money. The release template signs only if secrets exist (`LAUNCHER_DESIGN.md` sections 2, 5, 8.3). Owner: USER. Task T3.24. |
+| 245 | What legal wording goes on the README and release page? | Not decided. The design suggests the kit has no game code or assets, so a stronger statement is possible (`LAUNCHER_DESIGN.md` 8.8; `PUBLISHING_AUDIT.md` section 7 item 11). Owner: USER. Task T3.25. |
+| 246 | Which box art or icon may ship, and under what licence? | Not decided. `LAUNCHER_BOXART` is commented out in `CMakeLists.txt`. A PSX `disc.tga` exists in `recomp-ui\assets\consoles\psx\img\`, but its licence was not checked. Owner: USER. Task T3.13. |
+| 247 | Can the toolchain be pinned to v1.0.14 in the wizard without editing the submodule? | Not verified. The source has a minimum-version floor (`RETCOMM_TOOLCHAIN_MIN_VERSION`). Pinning is `[U]` (`LAUNCHER_DESIGN.md` section 2, 8.5). Tasks T3.17 and T3.26. |
+| 248 | Should framework-only prebuilt libraries be shipped (option E)? | Not decided. Upstream CMake was not seen to support it (`LAUNCHER_DESIGN.md` section 2). Adds a second build recipe. Not scheduled. |
+| 249 | What licence covers this repo's own files? | No `LICENSE` or `NOTICE` exists (`PUBLISHING_AUDIT.md` section 3, blocker 2). psxrecomp is PolyForm Noncommercial and recomp-ui is MIT. Owner: USER. Task T3.14. |
+| 250 | Should the local paths and the author email be scrubbed, or the history rewritten? | Facts: 25 tracked files hold `%USERPROFILE%\`. The email is in 46 commits, and changing it needs a history rewrite (`PUBLISHING_AUDIT.md` section 1a, blocker 3). Owner: USER. Task T3.15, before the first push. |
+| 251 | Are the derived files outside D8 allowed in a public repo? | `DISC_MAP.md`, `FORMATS.md`, `SYMBOLS.md`, `EXE_OVERLAYS.md`, `COVERAGE.md` and the replay digests are not named in D8 (`PUBLISHING_AUDIT.md` section 2, blocker 4). Owner: USER. Task T3.15. |
+| 252 | Does recomp-ui or the codegen host already have an updater for the game or the launcher? | Not found. The grep was not exhaustive (`LAUNCHER_DESIGN.md` section 3). Task T3.20. |
+| 253 | Does the kit carry the toolchain, or does the wizard download it? | D18 says the zip carries the toolchain. `LAUNCHER_DESIGN.md` option A has the wizard download it to `%LOCALAPPDATA%`. The two are not reconciled. Tasks T3.19 and T3.22. |
+| 254 | Should the kit carry an embedded Python 3? | Not tested. The CLI needs Python 3 (`LAUNCHER_DESIGN.md` section 2). A licence check is needed. Task T3.26 (optional). |
+| 255 | Does Smart App Control block the locally built exe on a clean machine? | Unknown. Not tested on any second machine (`LAUNCHER_DESIGN.md` section 2). Tasks T3.22 and T3.24. |
+| 256 | Does Windows Performance Recorder need an elevated shell here, and does the Release exe carry symbols for the analysis tool? | Not checked. Task T3.9. `PERF_AND_ENGINEERING_IDEAS.md` section 2, items 16 and 17. |
+| 257 | Should the psxrecomp pin move to upstream's newer commit? | Upstream master was ahead of the pin at audit time (`958ae0e3`, `PUBLISHING_AUDIT.md` section 4). A bump changes the exe and needs a replay baseline refresh (T3.2 pattern). Not scheduled. |
+| 258 | Should the modified psxrecomp files be fixed or documented? | Three OpenBIOS generated files show as modified. The audit found line endings only (`PUBLISHING_AUDIT.md` section 4, item 7). Task T3.18. |
