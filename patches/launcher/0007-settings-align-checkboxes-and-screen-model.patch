@@ -1,0 +1,76 @@
+From: MythologyKombat local launcher patch set (D19, T3.12)
+Subject: [PATCH 0007] Settings: align the checkbox rows and the Screen model button to one column
+
+Requires 0006 (uses SETTINGS_CTRL_W as the shared column).
+
+Issue (design item 5c; work/screens/shot_230059.png): in the DISPLAY card the
+  controls do not share edges.
+  - Dynamic resolution's checkbox is left-aligned in the control column
+    (x 724) while Perspective textures' and Rewind's are right-aligned (x 869).
+  - Scanlines' checkbox sits right after its label (x 157), and its strength
+    slider is not right-anchored.
+  - The Screen model button ("Raw") is a fixed 220 wide, 70 wider than every
+    other button.
+
+Fix: all checkbox rows use row_label_right(..., checkbox width), the same as
+  Perspective textures, Rewind and the AUDIO card. Scanline strength anchors to
+  the shared column. Screen model uses the shared column width and only widens
+  (still right-anchored) when its label does not fit.
+
+Verified: yes (framebuffer captures, work/screens/).
+Upstream candidate: yes.
+---
+diff --git a/src/common/backends/imgui/launcher_imgui.cpp b/src/common/backends/imgui/launcher_imgui.cpp
+index 3b9a09b..914de00 100644
+--- a/src/common/backends/imgui/launcher_imgui.cpp
++++ b/src/common/backends/imgui/launcher_imgui.cpp
+@@ -4261,7 +4261,7 @@ void draw_display_controls(LauncherModel* m, const LauncherTheme& th) {
+ 
+     if (m->has_dynamic_resolution && m->s.renderer == 1 &&
+         m->s.internal_resolution != 1) {
+-        row_label_right("Dynamic resolution", th, px(SETTINGS_CTRL_W));
++        row_label_right("Dynamic resolution", th, cb);
+         bool enabled = m->s.dynamic_resolution != 0;
+         if (ImGui::Checkbox("##dynamic_resolution", &enabled))
+             m->s.dynamic_resolution = enabled ? 1 : 0;
+@@ -4395,10 +4395,14 @@ void draw_display_controls(LauncherModel* m, const LauncherTheme& th) {
+     }
+ 
+     if (m->has_screen_kind) {
+-        row_label_right("Screen model", th, px(220));
+-        // Wide enough for the longest label ("Super Game Boy (No Border)");
+-        // shorter models (e.g. "DMG") center within the same fixed box.
+-        if (ImGui::Button(ui_text(launcher_model_screen_kind_label(m)), ImVec2(px(220), px(30))))
++        // Same column as every other button; only a label that does not fit
++        // it ("Super Game Boy (No Border)") widens the button, still
++        // right-anchored. "Raw" used to be 220 wide, 70 wider than its row mates.
++        const char* sk_label = ui_text(launcher_model_screen_kind_label(m));
++        float sk_w = ImGui::CalcTextSize(sk_label).x + ImGui::GetStyle().FramePadding.x * 2.0f;
++        if (sk_w < px(SETTINGS_CTRL_W)) sk_w = px(SETTINGS_CTRL_W);
++        row_label_right("Screen model", th, sk_w);
++        if (ImGui::Button(sk_label, ImVec2(sk_w, px(30))))
+             launcher_model_cycle_screen_kind(m);
+     }
+ 
+@@ -4406,7 +4410,7 @@ void draw_display_controls(LauncherModel* m, const LauncherTheme& th) {
+     // the Screen model colour filter above — the two compose. The strength row
+     // only appears once it is on.
+     if (m->has_scanlines) {
+-        row_label("Scanlines", th);
++        row_label_right("Scanlines", th, cb);
+         bool sl = m->s.scanlines != 0;
+         if (ImGui::Checkbox("##scanlines", &sl))
+             launcher_model_toggle_scanlines(m);
+@@ -4416,10 +4420,10 @@ void draw_display_controls(LauncherModel* m, const LauncherTheme& th) {
+                               "pitch; cleanest when the\nwindow is at least twice "
+                               "the console's line count tall.");
+         if (m->s.scanlines) {
+-            row_label("Scanline strength", th);
++            row_label_right("Scanline strength", th, px(SETTINGS_CTRL_W));
+             int p = launcher_model_scanline_strength_pct(m);
+             ImGui::PushID("scanline_strength");
+-            ImGui::SetNextItemWidth(px(150));
++            ImGui::SetNextItemWidth(px(SETTINGS_CTRL_W));
+             if (ImGui::SliderInt("##scanline_strength", &p, 1, 100, "%d%%"))
+                 launcher_model_set_scanline_strength_pct(m, p);
+             ImGui::PopID();

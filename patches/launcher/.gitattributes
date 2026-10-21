@@ -1,0 +1,2 @@
+# Patches must keep LF line endings: they are applied to LF blobs with git apply.
+*.patch -text

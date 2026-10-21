@@ -2420,3 +2420,63 @@ python tests\test_check_no_game_data.py
 ### Known minor issue
 
 - A file path with non-ASCII characters prints as mojibake in its `FAIL` line on the Windows console.
+
+## Launcher patches and screenshots (T3.12)
+
+The launcher fixes are patch files under `patches\launcher\` (D19). The `recomp-ui\` submodule is not edited. The patches apply to the pinned commit `7c635c6b`.
+
+| File | Item (`docs/LAUNCHER_DESIGN.md` 6.1) |
+|------|--------------------------------------|
+| `patches\launcher\0001-dashboard-fit-right-column.patch` | Scroll on the main section |
+| `patches\launcher\0002-game-card-disc-glyph.patch` | Calendar-like glyph in the game tile |
+| `patches\launcher\0003-game-card-wrap-file-name.patch` | File name cropped |
+| `patches\launcher\0004-player-card-selector-padding.patch` | Analog/D-Pad bottom padding |
+| `patches\launcher\0005-settings-window-size-combo.patch` | Window size dropdown |
+| `patches\launcher\0006-settings-control-column-width.patch` | Renderer label width |
+| `patches\launcher\0007-settings-align-checkboxes-and-screen-model.patch` | Misaligned controls |
+
+### Apply the patches
+
+```
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\apply_launcher_patches.ps1
+```
+
+- It reads the recomp-ui commit that the repo pins. It exports that commit with `git archive` into `work\recomp-ui-patched`, then applies every `patches\launcher\*.patch` in name order with `git apply`.
+- It prints the destination path on its last line.
+- `-Only 0001,0003` applies a subset. The before and after screenshots use this.
+- It writes only under `work\`.
+- `git -C recomp-ui status --short` must print nothing.
+
+### Build with the patched tree
+
+Use the same flags as T2.4, and add `-DRECOMP_UI_ROOT`. The T3.12 report does not say whether the T2.4 flags were kept, so check the configure log.
+
+```
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DRECOMP_UI_ROOT=<REPO_ROOT>\work\recomp-ui-patched
+cmake --build build --target psx-runtime
+```
+
+- PSXRecomp's `runtime.cmake` uses `RECOMP_UI_ROOT` when it is set. No CMake change is needed.
+- Any relink changes the exe SHA-256. Record the hash of the build you test. A user recording (T3.3) must come after the final relink.
+
+### Capture a DPI-aware screenshot
+
+The T3.11 method (`CopyFromScreen` from a process that is not DPI aware) gives a 1536 by 864 crop of a 1920 by 1080 screen at 125 percent. Do not use it for layout checks.
+
+```
+powershell -ExecutionPolicy Bypass -File tools\launcher_window_probe.ps1 -Exe work\build-launcher-test\MythologyKombat.exe -Out work\screens\probe.png
+```
+
+- The script marks itself per-monitor DPI aware, then reports the real window rectangle and the primary display, and saves a capture.
+- Options: `-DelaySeconds N` (default 10) and `-Disc <cue>`.
+- Scripted views: the launcher has a built-in hook, `LNG_SCRIPT`. The T3.12 report gives this form: `LNG_SCRIPT="wait:N;view:settings;click:x,y;shot:f.png;quit"`. This doc does not record a run of the hook in the game exe.
+
+### Lesson: line endings in patch files
+
+A Windows Python text-mode write added CR bytes to a patch header. `patches\launcher\.gitattributes` sets `*.patch -text`, so patches must keep LF line endings. Write patch files in binary mode, or with `newline=''`, when a script writes them.
+
+### Status
+
+- The patches are agent-measured. The user has not confirmed them. Item 4 (patch 0004) is not verified as the user's complaint.
+- Outcomes are in `docs/LAUNCHER_DESIGN.md` section 6.2. Open items are in `docs/OPEN_QUESTIONS.md` (243).
+- Not tested: multitap, narrow layout, non-PSX consoles, real mouse session.

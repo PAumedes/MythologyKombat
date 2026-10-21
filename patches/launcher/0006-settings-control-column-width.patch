@@ -1,0 +1,85 @@
+From: MythologyKombat local launcher patch set (D19, T3.12)
+Subject: [PATCH 0006] Settings: size the control column to the widest dropdown label
+
+Requires 0005 (uses launcher_model_window_size_count / label_at).
+
+Issue (design item 5b; work/screens/shot_230059.png): every dropdown and button
+  in the DISPLAY card is a fixed 150 px wide (SETTINGS_CTRL_W). The Renderer
+  combo closes to "OpenGL (Recor" because the host's label is longer.
+  Upstream already adds a hover tooltip, but the closed combo is what a player
+  reads.
+
+Fix: SETTINGS_CTRL_W becomes a variable. draw_settings measures the renderer,
+  internal-resolution and window-size labels, adds frame padding and the arrow,
+  and takes the widest (never below 150, never above 260); panel_video_draw runs
+  with that width for the DISPLAY card only (scope guard). AUDIO, SYSTEM and the
+  rest keep 150. All rows right-anchor to the column, so they stay aligned.
+  The two-column floor uses the DISPLAY width.
+
+Verified: yes (framebuffer captures, work/screens/).
+Upstream candidate: yes.
+---
+diff --git a/src/common/backends/imgui/launcher_imgui.cpp b/src/common/backends/imgui/launcher_imgui.cpp
+index 156ff73..3b9a09b 100644
+--- a/src/common/backends/imgui/launcher_imgui.cpp
++++ b/src/common/backends/imgui/launcher_imgui.cpp
+@@ -1909,7 +1909,14 @@ void row_label_right(const char* text, const LauncherTheme& th, float ctrl_w) {
+  * value any of them shows ("Borderless", "Adaptive", "2 frames", "32000 Hz").
+  * Rows whose value cannot fit -- a screen model, a file path -- pass their own
+  * width to row_label_right instead. */
+-#define SETTINGS_CTRL_W 150.0f
++/* The column is no longer a hard 150 in the DISPLAY card: draw_settings
++ * measures the longest label any dropdown there can show (an honest renderer
++ * label such as "OpenGL (Recommended)" does not fit 150 and closed to
++ * "OpenGL (Recor") into g_display_ctrl_w, and panel_video_draw runs with that
++ * width. Every other card keeps 150, the floor. */
++static float g_settings_ctrl_w = 150.0f;
++static float g_display_ctrl_w  = 150.0f;
++#define SETTINGS_CTRL_W g_settings_ctrl_w
+ 
+ /*
+  * False while the window is too narrow to run DISPLAY and AUDIO side by side,
+@@ -4555,6 +4562,12 @@ void draw_display_controls(LauncherModel* m, const LauncherTheme& th) {
+ // row_h band with no_scroll (legacy minimal surface) — exactly the sizing
+ // draw_settings used to pick inline, now co-located with its own content.
+ void panel_video_draw(LauncherModel* m, const LauncherTheme* th) {
++    // The DISPLAY card alone runs with the measured control column.
++    struct CtrlWScope {
++        float prev;
++        explicit CtrlWScope(float w) : prev(g_settings_ctrl_w) { g_settings_ctrl_w = w; }
++        ~CtrlWScope() { g_settings_ctrl_w = prev; }
++    } ctrl_w_scope(g_display_ctrl_w);
+     // video_card_grows() folds in NES's legacy-surface additions (Integer
+     // scaling row, HD texture pack block) alongside the deep/widescreen surfaces.
+     if (video_card_grows(m) || !g_settings_two_col) {
+@@ -5132,8 +5145,29 @@ void draw_settings(LauncherModel* m, const LauncherTheme& th) {
+      * draw, plus the control column, plus the card's own padding.
+      */
+     const float full_w = ImGui::GetContentRegionAvail().x;
++    {
++        // Widest closed-combo text: label + frame padding both sides + arrow.
++        const ImGuiStyle& st = ImGui::GetStyle();
++        const float chrome = st.FramePadding.x * 2.0f + ImGui::GetFrameHeight();
++        float want = 150.0f;
++        auto fit = [&](const char* lbl) {
++            if (!lbl || !lbl[0]) return;
++            const float w = ImGui::CalcTextSize(ui_text(lbl)).x + chrome;
++            if (w > want) want = w;
++        };
++        if (launcher_model_renderer_offered(m))
++            for (int i = 0; i < launcher_model_renderer_count(m); ++i)
++                fit(launcher_model_renderer_label_at(m, i));
++        if (launcher_model_internal_resolution_offered(m))
++            for (int i = 0; i < launcher_model_internal_resolution_count(m); ++i)
++                fit(launcher_model_internal_resolution_label_at(m, i));
++        if (m->has_window_size)
++            for (int i = 0; i < launcher_model_window_size_count(m); ++i)
++                fit(launcher_model_window_size_label_at(m, i));
++        g_display_ctrl_w = want < 260.0f ? want : 260.0f;
++    }
+     const float col_floor = ImGui::CalcTextSize("Affine background smoothing").x +
+-                            px(SETTINGS_CTRL_W) + px(th.spacing_md) * 3.0f;
++                            px(g_display_ctrl_w) + px(th.spacing_md) * 3.0f;
+     const bool two_col = (full_w - gap) * 0.5f >= col_floor;
+     const float half = two_col ? (full_w - gap) * 0.5f : full_w;
+     g_settings_two_col = two_col;   // read by panel_video_draw/panel_audio_draw

@@ -254,3 +254,4 @@ _Filled in by the doc-writer as tasks pass review._
   - Forking `recomp-ui`. The fork-or-patch question (question 243) is answered by this decision as "patch".
 - Reason: the user's choice. The fixes stay separate from the upstream code and can be proposed upstream later.
 - Open items: which items come first, and the outcome after the screenshots (T3.11 and T3.12). The apply step (CMake or a script) and the upstream-or-local choice per item are set in T3.12. Question 243 is open for item order.
+- Outcome (T3.12, 2026-10-20): the apply step is `tools\apply_launcher_patches.ps1` (a copy under `work\`, then `git apply`, not CMake). Patches 0001 to 0007 exist. Per-item outcomes are in `docs/LAUNCHER_DESIGN.md` section 6.2. Item 4 awaits the user's confirmation. Upstream choice per item is still the user's call.

@@ -1,0 +1,71 @@
+From: MythologyKombat local launcher patch set (D19, T3.12)
+Subject: [PATCH 0002] GAME card: draw a neutral disc glyph instead of the cartridge placeholder
+
+Issue (design item 2; work/screens/shot_230017.png): with no boxart.tga staged
+  (LAUNCHER_BOXART is unset, T3.13 route b) the GAME card draws upstream's
+  hand-made SNES cartridge placeholder, a blue rounded body with three ridges
+  on top. On a PlayStation title it reads as a big calendar.
+
+Fix: for disc consoles (profile verify.mode == 1) hero_boxart_centered draws a
+  plain optical disc from ImDrawList circles and two highlight arcs, in theme
+  colours. Original geometry: no logo, no copyrighted art, no asset file.
+  Cartridge consoles keep the old placeholder, and a real boxart.tga still wins.
+
+Verified: yes (framebuffer captures, work/screens/).
+Upstream candidate: yes (about 25 lines). Replaced by real art if T3.13 route (a)
+  is ever chosen.
+---
+diff --git a/src/common/backends/imgui/launcher_imgui.cpp b/src/common/backends/imgui/launcher_imgui.cpp
+index 97bab1b..8ba5731 100644
+--- a/src/common/backends/imgui/launcher_imgui.cpp
++++ b/src/common/backends/imgui/launcher_imgui.cpp
+@@ -2000,7 +2000,8 @@ void row_run_ahead(LauncherModel* m, const LauncherTheme& th) {
+ // Box art, centered, framed. No neon glow — the art is photographic content and
+ // a violet halo around it reads as a bug, not a design. Glow is reserved for
+ // the PLAY CTA, where it means "this is the action".
+-void hero_boxart_centered(const LauncherTexture& t, float box_h, float avail_w) {
++void hero_boxart_centered(const LauncherTexture& t, float box_h, float avail_w,
++                          bool disc = false) {
+     const LauncherTheme& th = *g_th;
+     float bh = px(box_h);
+     ImDrawList* dl = ImGui::GetWindowDrawList();
+@@ -2028,9 +2029,29 @@ void hero_boxart_centered(const LauncherTexture& t, float box_h, float avail_w)
+         dl->AddRectFilled(mn, mx, imcol(th.panel_hovered), px(6.0f));
+         dl->AddRect(mn, mx, imcol(th.border), px(6.0f), 0, px(1.0f));
+ 
++        float cx = (mn.x + mx.x) * 0.5f, cy = (mn.y + mx.y) * 0.5f;
++        if (disc) {
++            // Disc-based console (verify.mode == 1): a plain optical disc drawn
++            // from circles and two highlight arcs. Original geometry, no logo,
++            // no third-party art. The cartridge below reads as a calendar.
++            const ImVec2 c(cx, cy);
++            const float r = iw * 0.40f;
++            dl->AddCircleFilled(c, r, imcol(th.accent_dim), 64);
++            dl->AddCircle(c, r, imcol(th.accent), 64, px(2.0f));
++            dl->AddCircle(c, r * 0.62f, imcol(th.accent, 0.55f), 64, px(1.5f));
++            dl->AddCircleFilled(c, r * 0.30f, imcol(th.panel), 48);
++            dl->AddCircle(c, r * 0.30f, imcol(th.accent), 48, px(1.5f));
++            dl->AddCircleFilled(c, r * 0.12f, imcol(th.panel_hovered), 32);
++            const ImU32 sheen = imcol(lng_rgba(1, 1, 1, 1), 0.22f);
++            dl->PathArcTo(c, r * 0.82f, -2.75f, -1.85f, 24);
++            dl->PathStroke(sheen, 0, px(3.0f));
++            dl->PathArcTo(c, r * 0.82f, 0.40f, 1.30f, 24);
++            dl->PathStroke(sheen, 0, px(3.0f));
++            ImGui::Dummy(ImVec2(iw, ih));
++            return;
++        }
+         // cartridge body, centered in the slot
+         float cw = iw * 0.52f, ch = cw * 1.04f;
+-        float cx = (mn.x + mx.x) * 0.5f, cy = (mn.y + mx.y) * 0.5f;
+         ImVec2 bmn = ImVec2(cx - cw * 0.5f, cy - ch * 0.5f);
+         ImVec2 bmx = ImVec2(cx + cw * 0.5f, cy + ch * 0.5f);
+         dl->AddRectFilled(bmn, bmx, imcol(th.accent_dim), cw * 0.10f);
+@@ -2237,7 +2258,7 @@ void draw_game_panel(LauncherModel* m, const LauncherTheme& th, bool fill_h = fa
+         // Artwork yields to controls. Below a useful thumbnail size, omit it
+         // (and its spacer) instead of forcing the metadata below the fold.
+         if (art_h >= px(96.0f)) {
+-            hero_boxart_centered(g_boxart, art_h, availw);
++            hero_boxart_centered(g_boxart, art_h, availw, disc_verdict);
+             ImGui::Dummy(ImVec2(0, px(10)));
+         }
+     }

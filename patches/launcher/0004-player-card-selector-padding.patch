@@ -1,0 +1,31 @@
+From: MythologyKombat local launcher patch set (D19, T3.12)
+Subject: [PATCH 0004] PLAYER card: more room under the Analog / D-Pad selector
+
+Issue (design item 4; work/screens/shot_230017.png): the Analog / D-Pad row
+  (28 px buttons) is followed by only a 6 px Dummy before the 40 px Keyboard
+  combo, so the two rows look glued together.
+
+Fix: the gap under the selector goes from 6 to 12 logical px. The extra height
+  is absorbed by patch 0001 (controller art shrinks when the column would
+  overflow), so it does not cost a scrollbar.
+
+Verified: partly. The change is visible in the captures, but whether this is the
+  element the user meant is a judgement call (the gap was 28 px on screen
+  already); the user decides.
+Upstream candidate: low value; keep local.
+---
+diff --git a/src/common/backends/imgui/launcher_imgui.cpp b/src/common/backends/imgui/launcher_imgui.cpp
+index 2e6eb73..e7d8ea5 100644
+--- a/src/common/backends/imgui/launcher_imgui.cpp
++++ b/src/common/backends/imgui/launcher_imgui.cpp
+@@ -3487,7 +3487,9 @@ void draw_player_panel(LauncherModel* m, const LauncherTheme& th, int p, float w
+     // is user-selectable (not locked to a single mode).
+     if (m->pad_mode_supported && m->pad_mode_selectable) {
+         pad_mode_selector(m, th, p, cw);
+-        ImGui::Dummy(ImVec2(0, px(6)));
++        // 12, not 6: the 28 px Analog / D-Pad buttons sat a hand's width above
++        // the 40 px source combo and read as part of it.
++        ImGui::Dummy(ImVec2(0, px(12)));
+     }
+ 
+     ImGui::SetNextItemWidth(cw);

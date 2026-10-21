@@ -69,8 +69,8 @@ Gate notes:
 | T3.9 | Sampling profile of the Release exe during the FMV | T3.6 | USER + agents | todo |
 | T3.10 | PGO and LTO trial (flag-only, only if T3.9 points at compiled code) | T3.6, T3.7, T3.8, T3.9 | agents | todo |
 | T3.11 | Launcher screenshots at default and user scale | T3.1 | USER | done |
-| T3.12 | Launcher fixes as local patch files (D19) | T3.11, T3.13 | agents | todo |
-| T3.13 | Box art and disc icon source and licence | T3.11 | USER | todo |
+| T3.12 | Launcher fixes as local patch files (D19) | T3.11, T3.13 | agents | done |
+| T3.13 | Box art and disc icon source and licence | T3.11 | USER | todo (superseded, optional) |
 | T3.14 | Licence for this repo's own files (LICENSE and NOTICE) | — | USER + agents | todo |
 | T3.15 | Path, email and derived-data decisions, then the scrub | T3.14 | USER + agents | todo |
 | T3.16 | No-game-data guard script | — | agents | done |
@@ -381,8 +381,10 @@ Each fix is a patch file under `patches\launcher\`, applied at build time by a s
 6. Bottom padding for the Analog/D-pad area and the other padding items (item 4, item 5c), after the screenshots show which element is meant.
 Each fix has a before and after screenshot in `work\screens`. Each states whether it goes upstream; that is the user's call (`LAUNCHER_DESIGN.md` section 8 item 6). A relink changes the exe hash, so the user recording (T3.3) comes after this task.
 **Accept when:** the patches apply cleanly to the pinned submodule on a clean checkout of the pin; `git -C recomp-ui status --short` prints nothing after the build; the exe builds; before and after screenshots exist for each fix; no unrelated screen changes; section 6 of `docs\LAUNCHER_DESIGN.md` records the outcome.
+**Result (2026-10-20):** done. Seven patches are in `patches\launcher\` (0001 to 0007). `tools\apply_launcher_patches.ps1` applies them to a copy under `work\recomp-ui-patched`; the submodule stays clean. Steps are in `docs\SETUP.md` ("Launcher patches and screenshots"). Outcomes are in `docs\LAUNCHER_DESIGN.md` section 6.2. The window-clipping hypothesis is refuted. The fixes are agent-measured; item 4 (patch 0004) awaits the user's confirmation. Dependency on T3.13 is resolved through route (b), the disc glyph (patch 0002). Upstream: the call is the user's (`LAUNCHER_DESIGN.md` section 8, item 6).
 
 ## T3.13 Box art and disc icon source and licence (USER)
+**Status: superseded, optional.** T3.12 took route (b), a neutral disc glyph drawn by patch 0002, with no copyrighted art. Route (a) is not needed unless the user later wants real art. The user was told and did not object, but has not explicitly confirmed this. Do not start this task unless the user asks for box art.
 Depends on: T3.11. Owner: USER. Source: question 246, `docs\LAUNCHER_DESIGN.md` section 6 item 2.
 Two routes: (a) an image you own or may use, for the `LAUNCHER_BOXART` option in `CMakeLists.txt`, which is commented out now; or (b) a disc glyph drawn by a patch, using `recomp-ui\assets\consoles\psx\img\disc.tga` (its licence was not checked). Do not use a third-party box-art source without the rights to it.
 **What you do:**

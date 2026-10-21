@@ -1,0 +1,127 @@
+From: MythologyKombat local launcher patch set (D19, T3.12)
+Subject: [PATCH 0001] Dashboard: fit the right column to the window instead of scrolling
+
+Issue (design item 1, docs/LAUNCHER_DESIGN.md section 6; work/screens/shot_230017.png
+and the 1920x991 framebuffer capture work/screens/base_dashboard.png):
+  With a 1920x1080 screen at 125% scaling the launcher window is maximized to
+  792 logical units high. The PSX dashboard's right column (PLAYER card + the
+  two memory-card cards) is taller than the body, so the body scrolls and the
+  Browse/New buttons of the memory cards are cut in half. The left card is
+  sized from a hand-tuned "reserve" estimate (draw_game_panel), which is left
+  as it is: it did not overflow in any size tested.
+
+Fix:
+  draw_dashboard measures how far the right column overruns the body each frame
+  (damped) and takes the overrun out of, first, 14 units of memory-card padding,
+  then the controller picture (left out below 18 units, back once 24 fit, so it
+  cannot flicker). Nothing is hand-tuned. Windows that already fit are unchanged
+  (shrink stays 0). The state is only read inside a g_pad_art_fit_ctx scope set
+  by the two-player PSX branch, so the multitap branch, the narrow layout and any
+  other view never see it.
+
+Verified: yes (before/after framebuffer captures, work/screens/).
+Upstream candidate: yes, small and self-contained (user decides, D19).
+---
+diff --git a/src/common/backends/imgui/launcher_imgui.cpp b/src/common/backends/imgui/launcher_imgui.cpp
+index e1a0bca..97bab1b 100644
+--- a/src/common/backends/imgui/launcher_imgui.cpp
++++ b/src/common/backends/imgui/launcher_imgui.cpp
+@@ -966,6 +966,18 @@ float g_game_visible_h = 0.0f;
+ // inset comes from Child WindowPadding (same top/bottom as other panels).
+ bool g_save_fill_h = false;
+ 
++// Dashboard fit-to-window state (written only by draw_dashboard's two-player
++// PSX branch, read only while g_pad_art_fit_ctx is set, so no other layout
++// can ever see stale values). g_pad_art_shrink is how many logical pixels the
++// right-hand column overran the body: the first 14 are taken from the memory
++// card padding, the rest from the controller picture. The picture is left out
++// (g_pad_art_shown) once it would be under 18 px and only returns once 24 px
++// of it fit (plus its 6 px gap and a 4 px margin), so a column that fits only
++// without it cannot flicker between the two.
++static float g_pad_art_shrink  = 0.0f;
++static bool  g_pad_art_shown   = true;
++static bool  g_pad_art_fit_ctx = false;
++
+ // ---- panel registry lookup helper ------------------------------------------
+ // Resolve `id` against a SystemProfile's NULL-terminated composition array:
+ // the panel must both be LISTED (this system composes it at all) and
+@@ -2623,8 +2635,12 @@ void draw_memcard_slot(LauncherModel* m, const LauncherTheme& th, int slot) {
+     ImGui::TextUnformatted(cap);
+     ImGui::PopStyleColor();
+ 
+-    // Resume the card body BELOW the image, full width.
+-    ImGui::SetCursorPos(ImVec2(start_x, top_y + ih + px(14.0f)));
++    // Resume the card body BELOW the image, full width. When the dashboard is
++    // fitting itself to a short window the padding here gives way first (up to
++    // 7 px above Browse/New and 7 px under the image), before the controller
++    // picture is touched.
++    const float fit_cut = g_pad_art_fit_ctx ? std::min(g_pad_art_shrink, 14.0f) : 0.0f;
++    ImGui::SetCursorPos(ImVec2(start_x, top_y + ih + px(14.0f - fit_cut * 0.5f)));
+ 
+     // Dim the rest of the slot body when disabled (visual only; the Browse/New
+     // controls stay clickable so the slot can be re-configured while off).
+@@ -2656,7 +2672,7 @@ void draw_memcard_slot(LauncherModel* m, const LauncherTheme& th, int slot) {
+     const float cw = ImGui::GetContentRegionAvail().x;
+     const float bw = (cw - px(th.spacing_sm)) * 0.5f;
+     const float btn_h = px(32.0f);
+-    const float btn_gap = px(16.0f);
++    const float btn_gap = px(16.0f - fit_cut * 0.5f);
+     if (g_save_fill_h) {
+         const float slack = ImGui::GetContentRegionAvail().y - btn_h;
+         ImGui::Dummy(ImVec2(0, slack > btn_gap ? slack : btn_gap));
+@@ -3431,9 +3447,16 @@ void draw_player_panel(LauncherModel* m, const LauncherTheme& th, int p, float w
+         // Center on the FITTED width so a near-square pad (N64) or a portrait
+         // handheld (GB/GBC) sits centered, not left-shifted by the landscape
+         // box's spare width.
+-        image_fit_centered(art, 120, 78, inner);
++        // The art yields to the layout (see g_pad_art_shrink): a short window
++        // or a display scale that leaves little height shrinks the picture
++        // instead of putting a scrollbar through the memory cards.
++        const bool fit = g_pad_art_fit_ctx;
++        const float art_h = fit ? 78.0f - (g_pad_art_shrink > 14.0f ? g_pad_art_shrink - 14.0f : 0.0f)
++                                : 78.0f;
++        if (!fit || g_pad_art_shown)
++            image_fit_centered(art, 120.0f * art_h / 78.0f, art_h, inner);
+     }
+-    ImGui::Dummy(ImVec2(0, px(6)));
++    if (!g_pad_art_fit_ctx || g_pad_art_shown) ImGui::Dummy(ImVec2(0, px(6)));
+ 
+     // Pad-mode selector: only when the game supports pad modes AND the mode
+     // is user-selectable (not locked to a single mode).
+@@ -3642,6 +3665,8 @@ void draw_dashboard(LauncherModel* m, const LauncherTheme& th, int logical_w) {
+                     end_container();
+                 } else {
+                     begin_container("dash_r", ImVec2(0, 0), ImGuiChildFlags_AutoResizeY);
++                    const float fit_y0 = ImGui::GetCursorPosY();
++                    g_pad_art_fit_ctx = true;
+                     ctrl_p->draw(m, &th);
+                     if (tpak_p) {
+                         ImGui::Dummy(ImVec2(0, gap));
+@@ -3655,6 +3680,27 @@ void draw_dashboard(LauncherModel* m, const LauncherTheme& th, int logical_w) {
+                         ImGui::Dummy(ImVec2(0, gap));
+                         save_p->draw(m, &th);
+                     }
++                    g_pad_art_fit_ctx = false;
++                    // Fit by measurement, not by a hand-tuned reserve: how far
++                    // does this column run past the height the body has left?
++                    // Auto-resized cards report last frame's size, so the
++                    // correction is damped (a quarter of the error per frame,
++                    // 2 px dead band) to settle without hunting.
++                    const float over = (ImGui::GetCursorPosY() - fit_y0) - row_h;
++                    if (over > 2.0f) {
++                        g_pad_art_shrink += over * 0.25f;
++                    } else if (over < -2.0f) {
++                        // Hidden art returns only if 24 px + its 6 px gap + 4 px fit.
++                        if (!g_pad_art_shown) {
++                            if (-over >= 34.0f) g_pad_art_shrink = 14.0f + 54.0f;
++                        } else {
++                            g_pad_art_shrink += over * 0.25f;
++                        }
++                    }
++                    if (g_pad_art_shrink < 0.0f) g_pad_art_shrink = 0.0f;
++                    if (g_pad_art_shrink > 92.0f) g_pad_art_shrink = 92.0f;
++                    const float art_now = 78.0f - (g_pad_art_shrink > 14.0f ? g_pad_art_shrink - 14.0f : 0.0f);
++                    g_pad_art_shown = art_now >= (g_pad_art_shown ? 18.0f : 24.0f);
+                     end_container();
+                 }
+             }

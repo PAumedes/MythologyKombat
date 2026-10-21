@@ -155,7 +155,7 @@ Source: the user's five images in `work\screens\` (agent-viewed, not run live). 
 
 Also seen in the images, not in the five reports [H on cause]:
 
-- Window clipping (new, hypothesis, not tested). The window runs past the right edge. The D-Pad button shows `D-Pa`, the Audio panel controls are not visible and the `conn` status is cut off. Hypothesis: the window is sized from the video setting `1920 x 1440`, which is wider than the 1536 usable logical pixels at 125 percent. The default in this document is 1100 by 880 logical pixels, and 880 is also taller than 864. The bottom edge was not reported as clipped. Test: set the window to fit 1536 by 864 logical pixels, then take a new screenshot. Source of the window size: not traced.
+- Window clipping: **refuted (T3.12).** The earlier clipping hypothesis was wrong. The user's screenshot method was not DPI aware. The image was a 1536 by 864 crop of a 1920 by 1080 screen at 125 percent. With a DPI-aware capture the launcher fits the work area. The launcher window size comes from `launcher-window.ini`, not from `video.window_width`. The DPI-aware capture tool is `tools\launcher_window_probe.ps1` (see `docs/SETUP.md`, T3.12).
 - The Settings VSync combo shows `Off`, but `build\settings.toml` says `immediate` (user report, file not read in this step). Question 259.
 - The launcher wrote `multitap_analog = true` into the repo `game.toml` at line 52, directly above `[netplay]` at line 53, after the netplay comment at lines 50 to 51 (agent read). Question 260. The `game.toml` change is in the `git status` at the start of T3.11 (`M game.toml`).
 
@@ -169,6 +169,34 @@ Also seen while reading (not reported by the user) [H]:
 How to reproduce screenshots: run the launcher at the default 1100x880 and at the user's actual display scale; set the same Windows scaling; capture with the Windows screenshot tool. For repeatable images use recomp-ui's `LNG_SCRIPT` in the standalone harness (`LNG_VARIANT=psx`), which exercises the same code but with fabricated game info, so it may not show our no-boxart or long-filename cases unless `LNG_BOX` and a long ROM name are supplied (`proto_main.c:576` mentions `LNG_BOX`). [V] `recomp-ui\README.md`; the details of `proto_main.c` were not read.
 
 All of the above need the user's confirmation with a screenshot before any patch. Patches to `recomp-ui` would be to a submodule we pin: upstream-first means contribute or carry a patch file in `patches/`, not edit the submodule in place. [V] `CLAUDE.md` ("Upstream first"; `patches/` is for hooks and enhancements).
+
+### 6.2 Patch outcomes (T3.12, 2026-10-20)
+
+The fixes are patch files under `patches\launcher\` (D19). They apply to the pinned recomp-ui commit `7c635c6b`. The `recomp-ui\` submodule is not edited. The apply and build steps are in `docs/SETUP.md` (T3.12).
+
+Evidence: agent-measured in this session, with DPI-aware captures. Before images are `work\screens\base_*.png`. After images are `work\screens\after2_*.png`. The user has not checked these fixes.
+
+| # | Item (section 6.1) | Patch | Outcome (agent-measured) | Upstream candidate |
+|---|--------------------|-------|--------------------------|--------------------|
+| 1 | Scroll on the main section | `0001-dashboard-fit-right-column.patch` | The right column overrun is absorbed by 14 units of memory-card padding. Then the controller picture shrinks. At 1920 by 1080 at 125 percent, the pad art is about 30 logical units. | Yes |
+| 2 | Calendar-like glyph in the game tile | `0002-game-card-disc-glyph.patch` | A neutral disc glyph is drawn with `ImDrawList`. It uses no copyrighted art. This is route (b) in `docs/TASKS.md` (T3.13), which makes the box-art route superseded. The user was told and did not object. The user has not explicitly confirmed it. | Yes |
+| 3 | File name cropped | `0003-game-card-wrap-file-name.patch` | The file name wraps. | Yes |
+| 4 | Analog/D-Pad bottom padding | `0004-player-card-selector-padding.patch` | The gap goes from 6 to 12 units. This was not verified as the user's complaint. The user must judge it. | Low value |
+| 5a | Window size is a button, not a dropdown | `0005-settings-window-size-combo.patch` | Window size is a dropdown. | Yes |
+| 5b | Renderer text does not fit | `0006-settings-control-column-width.patch` | The control column width is scoped to the DISPLAY card. | Yes |
+| 5c | Misaligned controls | `0007-settings-align-checkboxes-and-screen-model.patch` | The checkboxes and the screen-model button align with the control column. This answers the 5c question in `docs/OPEN_QUESTIONS.md` (243). | Yes |
+
+Window clipping is refuted. See section 6.1.
+
+Not done, and why:
+
+- The blank band in popups comes from upstream theme padding. It is out of scope and not fixed.
+- The left-card reserve in `draw_game_panel` is not replaced. No overflow was found there.
+- Not tested: multitap, a narrow layout, non-PSX consoles and a real mouse session.
+
+Upstream: patches 0001, 0002, 0003, 0005, 0006 and 0007 are candidates. Patch 0004 is low value. Whether to send any upstream is the user's call (section 8, item 6).
+
+A relink with these patches changes the exe SHA-256. Any user recording (T3.3) must come after the final relink.
 
 ## 7. Effort estimate and proposed tasks
 

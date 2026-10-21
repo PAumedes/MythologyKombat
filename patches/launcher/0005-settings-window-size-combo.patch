@@ -1,0 +1,112 @@
+From: MythologyKombat local launcher patch set (D19, T3.12)
+Subject: [PATCH 0005] Settings: Window size is a dropdown, not a cycle button
+
+Issue (design item 5a; work/screens/shot_230059.png): "Window size" is a button
+  that steps 960 -> 1280 -> 1600 -> 1920 and wraps. The player cannot see the
+  other sizes or step back. Renderer and Internal resolution already use lists.
+
+Fix: launcher_model gets list accessors (window_size_count / index / label_at /
+  set_window_size, over the same kWindowWidths table and the same aspect-based
+  height) and the row draws a combo. launcher_model_cycle_window_size stays, so
+  no other caller changes. Selecting an entry stores the same window_width the
+  cycle button stored.
+
+Verified: yes (framebuffer captures, work/screens/, popup open).
+Upstream candidate: yes (about 40 lines, additive API).
+---
+diff --git a/src/common/backends/imgui/launcher_imgui.cpp b/src/common/backends/imgui/launcher_imgui.cpp
+index e7d8ea5..156ff73 100644
+--- a/src/common/backends/imgui/launcher_imgui.cpp
++++ b/src/common/backends/imgui/launcher_imgui.cpp
+@@ -4136,9 +4136,20 @@ void draw_display_controls(LauncherModel* m, const LauncherTheme& th) {
+     // Labels left, controls right (row_label_right), same as the legacy card.
+     const float cb = ImGui::GetFrameHeight();   // a checkbox is square
+     if (m->has_window_size) {
++        // A list, not a cycle button: the player sees every size and can go
++        // back, the same as Renderer and Internal resolution below.
+         row_label_right("Window size", th, px(SETTINGS_CTRL_W));
+-        if (ImGui::Button(ui_text(launcher_model_window_size_label(m)), ImVec2(px(SETTINGS_CTRL_W), px(30))))
+-            launcher_model_cycle_window_size(m);
++        ImGui::SetNextItemWidth(px(SETTINGS_CTRL_W));
++        if (ImGui::BeginCombo("##window_size",
++                              ui_text(launcher_model_window_size_label(m)))) {
++            const int n = launcher_model_window_size_count(m);
++            const int cur = launcher_model_window_size_index(m);
++            for (int i = 0; i < n; ++i)
++                if (ImGui::Selectable(ui_text(launcher_model_window_size_label_at(m, i)),
++                                      cur == i))
++                    launcher_model_set_window_size(m, i);
++            ImGui::EndCombo();
++        }
+     } else {
+         row_window_scale(m, th);
+     }
+diff --git a/src/common/launcher_model.c b/src/common/launcher_model.c
+index eacae9a..a95f350 100644
+--- a/src/common/launcher_model.c
++++ b/src/common/launcher_model.c
+@@ -1981,15 +1981,44 @@ void launcher_model_cycle_window_size(LauncherModel* m) {
+     m->s.window_width = kWindowWidths[(idx + 1) % kWindowWidthCount];
+ }
+ 
++static void lm_window_size_text(const LauncherModel* m, int w, char* buf, size_t cap) {
++    int aspect = clampi(m->s.aspect_index, 0, 2);
++    int h = (aspect == 1) ? (w * 9 / 16) : (aspect == 2) ? (w * 9 / 21) : (w * 3 / 4);
++    snprintf(buf, cap, "%d \xC3\x97 %d", w, h);   // "×" (U+00D7)
++}
++
+ const char* launcher_model_window_size_label(const LauncherModel* m) {
+     static char buf[32];
+     int w = m->s.window_width > 0 ? m->s.window_width : kWindowWidths[0];
+-    int aspect = clampi(m->s.aspect_index, 0, 2);
+-    int h = (aspect == 1) ? (w * 9 / 16) : (aspect == 2) ? (w * 9 / 21) : (w * 3 / 4);
+-    snprintf(buf, sizeof(buf), "%d \xC3\x97 %d", w, h);   // "×" (U+00D7)
++    lm_window_size_text(m, w, buf, sizeof(buf));
+     return buf;
+ }
+ 
++// List form of the same vocabulary, so the Settings card can offer a dropdown
++// (every entry one click away, and a way back) instead of a wrap-around cycle.
++int launcher_model_window_size_count(const LauncherModel* m) {
++    (void)m;
++    return kWindowWidthCount;
++}
++
++int launcher_model_window_size_index(const LauncherModel* m) {
++    for (int i = 0; i < kWindowWidthCount; ++i)
++        if (kWindowWidths[i] == m->s.window_width) return i;
++    return 0;
++}
++
++const char* launcher_model_window_size_label_at(const LauncherModel* m, int i) {
++    static char bufs[8][32];   // one per entry: callers hold several at once
++    if (i < 0 || i >= kWindowWidthCount || i >= 8) return "";
++    lm_window_size_text(m, kWindowWidths[i], bufs[i], sizeof(bufs[i]));
++    return bufs[i];
++}
++
++void launcher_model_set_window_size(LauncherModel* m, int i) {
++    if (i < 0 || i >= kWindowWidthCount) return;
++    m->s.window_width = kWindowWidths[i];
++}
++
+ /* Keep Settings.renderer_id in step with Settings.renderer, so a host may
+  * read back whichever of the two it speaks. A host that declared no IDs has
+  * no name to write and the field stays empty -- it never invents one. */
+diff --git a/src/common/launcher_model.h b/src/common/launcher_model.h
+index 1e065a4..b816b78 100644
+--- a/src/common/launcher_model.h
++++ b/src/common/launcher_model.h
+@@ -905,6 +905,12 @@ void launcher_model_volume_delta(LauncherModel* m, int delta);  // clamp 0..100
+ // flag so the control isn't shown at all, per the legacy PSX launcher parity). ----
+ void launcher_model_cycle_window_size(LauncherModel* m);       // {960,1280,1600,1920} wrap
+ const char* launcher_model_window_size_label(const LauncherModel* m);  // "1280 x 960" (H follows aspect)
++/* List form of the window-size vocabulary, for a dropdown. label_at() returns
++ * a stable buffer per index; set_window_size() ignores an out-of-range index. */
++int         launcher_model_window_size_count(const LauncherModel* m);
++int         launcher_model_window_size_index(const LauncherModel* m);
++const char* launcher_model_window_size_label_at(const LauncherModel* m, int i);
++void        launcher_model_set_window_size(LauncherModel* m, int i);
+ void launcher_model_toggle_renderer(LauncherModel* m);         // Software/OpenGL
+ const char* launcher_model_renderer_label(const LauncherModel* m);
+ /* List form of the same vocabulary, for hosts that draw a dropdown instead of

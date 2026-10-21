@@ -1,0 +1,31 @@
+From: MythologyKombat local launcher patch set (D19, T3.12)
+Subject: [PATCH 0003] GAME card: wrap long values (the disc file name) instead of clipping
+
+Issue (design item 3; work/screens/shot_230017.png): the File row shows
+  "Mortal Kombat Mythologies - Sub-Zero.c" and the rest is cut at the cell
+  edge, because kv_row draws the value with TextUnformatted (no wrap).
+
+Fix: kv_row wraps the value at the column edge (PushTextWrapPos(0)). Nothing is
+  lost and no hover is needed (a gamepad user cannot hover). Short values
+  (Serial, Region) draw exactly as before. Wrap was chosen over an ellipsis with
+  a tooltip for that reason.
+
+Verified: yes (framebuffer captures, work/screens/).
+Upstream candidate: yes (4 lines, low risk).
+---
+diff --git a/src/common/backends/imgui/launcher_imgui.cpp b/src/common/backends/imgui/launcher_imgui.cpp
+index 8ba5731..2e6eb73 100644
+--- a/src/common/backends/imgui/launcher_imgui.cpp
++++ b/src/common/backends/imgui/launcher_imgui.cpp
+@@ -1804,7 +1804,11 @@ void kv_row(const char* k, const char* v, const LauncherTheme& th,
+     ImGui::TextUnformatted(ui_text(k));
+     ImGui::PopStyleColor();
+     ImGui::TableNextColumn();
++    // Wrap at the column edge: a long value (a disc file name) used to be cut
++    // off mid-word by the cell clip.
++    ImGui::PushTextWrapPos(0.0f);
+     ImGui::TextUnformatted(v);
++    ImGui::PopTextWrapPos();
+     ImGui::TableNextColumn();
+     if (show_mark) state_mark(ok, th);
+ }
