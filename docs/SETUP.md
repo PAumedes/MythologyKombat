@@ -2258,3 +2258,50 @@ Files used and changed: `tools\overlay_coverage.py` (new options `--warp`, `--wa
 ### Investigation script
 
 `tools\overlay_interp_probe.py` (headless, about 2 minutes) lists the interpreted PCs and their code, the FIRE and WIND entry instructions, and the shared-entry counts. Results are in `docs/OPEN_QUESTIONS.md` (190 to 193).
+
+## T3.1 Release rebuild with the vsync-off default
+
+Agent-run, 2026-10-20, from the repo root, same commit as the D9 follow-up. Generated code was not regenerated.
+
+### Commands
+
+```
+$env:PSXRECOMP_TOOLCHAIN_DIR = '<RETRO_TOOLS_DIR>\cmake-clang'
+$env:PATH = '<RETRO_TOOLS_DIR>\cmake-clang\bin;<Git>\bin;<RETRO_TOOLS_DIR>\python;' + $env:PATH
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DPSXRECOMP_REQUIRE_GAME_C=ON
+cmake --build build --target psx-runtime
+cmake -S . -B work\build-dbg -G Ninja -DCMAKE_BUILD_TYPE=Release -DPSX_DEBUG_TOOLS=ON -DPSXRECOMP_REQUIRE_GAME_C=ON
+cmake --build work\build-dbg --target psx-runtime
+```
+
+Only 3 steps rebuilt in each tree (BIOS registry object, playtest diagnostics object, link). The previous Release exe was copied to `work\exe_backup\` first (git-ignored), with the previous `build\game.toml` and `build\settings.toml` and the previous debug exe.
+
+### Result
+
+| Item | Size (bytes) | SHA-256 |
+|------|--------------|---------|
+| `build\MythologyKombat.exe` (Release, the exe to record on) | 51,759,616 | `ff813773b1c5a9a608ee0331c82e004a0c468c61192975817c9199c45e7a0a81` |
+| `work\build-dbg\MythologyKombat.exe` (debug tools, used by smoke and boot route) | 35,525,632 | `b31a6b490ccc5029b26d56438cc1a787d53e3ddbe1f90f324e514e35e4993b44` |
+| Previous Release exe (rollback copy, `work\exe_backup\`) | 51,759,616 | `b5573bbe586f7669f3dfad11d3ca3a6f8888f8e37eb47eccdffbb8f201a7856b` |
+
+- Same size as the previous exe; the hash differs because each relink changes it (see the T2.4 note). The new hash is the one to record on.
+- Generated code unchanged: all files listed in `work\generate_run11_seed_t28b.sha256.txt` match (0 mismatches, checked by a PowerShell hash loop).
+
+### Config staging
+
+- `game.toml` has `[video] vsync = "off"`. The build copies it to `build\game.toml` with `copy_if_different`. This build copied it again, because the staged file differed. The staged file now equals the repo file, so the launcher-added `multitap_analog = true` line under `[controller]` is gone from `build\game.toml`.
+- `build\settings.toml` was not touched by the build (identical to before). It overrides `game.toml`. It reads `vsync = "immediate"` (rewritten by the launcher; the earlier D9 edit set `"off"`) and `multitap_analog = true`.
+- `"immediate"` and `"off"` both map to 0. Source: `psxrecomp\recompiler\src\config_loader.cpp` lines 983 to 984 (`game.toml` `[video]`) and lines 3153 to 3154 (`settings.toml` `[video]`).
+- `multitap_analog` is read from `settings.toml` (`config_loader.cpp` lines 3406 to 3408). `build\settings.toml` line 61 sets it to true, so removing the line from `build\game.toml` changes nothing. Which file wins when both set it was not exercised at runtime.
+- The perf run `tools\perf_run.ps1 -Name T31` used the `game.toml` path only. The hidden-window run below uses `--game game.toml` with `--no-launcher` and shows the wall-clock pacer.
+
+### Checks
+
+| Check | Result |
+|-------|--------|
+| `python tools\smoke_boot.py` (debug build) | PASS, 60 s, frames 0 to 4081, 4 screenshots ok |
+| `python tools\run_boot_route.py --expect tests\replays\expected\boot_to_menu.json` | MATCH, 7 checkpoints. Warnings: `exe_sha256 differs` (expected file still has the old hash, T3.2) and `wr`/`pc` locator differences at frames 3900, 4300, 5000, plus no RAM/VRAM compare at frame 3900 (paused on 3903). The expected file was not changed |
+| `tools\perf_run.ps1 -Name T31 -Seconds 40` (no `PSX_VSYNC`) | log line `present cadence: wall-clock pacer (16.6639 ms/frame)` (`work\perf\run_T31.log`) |
+| `git ls-files` for `ps1_game/`, `work/`, `generated/`, `.bin .cue .exe .ovr .iso .img` | no matches. `git status` shows only the docs edits and the pre-existing `psxrecomp` submodule state |
+
+- The recording in `tests\replays\local\session-1792525023167056` was made on the old exe `b5573bbe...7856b`. It does not apply to the new exe; the new recording is T3.3.

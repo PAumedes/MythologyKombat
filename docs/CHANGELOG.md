@@ -50,3 +50,4 @@
 ## Phase 3
 
 - Phase 3 plan added to TASKS.md: T3.1 to T3.5 (release rebuild, replay baselines, new user recording, strict replay, gate review) and an unscheduled backlog; all tasks `todo`, none run yet.
+- T3.1 Release rebuild with vsync-off default: relinked Release exe `build\MythologyKombat.exe` is 51,759,616 bytes, SHA-256 `ff813773...7a0a81`; generated code unchanged (hash list matches); smoke_boot PASS; run_boot_route MATCH with warnings (`exe_sha256 differs`, which is the stale baseline for T3.2; `wr`/`pc` locator differences at frames 3900, 4300 and 5000; no RAM/VRAM compare at 3900); perf run shows wall-clock pacer. The launcher-added `multitap_analog` line in `build\game.toml` was overwritten by the staging copy (still in `build\settings.toml`). Old recording in `tests\replays\local` belongs to the old exe. Commands in `docs/SETUP.md`.
