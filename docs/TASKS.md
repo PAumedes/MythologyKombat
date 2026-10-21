@@ -1,4 +1,4 @@
-# Tasks — Phase 0 (setup), Phase 1 (survey and naming) and Phase 2 (first boot)
+# Tasks — Phase 0 (setup), Phase 1 (survey and naming), Phase 2 (first boot) and Phase 3 (stabilise and release prep)
 
 Status values: `todo` · `in-progress` · `blocked` · `done`. `USER` = only Patricio can do it; the orchestrator explains the steps and waits.
 The orchestrator updates the Status column; nobody else edits this table.
@@ -53,6 +53,18 @@ Phase 2 notes: T2.9, T2.12, T2.21 and T2.19 do not need the game to boot. They c
 Gate notes:
 - T2.10 is `done`. The user descoped it on 2026-10-20 with the movies checked so far (`docs/DECISIONS.md`, D17). 23 of the 28 `/MOVIES` STR files are untested. Its open items are in `docs/SETUP.md` ("Why T2.10 was in-progress") and stay open.
 - T2.23 is `done`. The user closed it on 2026-10-20, after the T2.10 descope (D17). Its gate review had PASSED on checks before that.
+
+### Phase 3 (stabilise and release prep)
+
+| ID | Title | Depends on | Owner | Status |
+| --- | --- | --- | --- | --- |
+| T3.1 | Release rebuild with vsync-off default | T2.23 | agents | todo |
+| T3.2 | Refresh replay baselines | T3.1 | agents | todo |
+| T3.3 | Record a new session on the new exe | T3.1 | USER | todo |
+| T3.4 | Strict replay of the new recording, twice, with negative control | T3.3 | agents | todo |
+| T3.5 | Phase 3 gate review | T3.1, T3.2, T3.3, T3.4 | agents | todo |
+
+Phase 3 notes: T3.3 is the only USER step. The backlog after T3.5 is not scheduled and has no task IDs yet.
 
 ---
 
@@ -206,6 +218,39 @@ Add to `symbols.toml` the functions established in `docs/EXE_OVERLAYS.md`: get_s
 ## T2.23 Phase 2 gate review
 Adversarial reviewer only. Check that no game data is tracked (`git ls-files` shows no generated, work, ps1_game, captures, recordings, BIOS or .bin files); generated code was never hand-edited (regenerate and compare); each doc claim maps to a `tools\` script; user gates (T2.6, T2.10, T2.11, T2.17, T2.20) are recorded as user-reported, not agent-observed.
 **Accept when:** PASS. Then stop and report to the user before any Phase 3.
+
+## Phase 3: stabilise and release prep
+
+## T3.1 Release rebuild with vsync-off default (agents)
+Rebuild the Release exe from the current commit using the project's documented build steps (`docs\SETUP.md`). Record the new exe SHA-256 and size. Confirm `game.toml` and the settings staging (`[video] vsync = "off"`, D9) are in `build\`. Run `tools\smoke_boot.py` (expect PASS) and `tools\run_boot_route.py` (expect MATCH). Confirm no game data is embedded in or tracked by the repo.
+**Accept when:** the hash and size are recorded in docs; the build commands are reproducible from `docs\SETUP.md`; smoke_boot PASS and run_boot_route MATCH are recorded; no tracked game data (`git ls-files` check).
+
+## T3.2 Refresh replay baselines (agents)
+Re-record the expected digests in `tests\replays\expected` against the T3.1 exe. The stored `exe_sha256` is stale (open question 173). Update `README.md` to match.
+**Accept when:** `exe_sha256` in the expected files equals the T3.1 exe hash; the boot route still gives MATCH against the new baseline; `README.md` states the new baseline.
+
+## T3.3 Record a new session on the new exe — USER
+Orchestrator: give Patricio the short steps. He starts the T3.1 exe with recording on, plays from the title screen through a new game, then about 1 minute of a fight, and tells the orchestrator when done. He decides nothing else.
+**Accept when:** Patricio confirms the session is done; a new session folder exists under `tests\replays\local\` (git-ignored); the session is recorded as user-reported.
+
+## T3.4 Strict replay of the new recording, twice, with negative control (agents)
+Run `replay_diagnostics.py <session> --exe <T3.1 exe> --disc <cue> --game game.toml --output <new private dir>` twice. Run `tools\run_replays.ps1` (with `-ExecutionPolicy Bypass`) on the recording. Run one negative control: a changed input row or a different exe build.
+**Accept when:** both strict replays succeed; the negative control reports a mismatch; `tools\run_replays.ps1` prints pass or fail for the recording; the recording stays git-ignored.
+
+## T3.5 Phase 3 gate review (agents)
+Adversarial reviewer only, as in T2.23. Check that no game data is tracked (`git ls-files`); the T3.1 hash in the docs matches the built exe; each doc claim maps to a `tools\` script; the T3.3 session is recorded as user-reported, not agent-observed.
+**Accept when:** PASS. Then stop and report to the user.
+
+## Backlog (not scheduled, no task IDs yet)
+
+These are ideas only. Each needs its own task before work starts.
+
+| Item | Related |
+| --- | --- |
+| Further playtest of other levels and movies | Open questions 237, 238, 232 |
+| Smoothness work: PGO and LTO builds, overlay toolchain, Intel graphics driver | Q99 |
+| Enhancements | `docs\ENHANCEMENTS.md` |
+| Public release prep: README, PolyForm Noncommercial check, no disc data in the repo | `README.md`, `CLAUDE.md` (PSXRecomp licence) |
 
 ## Decisions needing the user (before they block)
 
