@@ -251,6 +251,7 @@ These are ideas only. Each needs its own task before work starts.
 | Smoothness work: PGO and LTO builds, overlay toolchain, Intel graphics driver | Q99 |
 | Enhancements | `docs\ENHANCEMENTS.md` |
 | Public release prep: README, PolyForm Noncommercial check, no disc data in the repo | `README.md`, `CLAUDE.md` (PSXRecomp licence) |
+| Launcher UX fixes (user-reported 2026-10-20): (1) scroll on the main section; (2) a big calendar icon where a disc or the game icon is expected; (3) filename cropped; (4) Analog/D-pad textbox lacks proper bottom padding; (5) Settings: Window size has no dropdown, Renderer: OpenGL option text does not fit, some textboxes have odd internal padding. The launcher is the upstream `recomp-ui` submodule (MIT), so the fix needs a patch or fork decision. | Q243 in `docs\OPEN_QUESTIONS.md`; `docs\LAUNCHER_DESIGN.md` (when written) |
 
 ## Decisions needing the user (before they block)
 
