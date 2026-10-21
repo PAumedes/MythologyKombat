@@ -74,9 +74,9 @@ Gate notes:
 | T3.14 | Licence for this repo's own files (LICENSE and NOTICE) | — | USER + agents | done |
 | T3.15 | Path, email and derived-data decisions, then the scrub | T3.14 | USER + agents | in-progress |
 | T3.16 | No-game-data guard script | — | agents | done |
-| T3.17 | CI on GitHub-hosted runners (guard, emitters-test, setup-host build from a clean clone) | T3.16, T3.18 | agents | todo |
-| T3.18 | Setup-host build in the repo, and the first wizard run | T3.1 | agents + USER | in-progress |
-| T3.19 | Local release script `tools\release.ps1` (game zip, content check, checksums) | T3.12, T3.14, T3.16, T3.18 | agents + USER | todo |
+| T3.17 | CI on GitHub-hosted runners (guard, emitters-test, setup-host build from a clean clone) | T3.16, T3.18 | agents | done |
+| T3.18 | Setup-host build in the repo, and the first wizard run | T3.1 | agents + USER | done |
+| T3.19 | Local release script `tools\release.ps1` (game zip, content check, checksums) | T3.12, T3.14, T3.16, T3.18 | agents + USER | done |
 | T3.20 | Optional: self-hosted runner for the game build (tag only, disc stays on the PC) | T3.17, T3.19 | USER + agents | todo |
 | T3.21 | Launcher updater: check, verify, replace, keep saves | T3.19 | agents | todo |
 | T3.22 | Clean-machine test of the downloaded zip (disc only) | T3.19 | USER | todo |
@@ -89,7 +89,7 @@ Phase 3 notes:
 - T3.3 is deferred. It is the only recording step, and only T3.4 needs it.
 - T3.5 is the gate and runs last. Its number stays T3.5 because other docs cite it.
 - Any relink of `build\MythologyKombat.exe` changes its SHA-256 and breaks strict replay (T2.20). So the user recording (T3.3) must come after the last relink (D14, D15).
-- Release model: D25 (a prebuilt game zip, built on the user's PC). D25 supersedes D18 where they conflict; D18's setup-host kit is the fallback and developer path. Launcher fixes: D19 (patch files). Release open questions are 244 to 285 in `docs\OPEN_QUESTIONS.md`.
+- Release model: D25 (a prebuilt game zip, built on the user's PC). D25 supersedes D18 where they conflict; D18's setup-host kit is the fallback and developer path. Launcher fixes: D19 (patch files). Release open questions are 244 to 295 in `docs\OPEN_QUESTIONS.md`.
 - Every USER step lists its exact commands in its task section.
 
 ---
@@ -440,6 +440,8 @@ Toolchain version: v1.0.14, as in `docs\SETUP.md`. How the pin is applied is ope
 Rules: no job has a disc or a game file. CI does not run `generate` or `rebuild`. CI does not set `PSX_PGO`. CI does not `git add -f` any artifact. The launcher or tool artifacts may be uploaded as workflow artifacts, never committed.
 **Accept when:** the YAML parses, checked with a tool named in the report; the `guard` job gives the same result as T3.16 on the repo; the workflow runs green on the first push (T3.23), or each failure is listed as a new task.
 
+**Status 2026-10-21 (done, with one part deferred):** the workflow file, the local checks and the adversarial review passed (commit `717ee78`). The first run on GitHub is not done. It is deferred to T3.23. Until then the GitHub side is unverified. Details are in `docs/SETUP.md` ("CI (T3.17)") and open questions 286 to 290.
+
 ## T3.18 Setup-host build in the repo, and the first wizard run (agents + USER)
 Depends on: T3.1. Owner: agents + USER. Source: `docs\LAUNCHER_DESIGN.md` sections 2 and 5, `docs\PUBLISHING_AUDIT.md` section 4 and question 258.
 Agents build the setup-host exe (`PSXRECOMP_FORCE_SETUP_HOST=ON`, `PSX_SETUP_WIZARD=ON`, no game C) in `build-setup\`, which `.gitignore` already covers. Use the generator and commands in `docs\SETUP.md`. Also decide question 258 (fix the modified psxrecomp files or document them) and question 257 (keep the pin or bump it; a bump needs the T3.2 baseline refresh).
@@ -468,15 +470,21 @@ The release game build is made on the user's PC, from the user's disc. The scrip
 7. Stops. It does not upload anything.
 Outputs go to `work\release\` (git-ignored). The upload is a separate step, run only after the user says yes in chat. It creates a draft first: `gh release create <tag> <zip> checksums.txt --draft`. Publishing the draft is a second explicit yes.
 Do not call `scripts\package_release.sh` (bundled packager). Do not call `psxrecomp\tools\package_setup_host.sh` (retired).
-**What you do** (USER, after the agents say the script is ready; the parameter names are fixed by this task):
+**What you do** (USER, after the agents say the script is ready). The real parameters, from `tools\release.ps1`:
 ```
 cd <REPO_ROOT>
 git status --short
 git tag --list "v*"
-powershell -ExecutionPolicy Bypass -File tools\release.ps1 -Tag <tag> -Disc "<REPO_ROOT>\ps1_game\Mortal Kombat Mythologies - Sub-Zero.cue"
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\release.ps1 -Version <x.y.z> -Disc "<REPO_ROOT>\ps1_game\Mortal Kombat Mythologies - Sub-Zero.cue" [-Ref <commit>] [-Draft] [-Repo owner/name] [-Pgo] [-KeepDisc]
 ```
-Then say yes in chat to the draft upload. The agents run the `gh release create` line from step 7.
+- Without `-Ref`, the tag `v<x.y.z>` must exist. The script stops if it does not.
+- `-Draft` prints the exact `gh release create ... --draft` command. It runs that command only after you type `UPLOAD` in an interactive window. Case matters.
+- `-Publish` is not implemented. Publishing a draft is a separate, explicit step.
+- `-Pgo`, `-KeepDisc` and `-Repo` are described in the script's header.
+- Do not run the upload in a non-interactive session. The script does not upload there.
 **Accept when:** from a clean checkout at a tag, the script runs with the user's disc and writes the zip and `checksums.txt` to `work\release\`; the content check passes on the zip; a test copy with a planted `.bin` or `.cue` makes the check fail and name the file; `checksums.txt` matches the zip; `git status` is clean after the run; the only upload is the draft, and only after the user's yes.
+
+**Status 2026-10-21 (done):** the script, the content check, its 18 tests and the smoke script passed review (commit `717ee78`). A test run wrote `work\release\test\`. Its zip is `MythologyKombat-test-Windows-x64.zip`. The user's own run with the real version is still to do, and the draft upload is still to do. Details are in `docs/SETUP.md` ("Local release script (T3.19)") and open questions 280 to 296. Decisions are in `docs/DECISIONS.md` (D26).
 
 ## T3.20 Optional: self-hosted runner for the game build (USER + agents)
 Depends on: T3.17, T3.19. Owner: USER + agents. Optional: the user decides. Source: D25, `docs\LAUNCHER_DESIGN.md` section 5.

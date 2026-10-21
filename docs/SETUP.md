@@ -2648,3 +2648,184 @@ Start-Process -FilePath .\build-setup\MythologyKombat.exe
 4. Send the list back to the orchestrator. The wizard may generate and compile, which takes several minutes.
 
 Your run is user-reported. The agent run above is agent-observed and does not replace it.
+
+## CI (T3.17)
+
+The workflow is `.github\workflows\ci.yml`. Its jobs run on GitHub-hosted runners, which have no disc. No job has a game file. CI does not run `generate` or `rebuild`, does not set `PSX_PGO`, and does not add any artifact to git (D25).
+
+- Triggers: push and pull request on `main` and `master`, and manual `workflow_dispatch`.
+- Permissions: `contents: read`. Every checkout has `persist-credentials: false`.
+- Composite action: `.github\actions\toolchain\action.yml`. It was read by eye only. No tool ran it.
+
+| Job | Runner | What it does |
+|-----|--------|--------------|
+| `guard` | ubuntu-latest, no submodules | Runs `tools/check_no_game_data.py` (T3.16) with `python3 -I`, then the guard tests. Forward slashes, because it runs on Ubuntu |
+| `emitters-test` | windows-latest, recursive submodules | Installs the toolchain pack, builds `psxrecomp\recompiler`, runs `ctest` |
+| `setup-host-build` | windows-latest, clean clone, recursive submodules, no `generated\` | Applies `patches\launcher`, configures the setup host, builds `psx-runtime`, runs the asserts, uploads the artifact |
+
+### Toolchain pin
+
+- Pack: the clang pack from RetroPorting-Toolchains, tag `v1.0.14`. CI does not use MSYS2.
+- Pinned by tag and SHA-256: `28da9742385e7ff875b3d9311e8ed89dbdc84f27b6ecba2bc0d0acc11f6d2b4d`. Size 209,497,009 bytes.
+- This answers question 247 for CI. The setup wizard still fetches the latest pack (question 276).
+
+### emitters-test
+
+- Two upstream test targets are excluded: `ws_cull_edge_interp_test` and `draw_distance_interp_test`. They do not link with the clang pack. See `docs/SETUP.md` (T0.5).
+- The build step tolerates only those two failures. It then sets `$global:LASTEXITCODE` to 0. GitHub's `pwsh` wrapper appends an exit with `LASTEXITCODE`, so without the reset the step would fail.
+- The job asserts `ctest` version 3.26 or newer.
+- Local check (agent, not on a runner): 35 tests are registered. 33 of them, the non-excluded ones, pass when run one by one. `ctest` itself was not run locally. A count of 38 was given for this suite, but 35 are registered (question 288).
+
+### setup-host-build
+
+- Clean checkout with recursive submodules. The job checks that no `generated\` folder exists.
+- Applies the launcher patches with `tools\apply_launcher_patches.ps1` (D19).
+- Configures with `PSXRECOMP_FORCE_SETUP_HOST=ON` and `PSX_SETUP_WIZARD=ON`.
+- Runs `tools\ci_assert_setup_host.ps1` (D24). It fails if:
+  - a `generated\` or `ps1_game\` folder exists;
+  - the configure log says `linking generated game C`;
+  - `build.ninja` or `.ninja_log` mentions `generated/overlays_static`, or the `SLUS_004.76` dispatch.
+- Uploads `MythologyKombat-setup-host-windows-x64` (the exe and `SHA256SUMS.txt`) as a workflow artifact. It is kept 14 days. It is never committed.
+
+### Pinned actions
+
+| Action | Version | Commit |
+|--------|---------|--------|
+| `actions/checkout` | v6.1.0 | `d23441a48e516b6c34aea4fa41551a30e30af803` |
+| `actions/cache` | v5.1.0 | `caa296126883cff596d87d8935842f9db880ef25` |
+| `actions/upload-artifact` | v6.0.0 | `b7c566a772e6b6bfb58ed0dc250532a479d7789f` |
+
+- The reviewer re-checked these commits with `gh api`.
+
+### Local checks
+
+| Check | Result |
+|-------|--------|
+| `actionlint` v1.7.12 on `ci.yml` | No findings. The zip was downloaded from `rhysd/actionlint`, with SHA-256 `6e7241b51e6817ea6a047693d8e6fed13b31819c9a0dd6c5a726e1592d22f6e9`. It is kept in `work\actionlint` (git-ignored). The orchestrator downloaded it with the user's yes |
+| Composite action | Read by eye only |
+
+### Not verified
+
+- CI has never run on GitHub. The first real run is at T3.23.
+- Not verified yet: the toolchain download and unpack on a runner, `pwsh` 7 behaviour, the SDL3 lookup, the libchdr `FetchContent`, and cache effects.
+- Open items: questions 286 to 290 in `docs/OPEN_QUESTIONS.md`.
+
+## Local release script (T3.19)
+
+`tools\release.ps1` builds the game zip on the PC that holds the disc. Run it by hand at release time. It is not a pre-commit step (D25). It runs under Windows PowerShell 5.1.
+
+### Command
+
+Run from the repo root:
+
+```
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\release.ps1 -Version <x.y.z> -Disc "<REPO_ROOT>\ps1_game\Mortal Kombat Mythologies - Sub-Zero.cue" [-Ref <commit>] [-Draft] [-Repo owner/name] [-Pgo] [-KeepDisc]
+```
+
+| Parameter | Meaning |
+|-----------|---------|
+| `-Version` | Release version, for example `0.1.0`. The tag is `v<Version>`. A dotted version must match the `VERSION` file at the commit. Other labels, such as `test`, skip that check. The format is checked with a regex |
+| `-Disc` | Path to the `.cue` of your own disc image |
+| `-Ref` | Tag or commit to build. Default: tag `v<Version>`, which must exist |
+| `-Pgo` | Build with PGO. Needs the disc and a window. Off by default |
+| `-Draft` | Print the `gh release create ... --draft` command. It runs only after you type `UPLOAD` in an interactive window |
+| `-Publish` | Not implemented. The script throws |
+| `-Repo` | `owner/name`, passed to `gh` as `--repo`. Optional |
+| `-KeepDisc` | Keep the disc copy that `generate` makes in the staging clone. Deleted by default |
+
+The script's header describes each parameter.
+
+### Steps
+
+1. Clones the repo at `-Ref` into `work\release\<Version>\src`, with recursive submodules. It never uses the dirty working tree. It stops if the clone is dirty, if a submodule differs from `framework_pins.txt`, or if a `generated\` folder is present.
+2. Applies `patches\launcher` through the clone's own `tools\apply_launcher_patches.ps1` (D19). The build then points at the patched copy with `-DRECOMP_UI_ROOT`.
+3. Runs `verify-disc`, `generate`, `ensure-toolchain` and `rebuild` through the clone's `tools\run_psxrecomp.ps1`. The build is Release, with no PGO unless `-Pgo`. It sets `-DPSX_PUBLIC_RELEASE=ON`, so the playtest recorder and input display are off by default (D14, D26).
+4. Runs the build guards.
+5. Builds the release folder from an allow-list. It does not copy the build folder and remove items.
+6. Runs `tools\check_release_content.py` on the folder, then on the zip. Any violation stops the script.
+7. Writes the zip (sorted entries, fixed timestamps), `checksums.txt` (SHA-256, in `sha256sum` format) and `release_notes.md`.
+8. With `-Draft`, prints the upload command. Otherwise nothing is uploaded.
+
+Outputs are in `work\release\<Version>\`: the zip, `checksums.txt`, `release_notes.md`, `logs\`, `src\` and the staged folder. `work\` is git-ignored.
+
+### Timings (measured 2026-10-21)
+
+| Step | Time |
+|------|------|
+| Clone | 99.6 s |
+| Launcher patches | 8.5 s |
+| `verify-disc` | 6.2 s |
+| `generate` | 140 s |
+| `ensure-toolchain` | 36 s |
+| `rebuild` | 105 s warm, 434 s cold |
+| Zip | 5 s |
+
+- Whole run: about 7 minutes with a warm ccache, about 15 minutes cold.
+
+### Test run (2026-10-21)
+
+The test folder is `work\release\test\`. The version label was `test`, so the version check was skipped (see `-Version`).
+
+| Item | Value |
+|------|-------|
+| Zip | `MythologyKombat-test-Windows-x64.zip`, 27,117,891 bytes |
+| SHA-256, from `work\release\test\checksums.txt` | `72f8c31c92c6188a9e6f517f2813fec2d4ed283ebf047d84565279ebb5f254b3` |
+| Files in the zip | 421 files, about 89 MB unzipped |
+| Game exe in the zip | 51,762,176 bytes |
+| Top-level folder | `MythologyKombat-<version>\` |
+
+- The zip is not in git. The hash above is a hash, not game data.
+
+### What the zip holds
+
+The zip holds only what the allow-list names. Inside the top-level folder:
+
+| Item | Note |
+|------|------|
+| Game exe, with the launcher | Release build |
+| `execution.json`, `psx_game_version.txt`, `release_info.json`, `README_FIRST.txt` | Version and run files |
+| `game.toml`, `game_options.toml` | Config. `game.toml` holds disc digests (MD5, SHA-1, CRC-32 and size) and relative names such as `ps1_game\...` and `work\disc\SLUS_004.76`. These are hashes and names, which D8 and D23 allow |
+| `LICENSE`, `NOTICE` | Licences (D20) |
+| `assets\`, `mods\`, `licenses\` | Assets, mod packages and licence texts |
+| `bios\` | `openbios.bin` only. Its SHA-256 was compared with `psxrecomp\bios\openbios.bin` |
+| `overlay_toolchain\` | 374 files: tcc, `psxrecomp-game.exe`, `psxrecomp-bios.exe`, an embedded Python, 9 seed JSON files (address lists only), and headers. The seed files hold no BIOS or game bytes. Four of them are retail-BIOS seed files that carry ROM SHA-256 digests as text |
+
+Not in the zip:
+
+- `input.ini`, `keybinds.ini`, `overlay_captures.json`, `mods\state.toml`, `texture-packs`, `cache`, `saves`, `replay-diagnostics.py`, `diagnostics-location.txt`, `psx_execution`, `_deps`.
+- `compiler.txt`. It holds a local path.
+- The disc, memory cards, BIOS dumps and recordings. These are excluded by the allow-list and by the content check.
+
+### Content check
+
+- `tools\check_release_content.py` is stdlib only. Use `--dir` for a folder, or `--zip` for a zip.
+- It fails on any `.bin`, `.cue`, `.iso`, `.chd` or `.mcd` file, on any session recording, and on any path under `ps1_game\`. It names each file it rejects. The full rule list is in the checker's docstring.
+- Deep scan: it reports WARNs for the PS-X EXE header and the CD sync byte pattern inside `MythologyKombat.exe`, `psxrecomp-game.exe`, `psxrecomp-bios.exe` and `sqlite3.dll`. These are framework constants. They do not answer question 280.
+- Tests: `python -I tests\test_check_release_content.py`. There are 18 tests.
+- Negative controls, run by the implementer: 13 FAIL lines on planted files. The planted files were a `.bin`, a `ps1_game` cue, a session recording, a renamed generated file and a 512 KiB BIOS-sized file. The reviewer re-planted a `.bin`, a local-path text, a `.mcd`, a CD sync pattern and a PS-X EXE header. Each was caught.
+
+### Smoke test
+
+- `tools\smoke_release.ps1 -Zip <zip> -Disc <cue> -At 15,30,45,60`.
+- Measured: unzip 1.7 s. Windowed boot with `--disc` and `--no-launcher`. The process stayed alive for 60 s. The frame counter read 530, 1420, 2328 and 3231 at 15, 30, 45 and 60 s. Between the 30 s and 60 s samples that is about 60 frames a second. No crash file was written.
+- The screen captures were black. So the smoke test gives no visual evidence.
+- A `psx_freeze_dump` `hard_freeze` appeared at frame 0, about 3 s after start, on every boot. This includes the dev exe. Frames kept advancing. It is probably a false positive. It was not investigated (question 291).
+- The user still has to look at the title screen once in the unzipped release (question 292).
+
+### Draft upload safety
+
+- The only network write in the script is the `gh` call at about line 538 of `tools\release.ps1`. It sits behind `-Draft`.
+- It runs only if the tag matches the built commit, the session is interactive, and you type `UPLOAD`. The match is case-sensitive.
+- `-Publish` throws.
+
+### Known limits
+
+- Reproducibility (T3.26, question 295): three runs of one commit gave three different exes. Two of them differed in 70 bytes. The bytes are the PE COFF timestamp, the `__DATE__ __TIME__` string, the build-id string `SLUS-00476/0.1.0+<git describe>/...` and a size field tied to that string. The zip is deterministic when the exe is identical, because the entries are sorted and the timestamps are fixed. A double build has not verified this.
+- Runtime files appear in an unzipped folder: `input.ini`, `keybinds.ini`, `overlay_captures.json`, `saves\*.mcd`, `mods\state.toml` and the freeze dump. The updater (T3.21) must keep `saves\`, the settings and the input files (question 293).
+- `-Ref` and `-Repo` are checked only by the regex on `-Version` (question 294).
+
+### Status
+
+- T3.19 is done (agent part and review). The user's own run with the real version is still to do.
+- The draft upload is still to do. It needs your typed `UPLOAD`.
+- Decisions: `docs/DECISIONS.md` (D26).

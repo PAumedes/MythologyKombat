@@ -1,0 +1,66 @@
+name: Pinned cmake-clang toolchain
+description: >
+  Download RetroPorting-Toolchains v1.0.14 (cmake-clang-v1, windows-x64), verify its
+  SHA-256, unpack it and put it on PATH. The tag and the hash are pinned here, so a
+  newer upstream release can never change what CI builds with (question 247).
+  No secrets and no token are used; the asset is public.
+
+runs:
+  using: composite
+  steps:
+    - name: Restore toolchain download
+      id: cache
+      uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+      with:
+        path: ${{ runner.temp }}/toolchain-dl
+        key: toolchain-cmake-clang-v1-1.0.14-28da9742
+
+    - name: Fetch, verify and unpack toolchain
+      shell: pwsh
+      env:
+        TC_TAG: v1.0.14
+        TC_ASSET: cmake-clang-v1-windows-x64.zip
+        # Release asset digest as reported by the GitHub API for v1.0.14.
+        TC_SHA256: 28da9742385e7ff875b3d9311e8ed89dbdc84f27b6ecba2bc0d0acc11f6d2b4d
+        TC_SIZE: '209497009'
+      run: |
+        $ErrorActionPreference = 'Stop'
+        $dl = Join-Path $env:RUNNER_TEMP 'toolchain-dl'
+        $out = Join-Path $env:RUNNER_TEMP 'toolchain'
+        $zip = Join-Path $dl $env:TC_ASSET
+        New-Item -ItemType Directory -Force $dl | Out-Null
+        if (-not (Test-Path $zip)) {
+          $url = "https://github.com/RetroPortingToolKit/RetroPorting-Toolchains/releases/download/$($env:TC_TAG)/$($env:TC_ASSET)"
+          Write-Host "downloading $url"
+          curl.exe -fL --retry 5 --retry-delay 5 -o $zip $url
+          if ($LASTEXITCODE) { throw 'toolchain download failed' }
+        }
+        $hash = (Get-FileHash -Algorithm SHA256 $zip).Hash.ToLowerInvariant()
+        Write-Host "toolchain zip sha256 $hash size $((Get-Item $zip).Length)"
+        if ($hash -ne $env:TC_SHA256) {
+          Remove-Item -Force $zip
+          throw "toolchain SHA-256 mismatch: got $hash, expected $($env:TC_SHA256)"
+        }
+        if (Test-Path $out) { Remove-Item -Recurse -Force $out }
+        New-Item -ItemType Directory -Force $out | Out-Null
+        & (Join-Path $env:SystemRoot 'System32\tar.exe') -xf $zip -C $out
+        if ($LASTEXITCODE) { throw 'toolchain unpack failed' }
+        # Unwrap a single top-level directory, as upstream fetch_toolchain.sh does.
+        $entries = @(Get-ChildItem $out)
+        $tc = if ($entries.Count -eq 1 -and $entries[0].PSIsContainer) { $entries[0].FullName } else { $out }
+        if (-not (Test-Path (Join-Path $tc 'bin\clang.exe'))) { throw "no bin\clang.exe under $tc" }
+        Add-Content $env:GITHUB_ENV "PSXRECOMP_TOOLCHAIN_DIR=$tc"
+        # Same environment as the pack's env.bat: host deps live under deps\, not on CMAKE_PREFIX_PATH.
+        if (Test-Path (Join-Path $tc 'deps\lib\cmake\SDL3')) { Add-Content $env:GITHUB_ENV "SDL3_DIR=$tc\deps\lib\cmake\SDL3" }
+        if (Test-Path (Join-Path $tc 'deps\include\zlib.h')) { Add-Content $env:GITHUB_ENV "ZLIB_ROOT=$tc\deps" }
+        # Pack first, then Git's bin (bash), as docs/SETUP.md does for local builds.
+        Add-Content $env:GITHUB_PATH "$tc\bin"
+        Add-Content $env:GITHUB_PATH 'C:\Program Files\Git\bin'
+        Write-Host "toolchain: $tc"
+
+    - name: Show toolchain versions
+      shell: pwsh
+      run: |
+        & "$env:PSXRECOMP_TOOLCHAIN_DIR\bin\clang.exe" --version
+        & "$env:PSXRECOMP_TOOLCHAIN_DIR\bin\cmake.exe" --version
+        & "$env:PSXRECOMP_TOOLCHAIN_DIR\bin\ninja.exe" --version

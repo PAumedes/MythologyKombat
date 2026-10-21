@@ -68,3 +68,7 @@ session-*/
 /build-release/
 /build-setup/
 /build-setup.configure.log
+
+# CI step outputs (T3.17)
+/build-emitters.log
+/ci-out/

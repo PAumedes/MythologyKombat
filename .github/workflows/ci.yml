@@ -1,0 +1,151 @@
+name: CI
+
+# T3.17 (D25, D24). Runs on GitHub-hosted runners only. GitHub has no disc, so
+# this workflow never builds the game: it checks the tree for game data, runs
+# the recompiler tests, and builds the setup-host / launcher exe from a clean
+# checkout. It uses no secrets, no disc path and no self-hosted runner.
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  guard:
+    name: guard (no game data in git)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      # No submodules: the guard only reads this repo's own tracked files.
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          submodules: false
+          persist-credentials: false
+      - name: Guard script on the git tree
+        run: python3 -I tools/check_no_game_data.py
+      - name: Guard negative controls (unit tests)
+        run: python3 tests/test_check_no_game_data.py -v
+
+  emitters-test:
+    name: emitters-test (recompiler build + ctest)
+    runs-on: windows-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - uses: ./.github/actions/toolchain
+      - name: Configure recompiler
+        run: |
+          $tc = $env:PSXRECOMP_TOOLCHAIN_DIR
+          cmake -S psxrecomp/recompiler -B build-emitters -G Ninja `
+            -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON `
+            "-DCMAKE_C_COMPILER=$tc\bin\clang.exe" "-DCMAKE_CXX_COMPILER=$tc\bin\clang++.exe"
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - name: Build recompiler and tests
+        run: |
+          # Known deviation (docs/SETUP.md, "default recompiler build fails"): with this
+          # clang pack two upstream test targets do not link. Keep going, then fail on any
+          # other failed target. Upstream CI builds these tests with MSYS2 gcc instead.
+          $known = @('ws_cull_edge_interp_test.exe', 'draw_distance_interp_test.exe')
+          cmake --build build-emitters --parallel -- -k 0 2>&1 | Tee-Object -FilePath build-emitters.log
+          $code = $LASTEXITCODE
+          $failed = @(Select-String -Path build-emitters.log -Pattern '^FAILED: (?:\[code=\d+\] )?(\S+)' |
+                      ForEach-Object { $_.Matches[0].Groups[1].Value } | Sort-Object -Unique)
+          Write-Host "build exit $code; failed targets: $($failed -join ', ')"
+          $unexpected = @($failed | Where-Object { $known -notcontains $_ })
+          if ($unexpected.Count -gt 0) { throw "unexpected build failures: $($unexpected -join ', ')" }
+          if ($code -ne 0 -and $failed.Count -eq 0) { throw "build failed (exit $code) with no FAILED target" }
+          if ($failed.Count -gt 0) { Write-Host "::warning::known link failures (docs/SETUP.md): $($failed -join ', ')" }
+          # The tolerated failures above leave $LASTEXITCODE nonzero, and the pwsh step wrapper ends
+          # with `exit $LASTEXITCODE`. Reset it; every real failure has already thrown.
+          $global:LASTEXITCODE = 0
+      - name: ctest
+        run: |
+          # The clang pack ships cmake but not ctest, so ctest comes from the runner's own CMake.
+          $ct = Get-Command ctest -ErrorAction SilentlyContinue
+          if (-not $ct) { throw 'ctest not found on PATH (expected the runner CMake install)' }
+          $verLine = (ctest --version | Select-Object -First 1)
+          Write-Host "ctest: $($ct.Source) ($verLine)"
+          # --no-tests=error needs ctest >= 3.26.
+          if ($verLine -notmatch 'version (\d+)\.(\d+)') { throw "cannot parse ctest version: $verLine" }
+          if ([int]$Matches[1] -lt 3 -or ([int]$Matches[1] -eq 3 -and [int]$Matches[2] -lt 26)) {
+            throw "ctest $($Matches[1]).$($Matches[2]) is older than 3.26 (needed for --no-tests=error)"
+          }
+          # The two known-unlinkable tests are excluded by name; every other test must run and pass.
+          ctest --test-dir build-emitters --output-on-failure --no-tests=error `
+            -E '^(ws_cull_edge_interp_test|draw_distance_interp_test)$'
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+
+  setup-host-build:
+    name: setup-host-build (clean checkout, no generated game C)
+    runs-on: windows-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - name: D24 precondition (clean checkout)
+        run: |
+          if (Test-Path generated) { throw 'generated\ exists in a fresh checkout' }
+          if (Test-Path ps1_game) { throw 'ps1_game\ exists in a fresh checkout' }
+          if (git ls-files -- generated) { throw 'files under generated/ are tracked' }
+      - uses: ./.github/actions/toolchain
+      - name: Patched launcher tree (patches\launcher, D19)
+        run: |
+          # The script writes only below work\ of the checkout, which is a fresh
+          # directory here, so it needs no CI-specific mode. Its protections are unchanged.
+          $dest = & ./tools/apply_launcher_patches.ps1 | Select-Object -Last 1
+          if (-not (Test-Path (Join-Path $dest 'CMakeLists.txt'))) { throw "patched tree missing: $dest" }
+          if (git -C recomp-ui status --short) { throw 'recomp-ui submodule is dirty' }
+          Add-Content $env:GITHUB_ENV "RECOMP_UI_ROOT=$dest"
+          Write-Host "RECOMP_UI_ROOT=$dest"
+      - name: Configure (setup host, no game C)
+        run: |
+          cmake -S . -B build-setup -G Ninja -DCMAKE_BUILD_TYPE=Release `
+            -DPSXRECOMP_FORCE_SETUP_HOST=ON -DPSX_SETUP_WIZARD=ON `
+            "-DRECOMP_UI_ROOT=$env:RECOMP_UI_ROOT" 2>&1 | Tee-Object -FilePath build-setup.configure.log
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - name: Build psx-runtime
+        run: |
+          cmake --build build-setup --target psx-runtime
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - name: D24 assertions (no generated C, no generated/overlays_static)
+        run: |
+          ./tools/ci_assert_setup_host.ps1 -Root . -BuildDir build-setup `
+            -ConfigureLog build-setup.configure.log -Exe build-setup/MythologyKombat.exe
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - name: Stage exe and SHA-256
+        run: |
+          New-Item -ItemType Directory -Force ci-out | Out-Null
+          Copy-Item build-setup/MythologyKombat.exe ci-out/
+          $h = Get-FileHash -Algorithm SHA256 ci-out/MythologyKombat.exe
+          $size = (Get-Item ci-out/MythologyKombat.exe).Length
+          "$($h.Hash.ToLowerInvariant())  MythologyKombat.exe" | Set-Content -Encoding ascii ci-out/SHA256SUMS.txt
+          Write-Host "MythologyKombat.exe $size bytes sha256 $($h.Hash.ToLowerInvariant())"
+          "setup-host exe: $size bytes, sha256 ``$($h.Hash.ToLowerInvariant())``" | Add-Content $env:GITHUB_STEP_SUMMARY
+      # Workflow artifact only. Never git-added (.gitignore blocks exe and zip).
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: MythologyKombat-setup-host-windows-x64
+          path: |
+            ci-out/MythologyKombat.exe
+            ci-out/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 14

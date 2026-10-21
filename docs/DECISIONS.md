@@ -331,3 +331,25 @@ _Filled in by the doc-writer as tasks pass review._
 - Open items: `CLAUDE.md` is not amended yet (question 281). This doc-writer's scope is `docs\` and `README.md`, so `CLAUDE.md` was not changed. Also questions 280 (whether the exe holds game data bytes, not only code), 282 (runner and variable name), 283 (Hell's Gate and Shaolin Monks zip contents), 284 (updater mechanism) and 285 (legal opinion).
 - Tasks: T3.17 to T3.26 in `docs/TASKS.md` replace the older T3.17 to T3.26. T3.18 is unchanged, with a D25 note. T3.5 stays the gate, last.
 - Reason: the user's choice. CI cannot build the game without the disc (see Context).
+
+## D26 Release zip contents and build choices (T3.19, T3.17, 2026-10-21)
+
+- Context: `tools\release.ps1` (T3.19) and the CI workflow (T3.17) were built and reviewed under D25. The implementer's test run and the reviewer's checks set the points below. Details are in `docs/SETUP.md` ("CI (T3.17)" and "Local release script (T3.19)").
+- Decisions:
+  1. The release game build includes `-DPSX_PUBLIC_RELEASE=ON`. Playtest recording and the input display are off by default. The manifest keeps `default_enabled = false` (checked in the zip).
+  2. `compiler.txt` is excluded from the zip, because it holds a local path.
+  3. `overlay_toolchain\` is shipped, as upstream's bundled release does. Overlays can then compile on the player's PC from the player's own disc. Without it, overlays run interpreted. This answers question 99 for the release zip only. The local build is unchanged.
+  4. The zip has one top-level folder, `MythologyKombat-<version>\`. A flat zip is a one-line change if wanted later.
+  5. `replay-diagnostics.py` is not shipped.
+  6. `game.toml` in the zip holds disc digests (MD5, SHA-1, CRC-32 and size) and relative path names. These are hashes and names, and D8 and D23 allow them.
+  7. CI pins the toolchain by tag and SHA-256 (`v1.0.14`, `28da9742...`). This answers question 247 for CI. CI uses the clang pack, not MSYS2. The wizard still fetches the latest pack.
+  8. CI does not run `generate` or `rebuild`, and does not set `PSX_PGO` (D25).
+  9. The only network write is `gh release create --draft`. It runs only with `-Draft`, only if the tag matches the built commit, only in an interactive session, and only after the user types `UPLOAD`. `-Publish` is not implemented.
+- Not chosen, and why:
+  - Flat zip without a top-level folder. The folder keeps the zip tidy. Changing it is a one-line change.
+  - Shipping `compiler.txt`. It holds a local path (D21).
+  - Shipping `replay-diagnostics.py`. It is a developer tool, and the recorder is off in the public build.
+  - Building CI with MSYS2 for the two non-linking tests. Not done. Open as question 286.
+- Reason: the points above follow the implementer's test run and the reviewer's checks. The disc never leaves the user's PC, and the zip holds no disc, BIOS, memory card or recording.
+- Open items: question 280 (whether the exe holds game data bytes, not only code) stays open. The reproducibility gap (question 295, T3.26), the first GitHub run (question 290, T3.23) and the CI test-count question (question 288) are open.
+- Status: the two tasks are `done` in `docs/TASKS.md`. The user's own run and the draft upload are not done.
