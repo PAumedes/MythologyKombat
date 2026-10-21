@@ -286,7 +286,7 @@ _Filled in by the doc-writer as tasks pass review._
   4. Make a backup bundle of the repo first.
   5. No rewrite happens without the user's final explicit yes in chat.
 - Replacement identity: name `Patricio Aumedes`; email `12850986+PAumedes@users.noreply.github.com`. This comes from the GitHub login `PAumedes` (id 12850986), looked up with `gh api users/paumedes`. The repo-local git config `user.email` changes at that point, not before.
-- The first commit `fa5df2b` was authored as `localuser`. The rewrite maps it to the same identity. Its hash will change after the rewrite.
+- The first commit `fa5df2b` was authored under the original local account name. The rewrite maps it to the same identity. Its hash will change after the rewrite.
 - Not chosen: keeping the email, or using the noreply address for future commits only. The user chose the rewrite.
 - Task: T3.15 (remaining part). Question 266 asks whether the email text in `docs\PUBLISHING_AUDIT.md` is also to be scrubbed.
 

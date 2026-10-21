@@ -17,19 +17,19 @@ Audit date: 2026-10-20. Repo HEAD at audit: `b5f9e13` on `master`.
 | Largest tracked files: `assets/psxrecomp.ico` 370 KB, `docs/SETUP.md` 140 KB, `symbols.toml` 94 KB, `psx_symbols.h` 89 KB. Repo object store 2.4 MB | [M] `ls -la`, `git count-objects -vH` |
 | No `.bin/.cue/.exe/.iso`, no `generated/`, no `work/`, no BIOS file, no memory card, no screenshot is tracked | [M] `git ls-files` listing read in full |
 | No tokens, API keys, passwords, private keys found. The word hits (`token`, `secret`) are the "identifier-like token" text in `docs/SYMBOLS.md` and `tools/symbol_hunt.py` | [M] `git grep -i -E 'ghp_\|github_pat\|api[_-]?key\|secret\|token\|password\|AKIA\|BEGIN (RSA\|PRIVATE)'` |
-| History was searched for `localuser` additions with `git log -p -S`. The only additions are the `C:\Users\<user>\retro-tools\python\python.exe` run lines in tool docstrings and docs | [M] |
+| History was searched for additions of the original local account name with `git log -p -S`. The only additions are the `C:\Users\<user>\retro-tools\python\python.exe` run lines in tool docstrings and docs | [M] |
 
 ### 1a. Personal information
 
 | Item | Where | Evidence |
 |------|-------|----------|
-| Author identity `Patricio Aumedes <the author personal email>` on 46 commits. The first commit `fa5df2b` is `localuser <the author personal email>` (author and committer). Intentional per the task, flagged here. Every commit is public once pushed; the email cannot be removed without rewriting history. GitHub offers a `noreply` address if wanted | all commits | [M] `git log --all --format='%an <%ae>'` |
+| Author identity `Patricio Aumedes` with the author's personal email on 46 commits. The first commit `fa5df2b` is the original local account name with the same personal email (author and committer). Intentional per the task, flagged here. Every commit is public once pushed; the email cannot be removed without rewriting history. GitHub offers a `noreply` address if wanted | all commits | [M] `git log --all --format='%an <%ae>'` |
 | Co-author trailer `Co-Authored-By: Claude ...` in commit messages (per harness rule) | commit messages | [H] not grepped per commit |
-| Local path `C:\Users\<user>\...` (user name `localuser`, tool root `C:\Users\<user>\retro-tools`) | 25 tracked files: `CLAUDE.md`, `KICKOFF.md`, `docs/SETUP.md` (62 lines), `docs/TASKS.md` (17), `docs/CHANGELOG.md`, `docs/CONTROLS.md`, `docs/DECISIONS.md`, `docs/DISC_MAP.md`, `docs/FORMATS.md`, `docs/OPEN_QUESTIONS.md`, `docs/SYMBOLS.md`, `tests/replays/README.md`, `tools/*.py` and `tools/run_replays.ps1` (docstring "Run:" lines and one default `$Python` parameter) | [M] `git grep -c` |
-| The email address does not appear in any file content (only in commit metadata) | | [M] `git grep '@gmail'` empty |
+| Local path `C:\Users\<user>\...` (original local account name, tool root `C:\Users\<user>\retro-tools`) | 25 tracked files: `CLAUDE.md`, `KICKOFF.md`, `docs/SETUP.md` (62 lines), `docs/TASKS.md` (17), `docs/CHANGELOG.md`, `docs/CONTROLS.md`, `docs/DECISIONS.md`, `docs/DISC_MAP.md`, `docs/FORMATS.md`, `docs/OPEN_QUESTIONS.md`, `docs/SYMBOLS.md`, `tests/replays/README.md`, `tools/*.py` and `tools/run_replays.ps1` (docstring "Run:" lines and one default `$Python` parameter) | [M] `git grep -c` |
+| The email address does not appear in any file content (only in commit metadata) | | [M] `git grep` for the personal-email domain was empty |
 | `tools/check_prereqs.ps1` lists generic search dirs (`Downloads`, `Desktop`, `Documents`, `source`) built from `$HOME`; no literal user name | | [S] line 241 |
 | The text names the user as "Patricio" in `docs/DECISIONS.md`, `docs/TASKS.md`, `docs/SETUP.md`, `docs/OPEN_QUESTIONS.md`, `docs/CHANGELOG.md`, `docs/CONTROLS.md` as the decision maker and play tester | | [M] `grep -c` |
-| `docs/OPEN_QUESTIONS.md` question 1 and `docs/SETUP.md` line 19 say the first commit used the author `localuser` | | [S] |
+| `docs/OPEN_QUESTIONS.md` question 1 and `docs/SETUP.md` line 19 say the first commit used the original local account name as author | | [S] |
 
 ### 1b. Gitignored local files that must stay out
 
@@ -232,7 +232,7 @@ git ls-files | wc -l
 git log --all --name-only --format= | sort -u
 git ls-files -i -c --exclude-standard
 git log --all --format='%an <%ae> | %cn <%ce>' | sort | uniq -c
-git grep -c -i 'localuser' -- . ':!psxrecomp' ':!recomp-ui'
+git grep -c -i 'pa[t]ri[^c]' -- . ':!psxrecomp' ':!recomp-ui'
 git grep -n -i -E 'ghp_|github_pat|api[_-]?key|secret|token|password|AKIA|BEGIN (RSA|PRIVATE)'
 git grep -n -i -E '8a75edba|bf5803d3|83988529|dc720deb'
 git submodule status

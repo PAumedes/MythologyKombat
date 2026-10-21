@@ -16,7 +16,7 @@ The repo lives at `<REPO_ROOT>`.
 
 No `.bin` or `.cue` file is tracked.
 
-The git user name is set in this repo's config to Patricio Aumedes. The first commit used the author `localuser`. History was not rewritten. See `docs/OPEN_QUESTIONS.md`, question 1.
+The git user name is set in this repo's config to Patricio Aumedes. The first commit used the author name of the original local account. History was not rewritten. See `docs/OPEN_QUESTIONS.md`, question 1.
 
 ## Prerequisite check (T0.2)
 

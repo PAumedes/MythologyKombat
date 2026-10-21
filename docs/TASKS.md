@@ -152,7 +152,7 @@ Adversarial reviewer only: check every file on the disc has a classification, `d
 **Accept when:** PASS. Then stop and report to Patricio before starting Phase 2.
 
 ## T2.1 CLI wrapper and disc re-verification
-Write `tools\run_psxrecomp.ps1`. It sets the toolchain environment from `docs/SETUP.md`, picks a Python that can run `psxrecomp\psxrecomp_cli.py`, and forwards the arguments. The upstream CLI needs `psxrecomp\tools` on `sys.path`. The embeddable Python ignores `PYTHONPATH` because of its `._pth` file. Our tools use `python -I`, but the upstream CLI must not. Resolve Q26: try the embeddable Python without `-I`, then the `work\py-scaffold` copy whose `._pth` lists `psxrecomp\tools`. If neither works, STOP and ask the user for a full Python install. No hard-coded `%USERPROFILE%` paths except documented, environment-overridable defaults (Q76). Record the Python decision as D5.
+Write `tools\run_psxrecomp.ps1`. It sets the toolchain environment from `docs/SETUP.md`, picks a Python that can run `psxrecomp\psxrecomp_cli.py`, and forwards the arguments. The upstream CLI needs `psxrecomp\tools` on `sys.path`. The embeddable Python ignores `PYTHONPATH` because of its `._pth` file. Our tools use `python -I`, but the upstream CLI must not. Resolve Q26: try the embeddable Python without `-I`, then the `work\py-scaffold` copy whose `._pth` lists `psxrecomp\tools`. If neither works, STOP and ask the user for a full Python install. No hard-coded `C:\Users\<user>` paths except documented, environment-overridable defaults (Q76). Record the Python decision as D5.
 **Accept when:** `verify-disc --config game.toml --disc <cue>` exits 0 with digests matching the `[prepare_disc] known_*` values and `disc_probe.json`; the SHA-256 of `work\disc\SLUS_004.76` equals `boot_exe_sha256` in `disc_probe.json`; nothing under `ps1_game\` changed (mtimes and sizes before and after); the Python decision is recorded as D5.
 
 ## T2.2 Seed sanity and static coverage baseline
@@ -414,7 +414,7 @@ Depends on: T3.14. Owner: USER + agents. Must be done before T3.23. Source: ques
 ```
 cd <REPO_ROOT>
 git log --all --format="%an <%ae>" | Sort-Object -Unique
-git grep -c -F "%USERPROFILE%" -- . ":!psxrecomp" ":!recomp-ui"
+git grep -c -E "C:.Users.pa[t]ri" -- . ":!psxrecomp" ":!recomp-ui"
 ```
 Then reply in chat with three answers:
 1. Local paths: scrub them (agents replace them with relative paths or `%RETRO_TOOLS_DIR%`), or keep them.
