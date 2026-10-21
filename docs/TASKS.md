@@ -79,7 +79,7 @@ Gate notes:
 | T3.19 | Local release script `tools\release.ps1` (game zip, content check, checksums) | T3.12, T3.14, T3.16, T3.18 | agents + USER | done |
 | T3.20 | Optional: self-hosted runner for the game build (tag only, disc stays on the PC) | T3.17, T3.19 | USER + agents | todo |
 | T3.21 | Launcher updater: check, verify, replace, keep saves | T3.19 | agents | done |
-| T3.22 | Clean-machine test of the downloaded zip (disc only) | T3.19 | USER | todo |
+| T3.22 | Clean-machine test of the downloaded zip (disc only) | T3.19 | USER | done |
 | T3.23 | First push to GitHub, history rewrite (D22) and first CI run | T3.15, T3.17, T3.19 | USER + agents | todo |
 | T3.24 | Code-signing decision for the release exe | T3.19 | USER | done |
 | T3.25 | README rewrite and legal wording | T3.14, T3.15, T3.21, T3.22, T3.24 | agents + USER | todo |
@@ -554,6 +554,14 @@ Enable-WindowsOptionalFeature -Online -FeatureName Containers-DisposableClientVM
 - Step 3 (agents, later): write a `.wsb` configuration and the exact steps. Rules for the sandbox: mapped folders read-only; networking disabled for the test; the zip and the disc folder are mapped read-only.
 - Known risk (question 310): Windows Sandbox may lack an OpenGL 3.3 driver, so the game window may not open there. The software renderer option (`--renderer software`) exists as a fallback. Not tested.
 - Result is recorded only after the user runs the steps. Question 311 (title screen by eye) and question 298 (Midway audio, with logs) stay open until then.
+
+**Result (2026-10-21, user-reported, `done` with partial result under the descope clause):** the user extracted zip 0.1.0 (SHA-256 `73279dc3...65a5`) in Windows Sandbox on this PC, with no network, 4 GB memory, vGPU on, the disc folder mapped read-only, and `--no-launcher`.
+- Default OpenGL renderer: game started, gameplay reported OK. Question 310 is answered for this setup.
+- `--renderer software`: game started, gameplay reported OK.
+- FMV videos: slower than on the dev PC in both renderers. Cause not known (question 313). The Sandbox cannot be used to judge audio (question 315).
+- Updater: the Sandbox has no internet, so only the offline path was possible. The user did not report the `-CheckOnly` offline output (question 316). The real update path is covered only by `tools\test_updater.ps1` (228 checks) and the 20 of 20 harness on the real build (`docs\SETUP.md`).
+
+Not reported by the user. These are not recorded as passed (question 317): the step 2 hash check; SmartScreen, Smart App Control and Mark of the Web behaviour (questions 255 and 305); the audio impression (question 298); the launcher result with no arguments; the step 5 forbidden-file listing; the title screen by eye (question 311).
 
 ## T3.23 First push to GitHub, history rewrite (D22) and first CI run (USER + agents)
 Depends on: T3.15, T3.17, T3.19. Owner: USER + agents. Source: `docs\PUBLISHING_AUDIT.md` sections 1 and 8, D22, D25.

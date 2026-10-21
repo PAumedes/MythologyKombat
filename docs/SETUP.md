@@ -3079,6 +3079,17 @@ One top folder, `MythologyKombat-0.1.0\`.
 | Manifest entry count (424 zip entries, 423 listed) | 312 |
 | Smart App Control on a clean machine | 255 |
 
-## Clean-machine test setup (T3.22, not done)
+## Clean-machine test (T3.22, done with partial result)
 
-The planned test machine is Windows Sandbox on this PC (D30). Steps are in `docs\TASKS.md` (T3.22). The feature is not enabled yet. Its availability on this edition is question 309.
+Run by the user on 2026-10-21 in Windows Sandbox on this PC (user-reported, no agent artifact; D30). Zip 0.1.0, SHA-256 `73279dc3...65a5`, extracted and run with `--no-launcher`. Settings: no network, 4 GB memory, vGPU on, disc folder mapped read-only. Steps are in `docs\TASKS.md` (T3.22).
+
+| Item | Result |
+|------|------|
+| Default OpenGL renderer | Game started. Gameplay reported OK. Question 310 |
+| `--renderer software` | Game started. Gameplay reported OK |
+| FMV videos | Slower than on the dev PC in both renderers. Question 313 |
+| Audio | Not judged. The Sandbox cannot be used for audio. Question 315 |
+| Updater online path | Not tested (no internet). Covered by `tools\test_updater.ps1` and the 20 of 20 harness only. Question 316 |
+| Other T3.22 steps | Not reported (hash check, SmartScreen, Smart App Control, Mark of the Web, launcher with no arguments, forbidden-file listing). Question 317 |
+
+Windows Sandbox works on this edition (question 309).
