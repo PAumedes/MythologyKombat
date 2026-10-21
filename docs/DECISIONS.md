@@ -295,3 +295,13 @@ _Filled in by the doc-writer as tasks pass review._
 - Not covered: replay recordings. D16 keeps them local and git-ignored.
 - Reason: the user's answer to question 251.
 - Task: T3.15 (part).
+
+## D24 Setup-host exe for the kit comes only from a clean build (2026-10-20)
+
+- Finding (T3.18, measured by the implementer): with `PSXRECOMP_FORCE_SETUP_HOST=ON`, a dev tree that has `generated\` still compiles and links `generated\overlays_static*.c`. That is 9 extra objects and about 4.8 MB more. The cause is the overlay-static glob in `psxrecomp\runtime\overlay_static_sources.cmake` and `runtime.cmake` (about line 1612), which ignores `FORCE_SETUP_HOST`.
+- Rule: a setup-host exe built in a dev tree holds game-derived code. It must never go in the kit.
+- Rule: the kit exe and the CI setup-host exe are built from a clean clone or CI checkout with no `generated\` folder.
+- Checks to add: T3.17 (CI) fails if there is no clean checkout, or if the configure or ninja graph mentions `generated/overlays_static`. T3.19 (kit) checks the content and builds from a clean clone.
+- Clean-clone exe, measured: 32,589,824 bytes, SHA-256 `b4e9d186d918e0839631a80dbb267e075307627bae45471bb63ff4bfa8b711a3`.
+- Open: the upstream glob bug (question 269).
+- Task: T3.18. Steps in `docs/SETUP.md`.

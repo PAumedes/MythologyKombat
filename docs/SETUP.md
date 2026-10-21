@@ -2480,3 +2480,94 @@ A Windows Python text-mode write added CR bytes to a patch header. `patches\laun
 - The patches are agent-measured. The user has not confirmed them. Item 4 (patch 0004) is not verified as the user's complaint.
 - Outcomes are in `docs/LAUNCHER_DESIGN.md` section 6.2. Open items are in `docs/OPEN_QUESTIONS.md` (243).
 - Not tested: multitap, narrow layout, non-PSX consoles, real mouse session.
+
+## Setup-host build (T3.18)
+
+The setup host is the exe that runs the setup wizard. It is built with no game C. Its build folder is `build-setup\`, which is git-ignored.
+
+Agent part measured on 2026-10-20 by the implementer. The first wizard run is a user step (see below). Logs are under `work\`: `build_setup_run.txt`, `build-setup.configure.log` and `clone_test_build.txt`.
+
+### Environment
+
+Use the same toolchain environment as T2.4 (`Game executable build (T2.4)` above).
+
+### Commands
+
+Run these from the repo root:
+
+```
+cmake -S . -B build-setup -G Ninja -DCMAKE_BUILD_TYPE=Release -DPSXRECOMP_FORCE_SETUP_HOST=ON -DPSX_SETUP_WIZARD=ON
+cmake --build build-setup --target psx-runtime
+```
+
+### Timings
+
+| Step | Dev tree (warm) | Fresh clone (cold) |
+|------|-----------------|--------------------|
+| Configure | about 25 s | 26 s |
+| Build `psx-runtime` | about 1 min | 2 min 42 s, 310 steps |
+| `git clone --recurse-submodules` | - | 49 s |
+
+### Exe hashes
+
+| Build | Size (bytes) | SHA-256 | Use |
+|-------|--------------|---------|-----|
+| Dev tree | 37,383,168 | `ce2a2497545ab53ce7445fb935d498e6460e127ea5cb6b0c3acbe0d8a5051e65` | Not for the kit. See the finding below |
+| Patched variant | 37,386,240 | `6aba104feefbaa573c7cf890e314ee0466eb3476b7b75dc01c32fdb6084e3d2f` | Not for the kit. The report does not say which tree it was built in |
+| Fresh clone, no `generated\` | 32,589,824 | `b4e9d186d918e0839631a80dbb267e075307627bae45471bb63ff4bfa8b711a3` | The true setup host |
+
+### Finding: dev trees link game code into the setup host
+
+- In a dev tree where `generated\` exists, `PSXRECOMP_FORCE_SETUP_HOST=ON` still compiles and links `generated\overlays_static*.c`. That is 9 extra objects and about 4.8 MB more.
+- Cause: the overlay-static glob in `psxrecomp\runtime\overlay_static_sources.cmake` and in `psxrecomp\runtime\runtime.cmake` (about line 1612) ignores `FORCE_SETUP_HOST`.
+- So a dev-tree setup-host exe holds game-derived code. It must never go in the kit.
+- The kit and CI exe must be built from a clean clone or CI checkout with no `generated\` folder. See `docs/DECISIONS.md` (D24).
+
+### Fresh clone test
+
+The clone is at `work\clone-test`. The check was run on 2026-10-20.
+
+- `git clone --recurse-submodules` took 49 s.
+- The clone was clean. It had no `generated\` folder and no tracked game files.
+- Configure took 26 s. The build gave the 32,589,824-byte exe above.
+
+### Submodule status (question 258, closed)
+
+- The `psxrecomp` ` m` in `git status` was a stale index entry. The index recorded 66 bytes for `generated/OpenBIOS.emitter.sha`, from a CRLF checkout. The file on disk is 65 bytes with LF. The blobs equal HEAD, and `git -C psxrecomp diff --raw` is empty.
+- Fix, in the submodule index only:
+
+```
+git -C psxrecomp add generated/OpenBIOS.emitter.sha generated/OpenBIOS_dispatch.c generated/OpenBIOS_full.c
+```
+
+- Optional, per clone: `git -C psxrecomp config core.autocrlf input`.
+- The superproject has no `.gitattributes`, and that cannot affect the submodule.
+- The ` m` may come back after the emitters run. Check it with `git -C psxrecomp diff --raw` before you act on it.
+- Do not run `git add psxrecomp`. See the T0.5 section above.
+
+### Pin decision (question 257, closed)
+
+- The psxrecomp pin stays at `449c31e5`.
+- Upstream `958ae0e3` is 3 commits ahead, with 19 files changed.
+- The only substantive change is a shared title release command with a required channel. It adds `runtime\psx_release_channel.cmake`.
+- Revisit at T3.19 and T3.21.
+
+### Open log line (question 267)
+
+- The setup-host configure log prints `BIOS backends linked: OpenBIOS`. A setup host should link no game C. The cause is not investigated.
+
+### User step: first wizard run (T3.18, not done)
+
+Only you can do this. It is the first run of the wizard on this machine. Use the fresh clone, so the exe has no game C.
+
+```
+cd <REPO_ROOT>\work\clone-test
+Start-Process -FilePath .\build-setup\MythologyKombat.exe
+```
+
+1. In the wizard, pick the disc: `<REPO_ROOT>\ps1_game\Mortal Kombat Mythologies - Sub-Zero.cue`.
+2. Before you approve any download, write down what the wizard asks you. Copy the exact text. Note any size or address it shows. The report does not say what it asks yet (question 268).
+3. Go on step by step. For each step, note what happened, how long it took, and any error text. Copy error text word for word.
+4. Send the list back to the orchestrator. The wizard may generate and compile, which takes several minutes.
+
+The result is user-reported. It is not verified by an agent until it is recorded in this file.

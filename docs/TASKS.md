@@ -75,7 +75,7 @@ Gate notes:
 | T3.15 | Path, email and derived-data decisions, then the scrub | T3.14 | USER + agents | in-progress |
 | T3.16 | No-game-data guard script | — | agents | done |
 | T3.17 | CI workflow (guard, emitters-test, setup-host) | T3.16, T3.18 | agents | todo |
-| T3.18 | Setup-host build in the repo, and the first wizard run | T3.1 | agents + USER | todo |
+| T3.18 | Setup-host build in the repo, and the first wizard run | T3.1 | agents + USER | in-progress |
 | T3.19 | Kit packager, content check and checksums | T3.12, T3.14, T3.16, T3.18 | agents | todo |
 | T3.20 | Updater: check, verify, replace, roll back | T3.19 | agents | todo |
 | T3.21 | Release workflow (tag `v*`) | T3.15, T3.17, T3.19 | agents | todo |
@@ -432,12 +432,13 @@ Write `tools\check_no_game_data.py`. It is stdlib only and reads `git ls-files`.
 
 ## T3.17 CI workflow (agents)
 Depends on: T3.16, T3.18. Owner: agents. Source: `docs\LAUNCHER_DESIGN.md` section 5.
-Add `.github\workflows\ci.yml` with three jobs: `guard` (ubuntu-latest, runs T3.16); `emitters-test` (windows-latest, recursive submodules, the toolchain, build `psxrecomp\recompiler`, then `ctest`); `setup-host` (windows-latest, configure with the setup-host flags from T3.18, build `psx-runtime`, and fail if the configure log says "linking generated game C" or a `generated\` folder exists). Toolchain version: v1.0.14, as in `docs\SETUP.md`. How the pin is applied is open (question 247). Do not set `PSX_PGO` in CI. Do not `git add -f` any artifact.
+Add `.github\workflows\ci.yml` with three jobs: `guard` (ubuntu-latest, runs T3.16); `emitters-test` (windows-latest, recursive submodules, the toolchain, build `psxrecomp\recompiler`, then `ctest`); `setup-host` (windows-latest, configure with the setup-host flags from T3.18, build `psx-runtime`, and fail if the configure log says "linking generated game C" or a `generated\` folder exists). Toolchain version: v1.0.14, as in `docs\SETUP.md`. How the pin is applied is open (question 247). Requirement from T3.18 (D24): fail if a `generated\` folder exists on the runner, or if the configure or ninja graph mentions `generated/overlays_static`. Do not set `PSX_PGO` in CI. Do not `git add -f` any artifact.
 **Accept when:** the YAML parses, checked with a tool named in the report; the `guard` job gives the same result as T3.16 on the repo; the workflow runs green on the first push (T3.23), or each failure is listed as a new task.
 
 ## T3.18 Setup-host build in the repo, and the first wizard run (agents + USER)
 Depends on: T3.1. Owner: agents + USER. Source: `docs\LAUNCHER_DESIGN.md` sections 2 and 5, `docs\PUBLISHING_AUDIT.md` section 4 and question 258.
 Agents build the setup-host exe (`PSXRECOMP_FORCE_SETUP_HOST=ON`, `PSX_SETUP_WIZARD=ON`, no game C) in `build-setup\`, which `.gitignore` already covers. Use the generator and commands in `docs\SETUP.md`. Also decide question 258 (fix the modified psxrecomp files or document them) and question 257 (keep the pin or bump it; a bump needs the T3.2 baseline refresh).
+**Status 2026-10-20 (in-progress):** agent part measured and recorded in `docs\SETUP.md` (Setup-host build, T3.18): exe hashes, timings and the fresh clone test. Question 258 closed; question 257 closed (pin kept at `449c31e5`). D24 records that dev-tree setup-host exes must not go in the kit. Remaining: the user's first wizard run (the steps are in `docs\SETUP.md`), then the result is recorded and the task is closed.
 **What you do** (when the agents ask, for the first wizard run on this machine):
 ```
 cd <REPO_ROOT>
@@ -450,6 +451,7 @@ Pick the disc in the wizard, then tell the orchestrator each step and any error 
 Depends on: T3.12, T3.14, T3.16, T3.18. Owner: agents. Source: `docs\LAUNCHER_DESIGN.md` sections 2 (option A) and 5 (`kit` row).
 Build the kit zip from an allow-list: the setup-host exe, the filtered `psxrecomp\` tree the CLI needs, `game.toml`, `seeds\`, `aot\overlays.json`, `symbols.toml`, the licences from T3.14, and a version file. Whether the toolchain is in the kit is open (question 253). Do not call `scripts\package_release.sh` (bundled packager). Do not call `psxrecomp\tools\package_setup_host.sh` unmodified (retired, not read in full).
 The content check rejects any `.c` from `generated\`, any `.bin`, `.cue`, `.ovr`, and any `.exe` other than the setup exe. Output: `MythologyKombat-<version>-kit-windows-x64.zip` and `checksums.txt` (SHA-256).
+Requirement from T3.18 (D24): build the kit exe from a clean clone with no `generated\` folder. The content check fails if the exe came from a dev tree, or if the kit holds any file from `generated\`.
 **Accept when:** the content check passes; the T3.16 guard passes on the zip's file list; `checksums.txt` matches the zip; the version is recorded in `docs\CHANGELOG.md` at release time.
 
 ## T3.20 Updater: check, verify, replace, roll back (agents)
