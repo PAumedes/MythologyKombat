@@ -2724,7 +2724,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\release.ps1 -Version <
 
 | Parameter | Meaning |
 |-----------|---------|
-| `-Version` | Release version, for example `0.1.0`. The tag is `v<Version>`. A dotted version must match the `VERSION` file at the commit. Other labels, such as `test`, skip that check. The format is checked with a regex |
+| `-Version` | Release version, for example `0.1.0`. The tag is `v<Version>`. A version that starts with x.y.z (including 0.1.0-rc1) must equal the `VERSION` file exactly. Only non-numeric labels such as `test` skip the check. The format is checked with a regex. The binary version stamp must also equal `VERSION`. See "Release-candidate verification" below |
 | `-Disc` | Path to the `.cue` of your own disc image |
 | `-Ref` | Tag or commit to build. Default: tag `v<Version>`, which must exist |
 | `-Pgo` | Build with PGO. Needs the disc and a window. Off by default |
@@ -2993,3 +2993,92 @@ The first runs 228 checks in about 8 minutes, against the fake server `tests\upd
 - The `Local\` mutex warning (question 307d).
 - The exe-hash failure after the swap (question 307f).
 - `update.cmd` does not return the updater's exit code (question 307b).
+
+## Release-candidate verification (2026-10-21)
+
+This is the agent's check of the release pipeline at commit `e8ec8fe`. It is agent-measured on this PC. It is not a release, and no draft was uploaded. The title screen was not checked by an agent (see below).
+
+### Command
+
+Run twice, with no `-Draft`. Both runs succeeded:
+
+```
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\release.ps1 -Version 0.1.0 -Ref HEAD -Disc "<REPO_ROOT>\ps1_game\Mortal Kombat Mythologies - Sub-Zero.cue"
+```
+
+| Run | Log | Zip | Total |
+|-----|-----|-----|-------|
+| a | `work\release\rc1-a.log` | `work\release\rc1-a\MythologyKombat-0.1.0-Windows-x64.zip` | 401.4 s |
+| b | `work\release\rc1-b.log` | `work\release\rc1-b\MythologyKombat-0.1.0-Windows-x64.zip` | 251.1 s |
+
+Stage times in seconds. Rebuild is 195.5 s in run a and 50.3 s in run b. The other stages are given as ranges or single values from the record:
+
+| Stage | Time |
+|-------|------|
+| Clone | 58 |
+| Patches | 4 |
+| Verify | 4 |
+| Generate | 91 to 95 |
+| Ensure toolchain | 28 |
+| Rebuild | 195.5 (run a), 50.3 (run b) |
+| Assemble | 6 |
+| Content checks | 2 to 3 |
+| Zip | 4 |
+
+### Results
+
+| Item | Result |
+|------|--------|
+| Exe SHA-256 | `86e02021338504a6e0263661e51bd2ece5493463cdd00cc6f771163c36a8ec50`, 51,762,176 bytes. Same in both runs |
+| Zip SHA-256 | `73279dc370f934923325457312a4f33895e24c042562ff777c607946b9ac65a5`, 27,156,192 bytes. Byte-identical in both runs (`cmp`) |
+| `checksums.txt` | Identical in both runs |
+| `manifest.json` | Identical in both runs. SHA-256 starts `ea7fa2dd`. It lists 423 files |
+| Zip entries | 424. The record does not say which entry is not in the manifest list. Open, see question 312 |
+| Content check | OK on the zip and on the folder: 424 files, 71 generated hashes, 0 violations |
+| Smoke run of the release exe | Alive for 60 s. Frame counter 819, 1686, 2591 and 3482 at 15, 30, 45 and 60 s (about 59 fps). No crash file. A `hard_freeze` dump was written at start (question 291) |
+| Updater harness on the real build | `tools\test_updater.ps1 -SourceDir work\release\rc1-b\MythologyKombat-0.1.0 -Only 01`: 20 of 20. Covers CheckOnly, DryRun, a full update with all 423 manifest files byte-exact, preserved files identical, a second run that is up to date, and a rollback tree that is byte-identical |
+
+### Zip layout
+
+One top folder, `MythologyKombat-0.1.0\`.
+
+| File | Size | Note |
+|------|------|------|
+| `update.cmd` | 101 bytes | One CRLF line |
+| `update.ps1` | 49,855 bytes | LF line endings |
+| `manifest.json` | | Hashes of the release files |
+| `release_info.json` | | Repo `PAumedes/MythologyKombat`, version `0.1.0`, tag `v0.1.0` (the tag does not exist yet), commit `e8ec8fe03df4f60e2d7431a45253db72a1ebaddb`, `public_release` true, `pgo` false, toolchain 1.0.14, psxrecomp `449c31e5`, recomp-ui `7c635c6`, 7 launcher patches |
+
+### Title screen: not checked by an agent
+
+- Every capture method returned a black image. The methods were CopyFromScreen, PrintWindow and a DPI-aware capture.
+- The dev build control gave black too. So this is a capture limit of this PC's GL surface, not a result for the release.
+- The user must look at the title screen by eye. The user did check an earlier release-test zip by eye and reported correct audio.
+- Question 311.
+
+### Findings
+
+- The script's version check (line 235) matches any label that starts with `x.y.z`. So `0.1.0-rc1` is treated as a version. It must then equal `VERSION`. The binary version stamp must also equal `VERSION` (line 325).
+- So a pre-release label needs `VERSION` to hold that string, or the regex needs an end anchor. The first release ships as plain `0.1.0`, marked as a pre-release on GitHub (D30). Question 308.
+- The draft command has no pre-release flag (`gh release create ... --draft`).
+
+### Sequencing
+
+- The build id holds the commit hash and the commit time (D27). So every new commit changes the exe hash. The history rewrite (D22) changes every hash.
+- The release zip must be built from the final commit, after the rewrite and the push (T3.23).
+- The two zips above show that the pipeline is reproducible on this PC. They are not the release.
+
+### Known open items
+
+| Item | Question |
+|------|----------|
+| Version label rule for pre-releases | 308 |
+| Windows Sandbox on this edition | 309 |
+| OpenGL 3.3 in Windows Sandbox | 310 |
+| Title screen by eye | 311 |
+| Manifest entry count (424 zip entries, 423 listed) | 312 |
+| Smart App Control on a clean machine | 255 |
+
+## Clean-machine test setup (T3.22, not done)
+
+The planned test machine is Windows Sandbox on this PC (D30). Steps are in `docs\TASKS.md` (T3.22). The feature is not enabled yet. Its availability on this edition is question 309.

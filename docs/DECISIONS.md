@@ -422,3 +422,17 @@ _Filled in by the doc-writer as tasks pass review._
 - Not verified: a real github.com or CDN download (the repo does not exist yet, T3.23). A game start during the preparation step, with the re-check, is not covered by the harness. The post-swap exe-hash failure branch is not tested. The list of open limits is in questions 302 to 307.
 - Not chosen: a launcher-built-in updater (option A, about 6 to 8 days against about 3 for B, per the research). An updater exe in C++ or C# (option C). A signature on `checksums.txt` is not built. It is a future option (question 306).
 - Status: decided and built. T3.21 is `done` in `docs/TASKS.md`.
+
+## D30 Release: unsigned, 0.1.0 as a pre-release, rebuild from the final commit (T3.24, T3.22, 2026-10-21)
+
+- Decided: Patricio, in chat, 2026-10-21.
+- Signing (T3.24, option b): the release exe is unsigned. The README (T3.25) will say so. It will explain the Smart App Control and SmartScreen warnings a player may see, and how to check the SHA-256 in `checksums.txt`. No certificate is bought, and nothing is signed locally. Question 244 is closed. Question 255 (Smart App Control) stays open.
+- First release: version `0.1.0`, marked as a pre-release on the GitHub release page. The label `0.1.0-rc1` is not used. `tools\release.ps1` treats any label that starts with `x.y.z` as a version, and then requires it to equal `VERSION` (and the binary stamp). So a release-candidate label needs `VERSION` to hold that string, or the regex needs an end anchor. Both are open (question 308).
+- Pre-release marking: the script's draft command (`gh release create ... --draft`) has no pre-release flag. Setting it is a manual step on the release page, or a later script change.
+- Rebuild rule: the exe build id holds the commit hash and the commit time (D27). So every new commit gives a new exe hash. The D22 history rewrite changes every hash. The release zip must be built from the final commit, after the rewrite and the push. The release-candidate zips at `e8ec8fe` (`docs/SETUP.md`, "Release-candidate verification") show that the pipeline is reproducible. They are not the release.
+- Clean-machine test (T3.22): the planned test machine is Windows Sandbox on this PC. The feature is not enabled yet. Steps are in `docs/TASKS.md` (T3.22). Mapped folders are read-only. Networking is off for the test. Known risk: Windows Sandbox may have no OpenGL 3.3 driver, so the game window may not open there. The software renderer option exists. Whether this edition ships the feature is question 309.
+- Not chosen, and why:
+  - Signing locally with a certificate kept on this PC (option a). The user chose not to.
+  - A `0.1.0-rc1` label without changing `VERSION`. The script refuses it.
+- Reason: the user's choices. The release-candidate check showed the rebuild rule, and the version rule that a label must match `VERSION`.
+- Status: decided. T3.24 is `done` in `docs/TASKS.md`. T3.22 stays `todo` (USER).

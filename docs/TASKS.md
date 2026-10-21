@@ -81,7 +81,7 @@ Gate notes:
 | T3.21 | Launcher updater: check, verify, replace, keep saves | T3.19 | agents | done |
 | T3.22 | Clean-machine test of the downloaded zip (disc only) | T3.19 | USER | todo |
 | T3.23 | First push to GitHub, history rewrite (D22) and first CI run | T3.15, T3.17, T3.19 | USER + agents | todo |
-| T3.24 | Code-signing decision for the release exe | T3.19 | USER | todo |
+| T3.24 | Code-signing decision for the release exe | T3.19 | USER | done |
 | T3.25 | README rewrite and legal wording | T3.14, T3.15, T3.21, T3.22, T3.24 | agents + USER | todo |
 | T3.26 | Reproducibility of the release exe (Q274) | T3.19 | agents | done |
 
@@ -544,6 +544,17 @@ Get-ChildItem "$env:USERPROFILE\MythologyKombat" -Recurse -Include *.bin,*.cue,*
 
 Added 2026-10-21 (audio check, questions 297 to 298): during step 4, play to the Midway logo and listen to its audio. Report whether the audio is broken. If it is, also give the time, and the `.out` and `.err` logs of a run made with `PSX_RUNTIME_PERF_DIAG=1` (steps in `docs\SETUP.md`, "Known issue: Midway logo audio on the release zip"). If it recurs on the clean machine, report it in the T3.22 result. Agents record the result as user-reported.
 
+**Status note (2026-10-21, decided in chat, D30):** the test machine is Windows Sandbox on this PC, if the feature can be enabled. This is not a second physical PC, so it may not show what a clean PC shows (question 255).
+- Check (read-only, agent, 2026-10-21): `C:\Windows\System32\WindowsSandbox.exe` is absent. CPU i5-7300HQ, virtualisation firmware enabled, SLAT true. Windows 11 IoT Enterprise LTSC 10.0.26100. Whether this edition ships the feature is question 309.
+- Step 1 (USER, elevated PowerShell):
+```
+Enable-WindowsOptionalFeature -Online -FeatureName Containers-DisposableClientVM -All -NoRestart
+```
+- Step 2 (USER): restart the PC. Then tell the orchestrator. If the command says the feature does not exist, tell the orchestrator the exact message.
+- Step 3 (agents, later): write a `.wsb` configuration and the exact steps. Rules for the sandbox: mapped folders read-only; networking disabled for the test; the zip and the disc folder are mapped read-only.
+- Known risk (question 310): Windows Sandbox may lack an OpenGL 3.3 driver, so the game window may not open there. The software renderer option (`--renderer software`) exists as a fallback. Not tested.
+- Result is recorded only after the user runs the steps. Question 311 (title screen by eye) and question 298 (Midway audio, with logs) stay open until then.
+
 ## T3.23 First push to GitHub, history rewrite (D22) and first CI run (USER + agents)
 Depends on: T3.15, T3.17, T3.19. Owner: USER + agents. Source: `docs\PUBLISHING_AUDIT.md` sections 1 and 8, D22, D25.
 A push is hard to undo, because the author email is in the history. The order is fixed by D22: all other commits first, then a backup bundle, then the history rewrite only after the user's final yes, then the push. The repo has no remote today.
@@ -560,6 +571,8 @@ git remote add origin https://github.com/<your-github-user>/<repo-name>.git
 git push -u origin master
 ```
 Do not create a tag or a release until you say so.
+
+Release order (D30): every commit changes the release exe hash, and the rewrite changes every hash. So the release zip is built with `tools\release.ps1` only after the last commit, the rewrite and the push. The release-candidate zips at `e8ec8fe` are evidence only (`docs\SETUP.md`, "Release-candidate verification").
 **Accept when:** the bundle exists outside the repo; `git log --all --format="%ae" | Sort-Object -Unique` shows only the noreply address after the rewrite (D22); the user confirms the push; agents report the first CI run (T3.17), green or with each failure listed as a task; no tag or release exists without the user's yes.
 
 ## T3.24 Code-signing decision for the release exe (USER)
@@ -571,6 +584,8 @@ Get-Content docs\LAUNCHER_DESIGN.md | Select-String -Pattern "Smart App Control|
 ```
 Reply in chat: (a) sign locally, or (b) ship unsigned. Do not paste a certificate, its password or its file path in chat.
 **Accept when:** question 244 is closed in `docs\OPEN_QUESTIONS.md`; if (a) is chosen, the release script signs the exe and `Get-AuthenticodeSignature` on the exe in the zip reports Valid; if (b) is chosen, the README says the release is unsigned.
+
+**Status note (2026-10-21, done):** the user chose (b), ship unsigned (D30). Question 244 is closed. The README wording (unsigned, the SmartScreen and Smart App Control warnings, and the SHA-256 check) is part of T3.25. Question 255 stays open.
 
 ## T3.25 README rewrite and legal wording (agents + USER)
 Depends on: T3.14, T3.15, T3.21, T3.22, T3.24. Owner: agents (doc-writer) + USER (the legal wording, question 245). Source: `docs\PUBLISHING_AUDIT.md` section 7, D25.
