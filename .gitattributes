@@ -1,0 +1,2 @@
+tools/updater/update.cmd text eol=crlf
+tools/updater/update.ps1 text eol=lf

@@ -30,7 +30,8 @@
 .PARAMETER Pgo      Build with PGO (needs the disc and a window; off by default).
 .PARAMETER Draft    After the build, print the draft-upload command; run it only after typing UPLOAD.
 .PARAMETER Publish  Not implemented.
-.PARAMETER Repo     owner/name passed to gh as --repo (optional).
+.PARAMETER Repo     owner/name. Default PAumedes/MythologyKombat (D28). Written to release_info.json as `repo` (the updater
+                    refuses an update whose repo differs from its own constant) and passed to gh as --repo.
 .PARAMETER KeepDisc Keep the disc copy that generate makes inside the staging clone (deleted by default).
 
 .EXAMPLE
@@ -44,7 +45,7 @@ param(
     [switch]$Pgo,
     [switch]$Draft,
     [switch]$Publish,
-    [string]$Repo,
+    [string]$Repo = 'PAumedes/MythologyKombat',
     [switch]$KeepDisc
 )
 $ErrorActionPreference = 'Stop'
@@ -55,6 +56,7 @@ $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $Version = $Version.Trim().TrimStart('v')
 if ($Version -notmatch '^[0-9A-Za-z][0-9A-Za-z._-]{0,40}$') { throw "Bad -Version '$Version'" }
 $Tag = "v$Version"
+if ($Repo -notmatch '^[A-Za-z0-9][A-Za-z0-9-]{0,38}/[A-Za-z0-9._-]{1,100}$') { throw "Bad -Repo '$Repo' (need owner/name)" }
 $ProductName = 'MythologyKombat'
 $ZipName = "$ProductName-$Version-Windows-x64.zip"
 
@@ -364,6 +366,9 @@ Measure-Step '5 assemble' {
     # overlay toolchain (runtime autocompiles overlays from the player's own disc); compiler.txt names a path on THIS machine
     PutTree (Join-Path $buildDir 'overlay_toolchain') 'overlay_toolchain' @('compiler.txt')
     # licences
+    # standalone updater (T3.21): sources live in tools\updater; copied byte for byte
+    Put (Join-Path $Src 'tools\updater\update.cmd') 'update.cmd'
+    Put (Join-Path $Src 'tools\updater\update.ps1') 'update.ps1'
     Put (Join-Path $Src 'LICENSE') 'LICENSE'
     Put (Join-Path $Src 'NOTICE') 'NOTICE'
     PutTree (Join-Path $Src 'psxrecomp\runtime\licenses') 'licenses'
@@ -387,6 +392,7 @@ Measure-Step '5 assemble' {
         product            = $ProductName
         version            = $Version
         tag                = $Tag
+        repo               = $Repo
         commit             = $Commit
         commit_date        = $CommitDate
         game_serial        = 'SLUS-00476'
@@ -429,6 +435,8 @@ WHAT IS IN THIS ZIP
 - LICENSE, NOTICE, licenses\: the licence of this port (PolyForm Noncommercial
   1.0.0) and third-party notices.
 - release_info.json: version, source commit, exe SHA-256, toolchain version.
+- update.cmd, update.ps1, manifest.json: the optional updater (double-click update.cmd to check
+  for a newer release; it asks first, verifies SHA-256, keeps saves and settings, never starts the game).
 
 NOT IN THIS ZIP: any disc image, memory card, save, recording, retail BIOS
 or the generated source code.
@@ -441,6 +449,9 @@ This project is not affiliated with or endorsed by the rights holders of the
 game. Names and trademarks belong to their owners. It is free and must stay free.
 "@
     Write-TextLF (Join-Path $Pkg 'README_FIRST.txt') ($readme + "`n")
+
+    # per-file manifest for the updater (last: it hashes every other file; deterministic)
+    & (Join-Path $Src 'tools\new_release_manifest.ps1') -Dir $Pkg -Version $Version | ForEach-Object { Write-Host "  $_" }
 
     # fixed timestamps (commit time) for a deterministic zip
     foreach ($f in Get-ChildItem -LiteralPath $Pkg -Recurse -File) { if ($f.IsReadOnly) { $f.IsReadOnly = $false }; $f.LastWriteTimeUtc = $FixedTime }

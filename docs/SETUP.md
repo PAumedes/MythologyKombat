@@ -2921,3 +2921,75 @@ Start-Process -FilePath ".\MythologyKombat.exe" -ArgumentList '--disc', '<path t
 3. Note the time, whether the Midway logo audio was broken, and anything else running. Send the `.out` and `.err` files to the agents, and say whether a `psx_freeze_dump` file was written in the game folder.
 
 Without the redirect, the output is not kept. The first broken run had no log, so the cause is still unknown.
+
+## Updater (T3.21)
+
+Status 2026-10-21: built and tested on a local fake server. Not tested against real GitHub (the repo does not exist yet, T3.23). Decision D29. Open items: questions 302 to 307.
+
+### What it is
+
+A PowerShell updater in the release zip: `update.cmd` (a one-line wrapper) and `update.ps1`. It checks `PAumedes/MythologyKombat` for a newer release, downloads the zip and `checksums.txt`, checks the SHA-256, and replaces the game build. It keeps the player's files (see below). It never starts the game and never runs anything from the zip.
+
+### How a player uses it
+
+1. Open PowerShell or a console in the extracted game folder (the folder with `MythologyKombat.exe`).
+2. Run:
+```
+.\update.cmd
+```
+3. The updater shows the new version and asks `y/N`. Type `y` to install. Any other answer stops it with nothing changed.
+4. The update runs only when you start it. Close the game first. The updater refuses while the game runs, and checks again just before the swap.
+
+### Options
+
+| Option | What it does |
+|--------|--------------|
+| `-CheckOnly` | Checks for a newer release and stops. Changes nothing. |
+| `-DryRun` | Runs the checks and the plan without replacing files. |
+| `-Rollback` | Restores the previous build from `.update\backup-<old>`. |
+
+Example: `.\update.cmd -CheckOnly`.
+
+### What it keeps
+
+`saves\`, `settings.toml`, `input.ini`, `keybinds.ini`, `disc.cfg`, `bios.cfg`, `launcher-window.ini`, `mods\state.toml`, `mods\texture-packs\`, `cache\` and `overlay_captures.json`. The disc path is never touched.
+
+`game.toml` and `game_options.toml` are replaced only if the file is unchanged from the old release. If you edited one, your copy is kept and the new one is written beside it as `.new`.
+
+The previous build stays in `.update\backup-<old>` until the new build has run once.
+
+### How it is checked
+
+- Only `https://github.com` downloads from `PAumedes/MythologyKombat` release assets, and the CDN hosts GitHub redirects to. Redirects are followed by hand, up to 5 hops.
+- Only versions strictly newer than the installed one, in the form `vX.Y.Z`.
+- The SHA-256 from `checksums.txt` is checked before anything is unpacked.
+- The zip is checked for unsafe names and links, and its files must match `manifest.json` exactly.
+
+### Release side
+
+| Item | Where |
+|------|-------|
+| Updater source | `tools\updater\update.cmd`, `tools\updater\update.ps1` |
+| Manifest | `tools\new_release_manifest.ps1` writes `manifest.json` (SHA-256 and size of each file) |
+| Zip contents | `release.ps1` copies the updater files and writes `manifest.json` after `release_info.json` and `README` |
+| Line endings | `.gitattributes`: `update.cmd` is CRLF, `update.ps1` is LF |
+| Repo default | `release.ps1 -Repo` defaults to `PAumedes/MythologyKombat`; the same value is in `release_info.json` as `repo` |
+
+The first release must ship `manifest.json`, so the first update has an old manifest to compare with. It does.
+
+### Test commands
+
+```
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\test_updater.ps1
+python -I tests\test_check_release_content.py
+```
+
+The first runs 228 checks in about 8 minutes, against the fake server `tests\updater_test_server.py` and a fake install made from `work\release\test\MythologyKombat-test`. The second runs 25 tests.
+
+### Not tested
+
+- A real GitHub or CDN download (question 307h).
+- A game start during the preparation step (question 307e).
+- The `Local\` mutex warning (question 307d).
+- The exe-hash failure after the swap (question 307f).
+- `update.cmd` does not return the updater's exit code (question 307b).

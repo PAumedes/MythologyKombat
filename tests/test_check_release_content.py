@@ -6,6 +6,8 @@ proves it passes, then plants one forbidden thing at a time and proves the check
 fails and names the planted path. No game data is used: the "PS-X EXE" and "CD sync"
 files are synthetic byte strings.
 """
+import hashlib
+import json
 import os
 import shutil
 import subprocess
@@ -55,6 +57,24 @@ def build_good(root):
     put(root, "overlay_toolchain/include/cpu_state.h", b"// runtime header\n")
     put(root, "overlay_toolchain/psxrecomp-game.exe", b"MZ" + b"\x00" * 1000)
     put(root, "licenses/TinyCC-LICENSE.txt", b"lgpl\n")
+    put(root, "update.cmd", b"@echo off\r\npowershell -NoProfile -File update.ps1\r\n")
+    put(root, "update.ps1", b"# updater\n")
+    write_manifest(root)
+
+
+def write_manifest(root):
+    files = []
+    for dp, _, fn in os.walk(root):
+        for n in fn:
+            full = os.path.join(dp, n)
+            rel = os.path.relpath(full, root).replace("\\", "/")
+            if rel == "manifest.json":
+                continue
+            with open(full, "rb") as f:
+                data = f.read()
+            files.append({"path": rel, "size": len(data), "sha256": hashlib.sha256(data).hexdigest()})
+    files.sort(key=lambda x: x["path"])
+    put(root, "manifest.json", json.dumps({"manifest_version": 1, "files": files}).encode())
 
 
 def run(*args):
@@ -79,6 +99,7 @@ class Release(unittest.TestCase):
         rmtree(SCRATCH)
 
     def args(self):
+        write_manifest(GOOD)   # planted files are listed, so only the planted fault is reported
         return ["--dir", GOOD, "--generated-dir", GEN, "--openbios-sha256", OPENBIOS_SHA]
 
     def test_good_tree_passes(self):
@@ -193,6 +214,74 @@ class Release(unittest.TestCase):
         code, out = run("--zip", z, "--openbios-sha256", OPENBIOS_SHA)
         self.assertEqual(code, 1)
         self.assertIn("FAIL extra/game.cue", out)
+
+    # ---- updater files and manifest.json (T3.21)
+    def test_manifest_detects_modified_file(self):
+        put(GOOD, "licenses/TinyCC-LICENSE.txt", b"tampered\n")   # no manifest rewrite
+        code, out = run("--dir", GOOD, "--openbios-sha256", OPENBIOS_SHA)
+        self.assertEqual(code, 1)
+        self.assertIn("FAIL licenses/TinyCC-LICENSE.txt: ", out)
+        self.assertIn("differs from manifest.json", out)
+
+    def test_manifest_detects_unlisted_and_missing_file(self):
+        put(GOOD, "assets/new.ttf", b"font2")
+        os.remove(os.path.join(GOOD, "NOTICE"))
+        code, out = run("--dir", GOOD, "--openbios-sha256", OPENBIOS_SHA)
+        self.assertEqual(code, 1)
+        self.assertIn("FAIL assets/new.ttf: file is not listed in manifest.json", out)
+        self.assertIn("FAIL NOTICE: manifest.json lists a file that is not in the release", out)
+
+    def test_manifest_size_mismatch(self):
+        put(GOOD, "game_options.toml", b"# none, but longer\n")
+        code, out = run("--dir", GOOD, "--openbios-sha256", OPENBIOS_SHA)
+        self.assertEqual(code, 1)
+        self.assertIn("FAIL game_options.toml: size differs from manifest.json", out)
+
+    def test_manifest_missing_and_unreadable(self):
+        os.remove(os.path.join(GOOD, "manifest.json"))
+        code, out = run("--dir", GOOD, "--openbios-sha256", OPENBIOS_SHA)
+        self.assertEqual(code, 1)
+        self.assertIn("FAIL manifest.json: required item is missing", out)
+        put(GOOD, "manifest.json", b"not json")
+        code, out = run("--dir", GOOD, "--openbios-sha256", OPENBIOS_SHA)
+        self.assertEqual(code, 1)
+        self.assertIn("FAIL manifest.json: unreadable manifest", out)
+
+    def test_updater_files_required(self):
+        for name in ("update.cmd", "update.ps1"):
+            with self.subTest(name=name):
+                build_good(GOOD)
+                os.remove(os.path.join(GOOD, name))
+                write_manifest(GOOD)
+                code, out = run("--dir", GOOD, "--openbios-sha256", OPENBIOS_SHA)
+                self.assertEqual(code, 1)
+                self.assertIn("FAIL %s: required item is missing" % name, out)
+
+    def test_updater_must_be_ascii_and_free_of_local_paths(self):
+        out = self.plant("update.ps1", "# caf\u00e9\n".encode("utf-8"))
+        self.assertIn("updater file is not ASCII", out)
+        out = self.plant("update.ps1", b"$x = 'C:\\Users\\someone\\x'\n")
+        self.assertIn("local user path", out)
+
+    def test_zip_with_manifest_passes_and_tampered_zip_fails(self):
+        z = os.path.join(SCRATCH, "m.zip")
+        with zipfile.ZipFile(z, "w") as zf:
+            for dp, _, fn in os.walk(GOOD):
+                for n in fn:
+                    full = os.path.join(dp, n)
+                    zf.write(full, "MythologyKombat-1.2.3/" + os.path.relpath(full, GOOD).replace("\\", "/"))
+        code, out = run("--zip", z, "--openbios-sha256", OPENBIOS_SHA)
+        self.assertEqual(code, 0, out)
+        z2 = os.path.join(SCRATCH, "m2.zip")
+        with zipfile.ZipFile(z, "r") as zin, zipfile.ZipFile(z2, "w") as zout:
+            for i in zin.infolist():
+                data = zin.read(i)
+                if i.filename.endswith("/NOTICE"):
+                    data = b"changed\n"
+                zout.writestr(i.filename, data)
+        code, out = run("--zip", z2, "--openbios-sha256", OPENBIOS_SHA)
+        self.assertEqual(code, 1)
+        self.assertIn("FAIL NOTICE: size differs from manifest.json", out)
 
 
 if __name__ == "__main__":

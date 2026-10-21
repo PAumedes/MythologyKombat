@@ -78,7 +78,7 @@ Gate notes:
 | T3.18 | Setup-host build in the repo, and the first wizard run | T3.1 | agents + USER | done |
 | T3.19 | Local release script `tools\release.ps1` (game zip, content check, checksums) | T3.12, T3.14, T3.16, T3.18 | agents + USER | done |
 | T3.20 | Optional: self-hosted runner for the game build (tag only, disc stays on the PC) | T3.17, T3.19 | USER + agents | todo |
-| T3.21 | Launcher updater: check, verify, replace, keep saves | T3.19 | agents | todo |
+| T3.21 | Launcher updater: check, verify, replace, keep saves | T3.19 | agents | done |
 | T3.22 | Clean-machine test of the downloaded zip (disc only) | T3.19 | USER | todo |
 | T3.23 | First push to GitHub, history rewrite (D22) and first CI run | T3.15, T3.17, T3.19 | USER + agents | todo |
 | T3.24 | Code-signing decision for the release exe | T3.19 | USER | todo |
@@ -513,6 +513,8 @@ Behaviour:
 - Never downloads or stores a disc.
 The data-version check in the older design does not apply. The release is a prebuilt game build, so the player does not regenerate.
 **Accept when:** against a local test server or a test release: (1) a newer version is found and installed; (2) a checksum mismatch is refused and nothing is replaced; (3) saves and settings survive the update; (4) the previous build stays until the new one has run once.
+
+**Status 2026-10-21 (done):** the mechanism is a standalone PowerShell updater in the zip (`tools\updater\update.cmd` and `update.ps1`), not a launcher patch (D29, research in `docs\UPDATER_DESIGN.md`, option B). The review took five rounds. Rounds 1 to 4 were FAIL and round 5 was PASS. The 3-round limit in `CLAUDE.md` was reached after round 3. The user approved rounds 4 and 5 in chat on 2026-10-21. Checks: `tools\test_updater.ps1` (228 checks, against the local fake server `tests\updater_test_server.py`), so the acceptance items are checked on a local test server only. No real GitHub or CDN download was tested, because the repo does not exist yet (T3.23). Limits are in `docs\OPEN_QUESTIONS.md` (questions 302 to 307). Steps for the player are in `docs\SETUP.md` ("Updater (T3.21)").
 
 ## T3.22 Clean-machine test of the downloaded zip (USER)
 Depends on: T3.19. Owner: USER. Source: `docs\PUBLISHING_AUDIT.md` section 6 and blocker 12, `docs\LAUNCHER_DESIGN.md` section 3, D25, questions 255 and 275. This is the acceptance test for the release zip. It needs a second Windows machine or a VM with only your disc. Test the zip you download (a draft release asset, or the copy in `work\release\`), not this PC's build.

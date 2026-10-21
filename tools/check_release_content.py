@@ -39,6 +39,7 @@ Output is sorted, so it is identical across runs.
 """
 import argparse
 import hashlib
+import json
 import os
 import re
 import stat
@@ -54,12 +55,13 @@ BAD_NAMES = {"overlay_captures.json", "overlay_captures.json.d", "disc.cfg", "ro
              "psx_last_run_report.json", "psx_freeze_heartbeat.json", "compiler.txt",
              "inputs.csv", "telemetry.csv", "session.json", "mods-state.toml"}
 SRC_EXT = {".c", ".cc", ".cpp", ".cxx", ".h", ".hpp", ".inc"}
-TEXT_EXT = {".txt", ".toml", ".json", ".ini", ".cfg", ".md", ".cmd", ".py"}
+TEXT_EXT = {".txt", ".toml", ".json", ".ini", ".cfg", ".md", ".cmd", ".py", ".ps1"}
 TOP_ALLOWED = {"assets", "bios", "mods", "overlay_toolchain", "licenses", "game.toml",
                "game_options.toml", "license", "notice", "readme_first.txt",
-               "release_info.json", "psx_game_version.txt"}
+               "release_info.json", "psx_game_version.txt", "update.cmd", "update.ps1", "manifest.json"}
 REQUIRED = ["MythologyKombat.exe", "LICENSE", "NOTICE", "README_FIRST.txt", "release_info.json",
-            "game.toml", "psx_game_version.txt", "bios/openbios.bin", "bios/OpenBIOS.LICENSE",
+            "game.toml", "psx_game_version.txt", "update.cmd", "update.ps1", "manifest.json",
+            "bios/openbios.bin", "bios/OpenBIOS.LICENSE",
             "assets", "mods/bundled"]
 OPENBIOS = "bios/openbios.bin"
 EXE_NAME = "MythologyKombat.exe"
@@ -241,6 +243,18 @@ def check(entries, gen_hashes=None, openbios_sha=None, deep=False,
     if total > total_max_mib * MIB:
         fail("(release total)", "uncompressed total %d bytes exceeds %d MiB" % (total, total_max_mib))
 
+    # updater files must be plain ASCII (PowerShell 5.1 reads BOM-less files as ANSI)
+    for e in entries:
+        if e.rel in ("update.ps1", "update.cmd"):
+            try:
+                e.read_all().decode("ascii")
+            except UnicodeDecodeError:
+                fail(e.rel, "updater file is not ASCII")
+    # manifest.json must describe exactly the other files (path, size, SHA-256)
+    for e in entries:
+        if e.rel == "manifest.json":
+            fails.extend(_check_manifest(e, entries))
+
     present = {e.rel.lower() for e in entries}
     prefixes = {p for e in entries for p in _prefixes(e.rel.lower())}
     for req in REQUIRED:
@@ -248,6 +262,29 @@ def check(entries, gen_hashes=None, openbios_sha=None, deep=False,
         if r not in present and r not in prefixes:
             fail(req, "required item is missing")
     return sorted(set(fails)), sorted(set(warns))
+
+
+def _check_manifest(man, entries):
+    out = []
+    try:
+        data = json.loads(man.read_all().decode("utf-8"))
+        listed = {f["path"]: f for f in data["files"]}
+        if data.get("manifest_version") != 1:
+            out.append(("manifest.json", "unsupported manifest_version"))
+    except (ValueError, KeyError, TypeError, UnicodeDecodeError) as ex:
+        return [("manifest.json", "unreadable manifest (%s)" % ex)]
+    actual = {e.rel: e for e in entries if e.rel != "manifest.json"}
+    for rel in sorted(set(actual) - set(listed)):
+        out.append((rel, "file is not listed in manifest.json"))
+    for rel in sorted(set(listed) - set(actual)):
+        out.append((rel, "manifest.json lists a file that is not in the release"))
+    for rel in sorted(set(listed) & set(actual)):
+        e, f = actual[rel], listed[rel]
+        if f.get("size") != e.size:
+            out.append((rel, "size differs from manifest.json"))
+        elif f.get("sha256") != e.sha256():
+            out.append((rel, "SHA-256 differs from manifest.json"))
+    return out
 
 
 def _prefixes(low):

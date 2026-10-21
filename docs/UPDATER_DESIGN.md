@@ -1,6 +1,6 @@
 # Updater design (T3.21 research)
 
-Status: research and proposal only, written 2026-10-21. Nothing here is decided or built. Decision goes to a new entry in `docs\DECISIONS.md` (question 284). `recomp-ui\` and `psxrecomp\` are not edited.
+Status: research written 2026-10-21. Option B was chosen and built (D29 in `docs\DECISIONS.md`, T3.21 done). The player steps are in `docs\SETUP.md` ("Updater (T3.21)"). Open items after the build are in `docs\OPEN_QUESTIONS.md` (questions 302 to 307). `recomp-ui\` and `psxrecomp\` are not edited.
 
 Evidence tags: **[V]** verified (read or measured in this session, source given), **[I]** inferred from verified facts, **[H]** hypothesis or not tested.
 Web sources were read with `gh api repos/<r>/contents/...` (raw file text) and `curl` on `api.github.com` metadata and on the 4-line `checksums.txt` only. No release binary was downloaded.
