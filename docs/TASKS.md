@@ -59,8 +59,8 @@ Gate notes:
 | ID | Title | Depends on | Owner | Status |
 | --- | --- | --- | --- | --- |
 | T3.1 | Release rebuild with vsync-off default | T2.23 | agents | done |
-| T3.2 | Refresh replay baselines | T3.1 | agents | todo |
-| T3.3 | Record a new session on the new exe | T3.1 | USER | todo |
+| T3.2 | Refresh replay baselines | T3.1 | agents | done |
+| T3.3 | Record a new session on the new exe | T3.1 | USER | in-progress |
 | T3.4 | Strict replay of the new recording, twice, with negative control | T3.3 | agents | todo |
 | T3.5 | Phase 3 gate review | T3.1, T3.2, T3.3, T3.4 | agents | todo |
 

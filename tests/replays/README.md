@@ -51,6 +51,13 @@ Steps must not overlap. The first step must be later than the frame at which the
 See `docs\SETUP.md` for the debug build. Replays here are tied to one exe build (`exe_sha256`); after a rebuild that changes
 generated code, re-record and review the diff.
 
+**Current baseline (T3.2).** `expected\boot_to_menu.json` was re-recorded on the T3.1 debug build
+(`work\build-dbg\MythologyKombat.exe`, SHA-256 `b31a6b490ccc5029b26d56438cc1a787d53e3ddbe1f90f324e514e35e4993b44`;
+the matching Release exe is `ff813773...7a0a81`). Recorded with `--runs 5`; the first run already had an exact RAM/VRAM hash at all
+7 checkpoints, so it stopped at `runs: 1`. Compared with the old baseline, every judge column (`cyc wc ws mmio mc sp sc qc`), the RAM/VRAM
+hashes and the route hash are unchanged; only `exe_sha256` and the `wr`/`pc` locators changed. Two further cold boots gave MATCH with no
+warnings in one and only "RAM/VRAM hash not compared" notes in the other (see `docs\SETUP.md`, T3.2).
+
 ## Strict replay of recorded sessions (T2.20)
 
 Separate from the debug-port routes above. A session folder written by the playtest diagnostics recorder (T2.19) is
@@ -76,4 +83,4 @@ field in one `N` row of `inputs.csv`, and run with `-Session`; it must report FA
 
 ## Effect of the vsync-off default (D9)
 
-`game.toml` now sets `[video] vsync = "off"`. The boot route does not depend on host pacing: `run_boot_route.py --runs 1 --expect` gave MATCH after the change. Recordings in `local\` were made with another exe and, user-reported, vsync on; they are tied to that exe (`docs/OPEN_QUESTIONS.md`, question 225). Strict replay of them was not re-run.
+`game.toml` now sets `[video] vsync = "off"`. The boot route does not depend on host pacing: `run_boot_route.py --runs 1 --expect` gave MATCH after the change. Recordings in `local\` were made with another exe and, user-reported, vsync on; they are tied to that exe (`docs/OPEN_QUESTIONS.md`, question 225). Strict replay of them was not re-run. The boot-route baseline was refreshed on the T3.1 debug build (T3.2, above).

@@ -1851,7 +1851,7 @@ cmake --build work\build-dbg --target psx-runtime
 | `tools\run_boot_route.py --expect` with `tests\replays\expected\boot_to_menu.json` | MATCH, 7 checkpoints. The only warning is the exe SHA-256 one |
 
 - The probe exits 0 only when `range_hits` is 0 at the first query and above 0 at the last query.
-- The `exe_sha256` in `tests\replays\expected\boot_to_menu.json` is now stale. It was not re-recorded. See `docs/OPEN_QUESTIONS.md` (173).
+- The `exe_sha256` in `tests\replays\expected\boot_to_menu.json` was stale at this point. It was re-recorded at T3.2 (below). See `docs/OPEN_QUESTIONS.md` (173).
 - Coverage is not proven. The audit field `full_static_coverage_proven` is false.
 - The static dispatcher handles only KSEG0 PCs. See `docs/OPEN_QUESTIONS.md` (190).
 
@@ -2305,3 +2305,36 @@ Only 3 steps rebuilt in each tree (BIOS registry object, playtest diagnostics ob
 | `git ls-files` for `ps1_game/`, `work/`, `generated/`, `.bin .cue .exe .ovr .iso .img` | no matches. `git status` shows only the docs edits and the pre-existing `psxrecomp` submodule state |
 
 - The recording in `tests\replays\local\session-1792525023167056` was made on the old exe `b5573bbe...7856b`. It does not apply to the new exe; the new recording is T3.3.
+
+## T3.2 Refresh replay baselines
+
+Agent-run, 2026-10-20, from the repo root, against the T3.1 debug build `work\build-dbg\MythologyKombat.exe` (SHA-256 `b31a6b490ccc5029b26d56438cc1a787d53e3ddbe1f90f324e514e35e4993b44`). The route file was not changed.
+
+### Commands
+
+```
+<RETRO_TOOLS_DIR>\python\python.exe -I tools\run_boot_route.py --runs 5 --record-expected tests\replays\expected\boot_to_menu.json
+<RETRO_TOOLS_DIR>\python\python.exe -I tools\run_boot_route.py --runs 1 --expect tests\replays\expected\boot_to_menu.json     (twice)
+# negative control: copy of the route with the CROSS step at frame 4001 instead of 4000, under work\route_neg\
+<RETRO_TOOLS_DIR>\python\python.exe -I tools\run_boot_route.py --runs 1 --route work\route_neg\neg.json --out work\route_neg\result.json --expect tests\replays\expected\boot_to_menu.json
+```
+
+### Results
+
+| Step | Result |
+|------|--------|
+| Record | One cold boot gave an exact RAM/VRAM hash at all 7 checkpoints, so the tool stopped (`runs: 1`). The file now has `exe_sha256` `b31a6b49...3b44` |
+| Diff against the old baseline | Only `exe_sha256`, `runs` (3 to 1) and the `wr`/`pc` locators changed (12 locator values). All judge columns (`cyc wc ws mmio mc sp sc qc`), `ram_sha256`, `vram_sha256`, `route_sha256` and the miss totals are identical |
+| Verify run 1 | MATCH, 7 checkpoints, exit 0. No `exe_sha256` warning, no locator warning. Two notes: frames 1800 and 5000 were paused one frame late (1801, 5001), so their RAM/VRAM hashes were not compared (the fingerprint was compared) |
+| Verify run 2 | MATCH, 7 checkpoints, exit 0. No warnings at all; all 7 RAM/VRAM hashes compared |
+| Negative control | MISMATCH, 12 differences, exit 1. Frames 3000 to 3900 identical (input not yet different); from frame 4300 `wc`, `ws`, `mmio`, `mc`, `ram_sha256` and `vram_sha256` differ, and so do `wc`, `ws`, `mmio`, `mc` and `ram_sha256` at 5000. `route_sha256` also differs (expected, the file changed) |
+
+### Locator warnings
+
+- The `wr`/`pc` warnings seen at T3.1 (frames 3900, 4300, 5000) were comparisons against the old-exe baseline. After re-recording, neither verify run printed any locator warning, and the `exe_sha256` warning is gone.
+- They are ordered locators that upstream says may differ for identical guest state. The evidence that they were benign: the old and new baselines have identical judge columns and RAM/VRAM hashes and differ only in `wr`/`pc`, which is what a relinked exe with identical generated code would give. In the negative control they differ only at frames 4300 and 5000, where the judge columns also differ. Whether they would stay stable across more builds was not tested.
+- The "RAM/VRAM hash not compared" note is a timing effect of the host pause, not a state difference. `--runs N` exists to fill those gaps at record time.
+
+### Files
+
+`tests\replays\expected\boot_to_menu.json` (changed, committable), `tests\replays\README.md`, `docs\SETUP.md`, `docs\CHANGELOG.md`, `docs\OPEN_QUESTIONS.md`. The negative-control route and result are under `work\route_neg\` (git-ignored). No screenshots or recordings were made.
