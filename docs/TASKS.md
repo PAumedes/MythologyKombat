@@ -62,7 +62,7 @@ Gate notes:
 | T3.2 | Refresh replay baselines | T3.1 | agents | done |
 | T3.3 | Record a new session on the new exe | T3.1 | USER (deferred, only needed for T3.4 replay) | todo |
 | T3.4 | Strict replay of the new recording, twice, with negative control | T3.3 | agents | todo |
-| T3.5 | Phase 3 gate review (runs last) | T3.1, T3.2, T3.4, T3.6 to T3.25 | agents | todo |
+| T3.5 | Phase 3 gate review (runs last) | T3.1, T3.2, T3.4, T3.6 to T3.26 | agents | todo |
 | T3.6 | Perf measurement hygiene | T3.1 | agents | done |
 | T3.7 | 1x vs 4K resolution A/B (visible window) | T3.6 | USER + agents | todo |
 | T3.8 | Vsync and window mode A/B (visible window) | T3.6 | USER + agents | todo |
@@ -74,22 +74,22 @@ Gate notes:
 | T3.14 | Licence for this repo's own files (LICENSE and NOTICE) | — | USER + agents | done |
 | T3.15 | Path, email and derived-data decisions, then the scrub | T3.14 | USER + agents | in-progress |
 | T3.16 | No-game-data guard script | — | agents | done |
-| T3.17 | CI workflow (guard, emitters-test, setup-host) | T3.16, T3.18 | agents | todo |
+| T3.17 | CI on GitHub-hosted runners (guard, emitters-test, setup-host build from a clean clone) | T3.16, T3.18 | agents | todo |
 | T3.18 | Setup-host build in the repo, and the first wizard run | T3.1 | agents + USER | in-progress |
-| T3.19 | Kit packager, content check and checksums | T3.12, T3.14, T3.16, T3.18 | agents | todo |
-| T3.20 | Updater: check, verify, replace, roll back | T3.19 | agents | todo |
-| T3.21 | Release workflow (tag `v*`) | T3.15, T3.17, T3.19 | agents | todo |
-| T3.22 | Clean-machine test of the kit (disc only) | T3.19 | USER | todo |
-| T3.23 | First push to GitHub and first CI run | T3.15, T3.17, T3.21 | USER + agents | todo |
-| T3.24 | Code-signing decision for the kit exe | T3.19 | USER | todo |
-| T3.25 | README rewrite and legal wording | T3.14, T3.15, T3.20 | agents + USER | todo |
-| T3.26 | Optional: embedded Python and offline toolchain | T3.19, T3.22 | agents | todo |
+| T3.19 | Local release script `tools\release.ps1` (game zip, content check, checksums) | T3.12, T3.14, T3.16, T3.18 | agents + USER | todo |
+| T3.20 | Optional: self-hosted runner for the game build (tag only, disc stays on the PC) | T3.17, T3.19 | USER + agents | todo |
+| T3.21 | Launcher updater: check, verify, replace, keep saves | T3.19 | agents | todo |
+| T3.22 | Clean-machine test of the downloaded zip (disc only) | T3.19 | USER | todo |
+| T3.23 | First push to GitHub, history rewrite (D22) and first CI run | T3.15, T3.17, T3.19 | USER + agents | todo |
+| T3.24 | Code-signing decision for the release exe | T3.19 | USER | todo |
+| T3.25 | README rewrite and legal wording | T3.14, T3.15, T3.21, T3.22, T3.24 | agents + USER | todo |
+| T3.26 | Reproducibility of the release exe (Q274) | T3.19 | agents | todo |
 
 Phase 3 notes:
 - T3.3 is deferred. It is the only recording step, and only T3.4 needs it.
 - T3.5 is the gate and runs last. Its number stays T3.5 because other docs cite it.
 - Any relink of `build\MythologyKombat.exe` changes its SHA-256 and breaks strict replay (T2.20). So the user recording (T3.3) must come after the last relink (D14, D15).
-- Release model: D18. Launcher fixes: D19 (patch files). Open questions 244 to 258 are in `docs\OPEN_QUESTIONS.md`.
+- Release model: D25 (a prebuilt game zip, built on the user's PC). D25 supersedes D18 where they conflict; D18's setup-host kit is the fallback and developer path. Launcher fixes: D19 (patch files). Release open questions are 244 to 285 in `docs\OPEN_QUESTIONS.md`.
 - Every USER step lists its exact commands in its task section.
 
 ---
@@ -275,7 +275,7 @@ Run `replay_diagnostics.py <session> --exe <T3.1 exe> --disc <cue> --game game.t
 **Accept when:** both strict replays succeed; the negative control reports a mismatch; `tools\run_replays.ps1` prints pass or fail for the recording; the recording stays git-ignored.
 
 ## T3.5 Phase 3 gate review (agents, runs last)
-Depends on: T3.1, T3.2, T3.4, T3.6 to T3.25 (T3.26 only if the user schedules it). T3.3 and T3.4 wait for the user's recording. If the user descopes them, the gate records that choice, as D17 did for T2.10.
+Depends on: T3.1, T3.2, T3.4, T3.6 to T3.26. T3.3 and T3.4 wait for the user's recording. If the user descopes any of T3.3, T3.4, T3.20 or T3.22 to T3.24, the gate records that choice, as D17 did for T2.10.
 Adversarial reviewer only, as in T2.23. Check that no game data is tracked (`git ls-files`); the T3.1 hash in the docs matches the built exe; each doc claim maps to a `tools\` script; the T3.3 session is recorded as user-reported, not agent-observed.
 **Accept when:** PASS. Then stop and report to the user.
 
@@ -430,15 +430,22 @@ Depends on: none. Owner: agents. Source: `docs\LAUNCHER_DESIGN.md` section 5 (`g
 Write `tools\check_no_game_data.py`. It is stdlib only and reads `git ls-files`. It fails on any tracked path under `generated/`, `ps1_game/` or `work/`; any `*.bin`, `*.cue`, `*.iso`, `*.exe`, `*.dll`, `*.zip`, `*.ovr`, `*.str` or `*.mcd`; `overlay_captures.json`; and any file whose first 8 bytes are `PS-X EXE`. It allows the derived files named in D8.
 **Accept when:** exit 0 on the current repo; a negative test in a temp git repo under `work\` with a planted `.bin` and a file with the `PS-X EXE` header each exits 1 and names the file; output is the same on two runs.
 
-## T3.17 CI workflow (agents)
-Depends on: T3.16, T3.18. Owner: agents. Source: `docs\LAUNCHER_DESIGN.md` section 5.
-Add `.github\workflows\ci.yml` with three jobs: `guard` (ubuntu-latest, runs T3.16); `emitters-test` (windows-latest, recursive submodules, the toolchain, build `psxrecomp\recompiler`, then `ctest`); `setup-host` (windows-latest, configure with the setup-host flags from T3.18, build `psx-runtime`, and fail if the configure log says "linking generated game C" or a `generated\` folder exists). Toolchain version: v1.0.14, as in `docs\SETUP.md`. How the pin is applied is open (question 247). Requirement from T3.18 (D24): fail if a `generated\` folder exists on the runner, or if the configure or ninja graph mentions `generated/overlays_static`. Do not set `PSX_PGO` in CI. Do not `git add -f` any artifact.
+## T3.17 CI on GitHub-hosted runners (agents)
+Depends on: T3.16, T3.18. Owner: agents. Source: D25, D24, `docs\LAUNCHER_DESIGN.md` section 5 (CI rows, revised by D25).
+GitHub-hosted runners have no disc, so CI never builds the game (D25). CI builds and tests only the launcher, the setup-host and the tools. Add `.github\workflows\ci.yml` with three jobs, all on GitHub-hosted runners:
+1. `guard` (ubuntu-latest): runs `tools\check_no_game_data.py` (T3.16) on the git tree.
+2. `emitters-test` (windows-latest, recursive submodules): installs the toolchain, builds `psxrecomp\recompiler`, then runs `ctest`.
+3. `setup-host-build` (windows-latest, clean clone, recursive submodules, no `generated\`): configures with the setup-host flags from T3.18, builds `psx-runtime`. It fails if the configure log says "linking generated game C", if a `generated\` folder exists, or if the configure or ninja graph mentions `generated/overlays_static` (D24).
+Toolchain version: v1.0.14, as in `docs\SETUP.md`. How the pin is applied is open (question 247).
+Rules: no job has a disc or a game file. CI does not run `generate` or `rebuild`. CI does not set `PSX_PGO`. CI does not `git add -f` any artifact. The launcher or tool artifacts may be uploaded as workflow artifacts, never committed.
 **Accept when:** the YAML parses, checked with a tool named in the report; the `guard` job gives the same result as T3.16 on the repo; the workflow runs green on the first push (T3.23), or each failure is listed as a new task.
 
 ## T3.18 Setup-host build in the repo, and the first wizard run (agents + USER)
 Depends on: T3.1. Owner: agents + USER. Source: `docs\LAUNCHER_DESIGN.md` sections 2 and 5, `docs\PUBLISHING_AUDIT.md` section 4 and question 258.
 Agents build the setup-host exe (`PSXRECOMP_FORCE_SETUP_HOST=ON`, `PSX_SETUP_WIZARD=ON`, no game C) in `build-setup\`, which `.gitignore` already covers. Use the generator and commands in `docs\SETUP.md`. Also decide question 258 (fix the modified psxrecomp files or document them) and question 257 (keep the pin or bump it; a bump needs the T3.2 baseline refresh).
 **Status 2026-10-20 (in-progress):** agent part measured and recorded in `docs\SETUP.md` (Setup-host build, T3.18): exe hashes, timings and the fresh clone test. Question 258 closed; question 257 closed (pin kept at `449c31e5`). D24 records that dev-tree setup-host exes must not go in the kit. Remaining: the user's first wizard run (the steps are in `docs\SETUP.md`), then the result is recorded and the task is closed.
+**D25 note (2026-10-21):** the setup-host exe is the fallback and developer path. The release is the prebuilt game zip (T3.19). D24 still holds: a setup-host exe built in a dev tree never goes in a release.
+
 **What you do** (when the agents ask, for the first wizard run on this machine):
 ```
 cd <REPO_ROOT>
@@ -449,25 +456,58 @@ Pick the disc in the wizard, then tell the orchestrator each step and any error 
 
 **Status note 2026-10-21 (wizard run agent-observed, not user-reported):** The first wizard run was done by agents in `work\clone-test`, with the clone exe `b4e9d186...`. Patricio did not take part. The run is in `docs\SETUP.md` (First wizard run). Met: exe built (`build-release\MythologyKombat.exe`, SHA-256 `17ca5c78...`), fresh clone builds, hash recorded, question 258 closed. Not met as written: the run is recorded as agent-observed, not user-reported. Patricio's own run is still open. The orchestrator sets the status; this note does not change the status column.
 
-## T3.19 Kit packager, content check and checksums (agents)
-Depends on: T3.12, T3.14, T3.16, T3.18. Owner: agents. Source: `docs\LAUNCHER_DESIGN.md` sections 2 (option A) and 5 (`kit` row).
-Build the kit zip from an allow-list: the setup-host exe, the filtered `psxrecomp\` tree the CLI needs, `game.toml`, `seeds\`, `aot\overlays.json`, `symbols.toml`, the licences from T3.14, and a version file. Whether the toolchain is in the kit is open (question 253). Do not call `scripts\package_release.sh` (bundled packager). Do not call `psxrecomp\tools\package_setup_host.sh` unmodified (retired, not read in full).
-The content check rejects any `.c` from `generated\`, any `.bin`, `.cue`, `.ovr`, and any `.exe` other than the setup exe. Output: `MythologyKombat-<version>-kit-windows-x64.zip` and `checksums.txt` (SHA-256).
-Requirement from T3.18 (D24): build the kit exe from a clean clone with no `generated\` folder. The content check fails if the exe came from a dev tree, or if the kit holds any file from `generated\`.
-**Accept when:** the content check passes; the T3.16 guard passes on the zip's file list; `checksums.txt` matches the zip; the version is recorded in `docs\CHANGELOG.md` at release time.
+## T3.19 Local release script `tools\release.ps1` (agents; USER runs it and uploads)
+Depends on: T3.12, T3.14, T3.16, T3.18. Owner: agents (the script). USER (the run and the upload). Source: D25, D8, D16, D24, `docs\LAUNCHER_DESIGN.md` section 2 (revised by D25).
+The release game build is made on the user's PC, from the user's disc. The script is run by hand at release time. It is not a pre-commit step. `tools\release.ps1` does these steps in order:
+1. Takes a clean checkout of a tag (a fresh clone, or a worktree under `work\`, with recursive submodules). It stops if the tree is dirty or the tag does not exist.
+2. Takes the disc as a parameter (`-Disc`, the path to the `.cue`). In that checkout it runs `verify-disc`, `generate` and `rebuild` through `tools\run_psxrecomp.ps1`. Generated code stays in the checkout.
+3. Builds the game exe. It includes the launcher (recomp-ui is linked into it, `LAUNCHER_DESIGN.md` section 3).
+4. Packages the game zip from an allow-list: the release exe, its launcher files, `mods\`, `LICENSE`, `NOTICE`, a version file and the settings defaults. It excludes the disc, saves, recordings, BIOS dumps and memory cards.
+5. Runs a release content check on the zip. It fails on any `.bin`, `.cue`, `.iso`, `.chd` or `.mcd` file, on any session recording, and on any path under `ps1_game\`. It names each file it rejects.
+6. Writes `checksums.txt` (SHA-256 of the zip).
+7. Stops. It does not upload anything.
+Outputs go to `work\release\` (git-ignored). The upload is a separate step, run only after the user says yes in chat. It creates a draft first: `gh release create <tag> <zip> checksums.txt --draft`. Publishing the draft is a second explicit yes.
+Do not call `scripts\package_release.sh` (bundled packager). Do not call `psxrecomp\tools\package_setup_host.sh` (retired).
+**What you do** (USER, after the agents say the script is ready; the parameter names are fixed by this task):
+```
+cd <REPO_ROOT>
+git status --short
+git tag --list "v*"
+powershell -ExecutionPolicy Bypass -File tools\release.ps1 -Tag <tag> -Disc "<REPO_ROOT>\ps1_game\Mortal Kombat Mythologies - Sub-Zero.cue"
+```
+Then say yes in chat to the draft upload. The agents run the `gh release create` line from step 7.
+**Accept when:** from a clean checkout at a tag, the script runs with the user's disc and writes the zip and `checksums.txt` to `work\release\`; the content check passes on the zip; a test copy with a planted `.bin` or `.cue` makes the check fail and name the file; `checksums.txt` matches the zip; `git status` is clean after the run; the only upload is the draft, and only after the user's yes.
 
-## T3.20 Updater: check, verify, replace, roll back (agents)
-Depends on: T3.19. Owner: agents. Source: D18, `docs\LAUNCHER_DESIGN.md` section 4 (the design is a proposal).
-The launcher calls `GET https://api.github.com/repos/<owner>/<repo>/releases/latest` and compares the tag with the local kit version. If newer, it downloads the zip and `checksums.txt`, checks the SHA-256, and extracts over the install folder. It keeps `build-release\`, `saves\`, `settings.toml` and `bios\`. It keeps the previous kit until the new one works (rollback). It warns when the data version changes and a regenerate is needed. The code is a launcher-side helper or a patch under `patches\` (D19). recomp-ui is not edited.
-**Accept when:** against a local test server or a test release: (1) a newer version is found and installed; (2) a checksum mismatch is refused and nothing is replaced; (3) saves and settings survive the update; (4) the previous kit stays until the new one has run.
+## T3.20 Optional: self-hosted runner for the game build (USER + agents)
+Depends on: T3.17, T3.19. Owner: USER + agents. Optional: the user decides. Source: D25, `docs\LAUNCHER_DESIGN.md` section 5.
+A GitHub Actions self-hosted runner on the user's PC can run the same steps as T3.19 when a version tag is pushed. The disc never leaves the PC.
+Rules:
+- The runner runs on the user's PC only. Its label is chosen in this task and written in `docs\SETUP.md`.
+- The disc path comes from a local environment variable set on that PC. The variable name is chosen in this task. The path is never in the repo, in a workflow file or in chat.
+- The workflow runs only on a version tag that the user pushed (`v*`). It does not run on pull requests, and it does not run for forks.
+- It creates a draft release only. Publishing is the user's step (T3.19).
+- Check whether the repo's tag rules can limit who may push `v*` tags. Not verified.
+**What you do** (USER, when the agents ask):
+```
+[Environment]::SetEnvironmentVariable("<variable name chosen in T3.20>", "<REPO_ROOT>\ps1_game\Mortal Kombat Mythologies - Sub-Zero.cue", "User")
+```
+The runner install commands are on the GitHub page at Settings, Actions, Runners, New self-hosted runner. Run them in a PowerShell window yourself. Do not paste the runner token in chat.
+**Accept when:** the user confirms the runner is registered; with the user's yes, a test tag produces a draft release from the runner; `git grep` for the disc file name finds nothing in the tracked tree; a pull request from a fork does not start the job; each failure becomes a question or a task.
 
-## T3.21 Release workflow (agents)
-Depends on: T3.15, T3.17, T3.19. Owner: agents. Source: `docs\LAUNCHER_DESIGN.md` section 5 (`release` row).
-Write `.github\workflows\release.yml`. It runs on a tag `v*` or by manual dispatch, needs `guard`, `emitters-test`, `setup-host` and `kit`, and uploads the kit zip and `checksums.txt` with `softprops/action-gh-release@v2` and `fail_on_unmatched_files`, with `permissions: contents: write`. Artifacts are never committed.
-**Accept when:** the YAML parses; a manual dispatch after T3.23 produces the zip and checksums as workflow artifacts, and the T3.16 check passes on them. No release is published without the user's yes (T3.23).
+## T3.21 Launcher updater: check, verify, replace, keep saves (agents)
+Depends on: T3.19. Owner: agents. Source: D25, question 252, question 284, `docs\LAUNCHER_DESIGN.md` section 4 (proposal, revised by D25).
+Step 1, research first: read how Hell's Gate Recomp and Shaolin Monks Recomp update, from their public source and release assets. Record the findings in `docs\LAUNCHER_DESIGN.md`. Then choose the mechanism: a launcher-built-in updater (a patch under `patches\launcher\`, D19), or an upstream one if one exists. Record the choice as a new entry in `docs\DECISIONS.md`. `recomp-ui\` is not edited.
+Behaviour:
+- Calls `GET https://api.github.com/repos/<owner>/<repo>/releases/latest` and compares the tag with the local version file.
+- If the release is newer, downloads the game zip and `checksums.txt` and checks the SHA-256. A mismatch is refused, and nothing is replaced.
+- Replaces the game build. Keeps `saves\`, `settings.toml`, `bios\` and the disc path.
+- Keeps the previous build until the new one has started once (rollback).
+- Never downloads or stores a disc.
+The data-version check in the older design does not apply. The release is a prebuilt game build, so the player does not regenerate.
+**Accept when:** against a local test server or a test release: (1) a newer version is found and installed; (2) a checksum mismatch is refused and nothing is replaced; (3) saves and settings survive the update; (4) the previous build stays until the new one has run once.
 
-## T3.22 Clean-machine test of the kit (USER)
-Depends on: T3.19. Owner: USER. Source: `docs\PUBLISHING_AUDIT.md` section 6 and blocker 12, `docs\LAUNCHER_DESIGN.md` section 3. The design calls this the acceptance test for the kit. It needs a second Windows machine or a VM with only your disc. The CLI needs Python 3 (`LAUNCHER_DESIGN.md` section 2). Record whether the kit installs it or you must (question 254, T3.26).
+## T3.22 Clean-machine test of the downloaded zip (USER)
+Depends on: T3.19. Owner: USER. Source: `docs\PUBLISHING_AUDIT.md` section 6 and blocker 12, `docs\LAUNCHER_DESIGN.md` section 3, D25, questions 255 and 275. This is the acceptance test for the release zip. It needs a second Windows machine or a VM with only your disc. Test the zip you download (a draft release asset, or the copy in `work\release\`), not this PC's build.
 **What you do:**
 1. Put your disc in a folder outside the repo. Copy the `.cue` and the `.bin` by hand, or:
 ```
@@ -475,61 +515,72 @@ New-Item -ItemType Directory -Force "$env:USERPROFILE\Discs\MK" | Out-Null
 Copy-Item "<path to your .cue>" "$env:USERPROFILE\Discs\MK\"
 Copy-Item "<path to your .bin>" "$env:USERPROFILE\Discs\MK\"
 ```
-2. Copy the kit zip to the test machine (download from the release page, or USB). Then:
+2. Download the zip from the draft release page, or copy it to the test machine by USB. The zip name is set in T3.19. Then:
 ```
-Expand-Archive -Path "$env:USERPROFILE\Downloads\MythologyKombat-<version>-kit-windows-x64.zip" -DestinationPath "$env:USERPROFILE\MythologyKombat-kit"
-Get-ChildItem "$env:USERPROFILE\MythologyKombat-kit" | Select-Object Name, Length
+Expand-Archive -Path "$env:USERPROFILE\Downloads\MythologyKombat-<version>-windows-x64.zip" -DestinationPath "$env:USERPROFILE\MythologyKombat"
+Get-ChildItem "$env:USERPROFILE\MythologyKombat" | Select-Object Name, Length
 ```
-3. Start the setup exe:
+3. Start the program:
 ```
-Start-Process "$env:USERPROFILE\MythologyKombat-kit\MythologyKombat-setup.exe"
+Start-Process "$env:USERPROFILE\MythologyKombat\MythologyKombat.exe"
 ```
-4. In the wizard, pick the `.cue` from `Discs\MK`. Let verify, generate, toolchain and rebuild run. Note how long each phase takes, and copy any error text.
-5. Check that no disc file reached the kit folder:
+4. In the launcher, pick the `.cue` from `Discs\MK`, check the verdict, and press PLAY. Note any error text.
+5. Check that no disc file is in the folder:
 ```
-Get-ChildItem "$env:USERPROFILE\MythologyKombat-kit" -Recurse -Include *.bin,*.cue,*.ovr,*.str | Select-Object FullName
+Get-ChildItem "$env:USERPROFILE\MythologyKombat" -Recurse -Include *.bin,*.cue,*.iso,*.chd,*.mcd,*.ovr,*.str | Select-Object FullName
 ```
-6. Report: the Windows version (`(Get-CimInstance Win32_OperatingSystem).Caption`), each wizard step and its result, the time per phase, any Smart App Control message, and whether `build-release\MythologyKombat.exe` starts.
-**Accept when:** the user confirms the wizard runs to the end on the test machine; agents record the steps, times and errors as user-reported; each failure becomes a question or a task; the check in step 5 finds nothing.
+6. Report: the Windows version (`(Get-CimInstance Win32_OperatingSystem).Caption`), each step and its result, whether the game reaches the title screen, the time from PLAY to the title screen, and any Smart App Control message.
+**Accept when:** the user confirms the game starts from the zip on the test machine; agents record the steps, times and errors as user-reported; the check in step 5 finds nothing; each failure becomes a question or a task.
 
-## T3.23 First push to GitHub and first CI run (USER + agents)
-Depends on: T3.15, T3.17, T3.21. Owner: USER + agents. Source: `docs\PUBLISHING_AUDIT.md` section 1 and section 8.
-A push is hard to undo, because the author email is in the history. Push only after T3.14 and T3.15 are decided. The repo has no remote today.
+## T3.23 First push to GitHub, history rewrite (D22) and first CI run (USER + agents)
+Depends on: T3.15, T3.17, T3.19. Owner: USER + agents. Source: `docs\PUBLISHING_AUDIT.md` sections 1 and 8, D22, D25.
+A push is hard to undo, because the author email is in the history. The order is fixed by D22: all other commits first, then a backup bundle, then the history rewrite only after the user's final yes, then the push. The repo has no remote today.
 **What you do:** create an empty GitHub repo first, under a name you choose (public or private is your choice). Then:
 ```
 cd <REPO_ROOT>
 git status --short
 git ls-files | Select-String -Pattern "^(ps1_game|work|generated|build)/"
+git bundle create "$env:USERPROFILE\MythologyKombat-backup.bundle" --all
+```
+The `Select-String` line must print nothing. The bundle goes outside the repo. Then tell the orchestrator and say yes in chat to the rewrite. The agents run the rewrite and report the author list. After that, you run:
+```
 git remote add origin https://github.com/<your-github-user>/<repo-name>.git
 git push -u origin master
 ```
-The `Select-String` line must print nothing. Then tell the orchestrator. Do not create a tag or a release until you say so.
-**Accept when:** the user confirms the push; agents report the first CI run, green or with each failure listed as a task; no tag or release exists without the user's yes.
+Do not create a tag or a release until you say so.
+**Accept when:** the bundle exists outside the repo; `git log --all --format="%ae" | Sort-Object -Unique` shows only the noreply address after the rewrite (D22); the user confirms the push; agents report the first CI run (T3.17), green or with each failure listed as a task; no tag or release exists without the user's yes.
 
-## T3.24 Code-signing decision for the kit exe (USER)
-Depends on: T3.19. Owner: USER. Source: question 244, `docs\LAUNCHER_DESIGN.md` sections 2, 5 and 8 item 3. Smart App Control may block an unsigned exe (question 255). A certificate costs money. Optional: the release can ship unsigned.
+## T3.24 Code-signing decision for the release exe (USER)
+Depends on: T3.19. Owner: USER. Source: question 244, question 255, `docs\LAUNCHER_DESIGN.md` sections 2 and 8 item 3, D25. Smart App Control may block an unsigned exe (question 255, not tested). The release exe is built on your PC (D25), so the GitHub-secrets signing route in the older design does not fit. Options, not decided: (a) sign locally in `tools\release.ps1`, with a certificate kept on your PC; (b) ship unsigned, and say so in the README. A certificate costs money. The choice is yours.
 **What you do:**
 ```
 cd <REPO_ROOT>
 Get-Content docs\LAUNCHER_DESIGN.md | Select-String -Pattern "Smart App Control|signing"
 ```
-Reply in chat: sign, or ship unsigned. If you sign, do not paste the certificate or its password in chat. Add the two secrets, `WINDOWS_SIGN_PFX_BASE64` and `WINDOWS_SIGN_PFX_PASSWORD`, in the GitHub repo settings, and agents wire them into the release.
-**Accept when:** question 244 is closed in `docs\OPEN_QUESTIONS.md`; if signing is chosen, the release signs the kit exe and `Get-AuthenticodeSignature` on the exe in the zip reports a valid signature.
+Reply in chat: (a) sign locally, or (b) ship unsigned. Do not paste a certificate, its password or its file path in chat.
+**Accept when:** question 244 is closed in `docs\OPEN_QUESTIONS.md`; if (a) is chosen, the release script signs the exe and `Get-AuthenticodeSignature` on the exe in the zip reports Valid; if (b) is chosen, the README says the release is unsigned.
 
 ## T3.25 README rewrite and legal wording (agents + USER)
-Depends on: T3.14, T3.15, T3.20. Owner: agents (doc-writer) + USER review of the legal wording (question 245). Source: `docs\PUBLISHING_AUDIT.md` section 7.
-Rewrite `README.md` in the eleven parts listed in section 7 of the audit. Include the status (with D17), the requirements, the player steps for the kit, the developer build, the controls link (`docs\CONTROLS.md`), troubleshooting, the licence and credits, and the legal note.
+Depends on: T3.14, T3.15, T3.21, T3.22, T3.24. Owner: agents (doc-writer) + USER (the legal wording, question 245). Source: `docs\PUBLISHING_AUDIT.md` section 7, D25.
+Rewrite `README.md` in the style of the Shaolin Monks Recomp README: download the zip, extract it, start the exe, select your disc, PLAY. Include the checksums (`checksums.txt`), the status (D17), the requirements, the controls link (`docs\CONTROLS.md`), troubleshooting, the update check (T3.21), the signing status (T3.24), the licence and credits, and the legal note.
+Legal rules (D25):
+- The README must not say the program contains no game-derived code. The release zip contains a program built from the game's code.
+- It states what the zip contains and does not contain, as the T3.19 content check shows. The disc image, saves, recordings, BIOS dumps and memory cards are not in the zip.
+- The player supplies their own disc.
+- The wording about game data depends on question 280 (whether the exe holds game data bytes, not only code).
+- The current `README.md` line 9 says the repo holds no game code. That is true of the repo, and it is replaced by the rules above.
 **What you do:** reply in chat with the legal wording you approve, or with changes. Check the draft with:
 ```
 cd <REPO_ROOT>
 Get-Content README.md
 ```
-**Accept when:** every section in the audit's section 7 exists, or is marked "not yet"; only the 3 literal pattern mentions in `docs\TASKS.md` remain; the legal note is the wording the user approved (question 245); each claim maps to a doc or a script; the player steps match the kit from T3.19 and the updater from T3.20.
+**Accept when:** every section in the audit's section 7 exists, or is marked "not yet"; the README makes no claim of "no game code"; the legal note is the wording the user approved (question 245); each claim maps to a doc, a script or the T3.19 content check; the player steps match the zip from T3.19 and the updater from T3.21.
 
-## T3.26 Optional: embedded Python and offline toolchain (agents)
-Depends on: T3.19, T3.22. Owner: agents. Optional: not part of the gate unless the user schedules it. Source: `docs\LAUNCHER_DESIGN.md` sections 2 and 7 (effort row for embedded Python), questions 247, 248 and 254.
-Options: ship an embedded Python 3 in the kit (licence check first); pin the toolchain so the wizard needs no network check; an offline kit variant. Option E (prebuilt framework libraries, question 248) is not scheduled. Start only after T3.22 shows which first-run step fails.
-**Accept when:** the user approves the option; T3.22 is repeated and the step that failed no longer fails; any licence added is listed in the T3.14 `NOTICE`.
+## T3.26 Reproducibility of the release exe (agents)
+Depends on: T3.19. Owner: agents. Source: question 274, D14, D15, D24, T2.20.
+Two exes of the same size had different hashes (question 274): `ff813773...` (T3.1, dev tree) and `17ca5c78...` (wizard build). The released exe needs a known hash, and the user's recordings are tied to one exe hash (D14, D15).
+Steps: build the same tag twice from two clean clones and compare the SHA-256 of the exe. Then compare a dev-tree build with a clean-clone build. Find the cause of any difference (for example timestamps, paths or the toolchain). Record the cause in `docs\SETUP.md`. Record the hash of the released exe in `docs\CHANGELOG.md` at release time.
+**Accept when:** two clean builds of the same tag give the same SHA-256, or each difference is explained and recorded with its cause; the released exe hash is recorded; any framework-level fix goes upstream first (`CLAUDE.md`), or is recorded as a question.
 
 ## Backlog (not scheduled, no task IDs yet)
 
@@ -538,6 +589,7 @@ These are ideas only. Each needs its own task before work starts.
 | Item | Related |
 | --- | --- |
 | Further playtest of other levels and movies | Open questions 237, 238, 232 |
+| Embedded Python, pinned or offline toolchain, offline kit (formerly T3.26). Not needed by the prebuilt release route (D25) unless the fallback kit is used | Q247, Q253, Q254 |
 | Enhancements | `docs\ENHANCEMENTS.md` |
 | Overlay toolchain and KUSEG shard (left for later, `docs\PERF_AND_ENGINEERING_IDEAS.md` item 5). Intel driver update and GPU choice (item 4) are USER system changes, not scheduled | Q99, Q190 |
 
@@ -556,9 +608,12 @@ Hard to undo, so ask first:
 | Box art or icon source and its licence | Q246 | T3.12 (choose before patches) |
 | Repo licence for this repo's own files | Q249 | T3.14 |
 | Path and email scrub, history rewrite, derived-data scope | Q250, Q251 | T3.15 (before T3.23) |
-| Pushing the repo to GitHub, and any tag or release | — | T3.23 |
-| Code-signing certificate for the kit exe | Q244 | T3.24 |
-| Legal wording for the README and release page | Q245 | T3.25 |
+| Pushing the repo to GitHub | — | T3.23 |
+| Publishing a locally built release exe: draft first, then a public release (each a separate yes) | D25, Q281, Q285 | T3.19, T3.22 |
+| Running a self-hosted runner on this PC, and its disc-path variable | D25, Q282 | T3.20 |
+| Code-signing for the release exe (sign locally or ship unsigned) | Q244 | T3.24 |
+| Legal wording for the README and release page | Q245, Q280, Q285 | T3.25 |
+| Shipping the release exe with translated game code (takedown risk accepted, no legal opinion) | D25, Q285 | T3.19 |
 
 ### Open questions for the user
 

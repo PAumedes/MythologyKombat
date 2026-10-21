@@ -2,6 +2,8 @@
 
 Status: research and proposal only, written 2026-10-20. Nothing here is decided. Nothing was built, run or pushed.
 
+Update 2026-10-21: superseded by D25 for the distribution choice. The release is a prebuilt game zip, built on the user's PC from the user's disc (`tools\release.ps1`, or an optional self-hosted runner). CI builds the launcher and tools only. Section 2 (options A and C) and section 4 (updater) no longer decide the release route. Section 0 and the excluded options in section 2 still hold. D18's setup-host kit is the fallback and developer path. Section 5 CI rows for the `kit` and `release` jobs are replaced by T3.17 to T3.26.
+
 Evidence tags: **[V]** verified (read in this session; source given), **[U]** unverified (not stated by the source, or inferred), **[H]** hypothesis.
 Local sources are paths under `<REPO_ROOT>`. Web pages were read through a fetch tool that summarises the page, so wording is paraphrased; open the URL before quoting.
 

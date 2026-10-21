@@ -227,6 +227,8 @@ _Filled in by the doc-writer as tasks pass review._
 
 ## D18 Release model: setup-host kit (2026-10-20)
 
+- Status (2026-10-21): partly superseded by D25. Where they differ, D25 governs. The setup-host kit below stays as the documented fallback and developer path. Its release tasks are replaced by T3.17 to T3.26 (D25).
+
 - Context: `docs/LAUNCHER_DESIGN.md` (section 2, option A) and `docs/PUBLISHING_AUDIT.md` (section 8, blocker 1) left the release model open. Game C, any exe built from it, and disc-derived data may not be distributed (D8, `CLAUDE.md`).
 - Decision (Patricio, in chat, 2026-10-20):
   - The release is a setup-host kit: a release zip with the launcher, the toolchain and the recompiler.
@@ -305,3 +307,27 @@ _Filled in by the doc-writer as tasks pass review._
 - Clean-clone exe, measured: 32,589,824 bytes, SHA-256 `b4e9d186d918e0839631a80dbb267e075307627bae45471bb63ff4bfa8b711a3`.
 - Open: the upstream glob bug (question 269).
 - Task: T3.18. Steps in `docs/SETUP.md`.
+
+## D25 Release model: prebuilt game zip, built on the user's PC (2026-10-21)
+
+- Decided: Patricio, in chat, 2026-10-21. The orchestrator relayed the decision. The user was told the risks first (see Risk). No legal opinion was given.
+- Supersedes D18 where they conflict. D18's setup-host kit stays as the documented fallback and developer path.
+- Context:
+  - GitHub-hosted runners have no disc. `generate` needs the game executable from the user's disc, and uploading the disc to GitHub is not acceptable. So CI cannot build the game.
+  - Shaolin Monks Recomp and Hell's Gate Recomp publish a prebuilt zip (Hell's Gate also an installer) on GitHub Releases. Read on 2026-10-21 from their READMEs and release metadata with `gh api`. Their zip contents were not inspected. Shaolin Monks: download the zip, extract, start the exe, select your ISO, Save and Play, with `checksums.txt`. Hell's Gate: an installer or portable zip, and an in-launcher updater that reads GitHub Releases.
+- Decision:
+  1. The GitHub release includes a prebuilt game build (a zip).
+  2. The game build is made on the user's PC, from the user's disc. Two routes: (a) a local release script, `tools\release.ps1`, run by hand at release time (not a pre-commit step); (b) an optional self-hosted GitHub Actions runner on the user's PC, triggered by a version tag. The disc never leaves the PC.
+  3. GitHub-hosted runners build the launcher and the tools only (T3.17).
+  4. A locally built release artifact (an exe with translated game code) may be published as a GitHub Release asset only. It is never committed to git, and it is never built from or containing the disc image, memory cards or recordings.
+  5. The README must not say the program contains no game-derived code. It states what the zip does and does not contain, and that the player supplies their own disc.
+- What stays: generated C, disc images, BIOS dumps, saves, recordings and extracted files are never committed to git (D8, D16, `CLAUDE.md`).
+- What changes: the release game zip may be published as an asset (item 4). The README wording changes (item 5). CI no longer builds the game (item 3).
+- Risk: the user accepted the takedown risk. A release containing translated game code carries that risk. The decision brief says Mortal Kombat is a Warner property, and the user was told this. No legal opinion was given (question 285).
+- Not chosen, and why:
+  - CI builds the game from a disc held in CI secrets or on a server (`LAUNCHER_DESIGN.md` option X2). The disc would sit on a server.
+  - Committing generated C and letting CI link it (option X1). Still excluded: nothing generated is committed.
+  - Committing a built exe or zip to git. Not allowed by any route.
+- Open items: `CLAUDE.md` is not amended yet (question 281). This doc-writer's scope is `docs\` and `README.md`, so `CLAUDE.md` was not changed. Also questions 280 (whether the exe holds game data bytes, not only code), 282 (runner and variable name), 283 (Hell's Gate and Shaolin Monks zip contents), 284 (updater mechanism) and 285 (legal opinion).
+- Tasks: T3.17 to T3.26 in `docs/TASKS.md` replace the older T3.17 to T3.26. T3.18 is unchanged, with a D25 note. T3.5 stays the gate, last.
+- Reason: the user's choice. CI cannot build the game without the disc (see Context).

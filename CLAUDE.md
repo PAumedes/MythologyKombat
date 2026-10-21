@@ -35,6 +35,8 @@ a decision that can't be undone). Tasks marked `USER` are such steps: explain ex
 
 - Never commit game data: nothing from `ps1_game/`, `work/`, generated C from game code (`generated/`),
   game binaries, or `overlay_captures.json`. Check `git status` before every commit.
+  Exception (D25, user decision 2026-10-21): a locally built release artifact containing recompiled game
+  code may be published as a GitHub Release asset; it is never committed to git.
 - Generated code is never hand-edited: fix the recompiler or config and regenerate.
 - No invented facts about the game. Unknowns go in `docs/OPEN_QUESTIONS.md`.
 - Every claim about the disc must come from a script in `tools/` whose output can be reproduced.
