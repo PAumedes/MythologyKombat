@@ -68,7 +68,7 @@ Gate notes:
 | T3.8 | Vsync and window mode A/B (visible window) | T3.6 | USER + agents | todo |
 | T3.9 | Sampling profile of the Release exe during the FMV | T3.6 | USER + agents | todo |
 | T3.10 | PGO and LTO trial (flag-only, only if T3.9 points at compiled code) | T3.6, T3.7, T3.8, T3.9 | agents | todo |
-| T3.11 | Launcher screenshots at default and user scale | T3.1 | USER | todo |
+| T3.11 | Launcher screenshots at default and user scale | T3.1 | USER | done |
 | T3.12 | Launcher fixes as local patch files (D19) | T3.11, T3.13 | agents | todo |
 | T3.13 | Box art and disc icon source and licence | T3.11 | USER | todo |
 | T3.14 | Licence for this repo's own files (LICENSE and NOTICE) | — | USER + agents | todo |
@@ -367,6 +367,7 @@ $bmp = New-Object System.Drawing.Bitmap $b.Width, $b.Height
 $bmp.Save((Join-Path (Resolve-Path work\screens) ("shot_" + (Get-Date -Format HHmmss) + ".png")))
 ```
 Views to capture: the main page with the game loaded, the main page scrolled to the bottom, the Settings page, the Analog/D-pad area, and the Renderer dropdown open. Tell the orchestrator the DPI number and the folder. The screenshots stay in `work\` and are not committed.
+**Result (2026-10-20):** DPI is 120 (`AppliedDPI`, which is 125 percent). Five images are in `work\screens\`: `shot_230017.png` (main page), `shot_230036.png` (main page scrolled), `shot_230049.png` (Settings top), `shot_230059.png` (Settings scrolled) and `shot_230113.png` (Mods/Features). The Renderer dropdown-open view was not captured, so item 5b shows the closed combo only. Findings are in `docs\LAUNCHER_DESIGN.md` section 6.1. Items 1, 2, 3, 5a and 5b are seen in the images; item 4 is partly seen (spacing above the Keyboard row); 5c is not confirmed. The window-size cause is a hypothesis, not tested. The images are agent-viewed, not run live.
 **Accept when:** at least one screenshot for each of the five items in `docs\LAUNCHER_DESIGN.md` section 6; the DPI number is recorded; section 6 is updated from hypothesis to observed for each item.
 
 ## T3.12 Launcher fixes as local patch files (agents)

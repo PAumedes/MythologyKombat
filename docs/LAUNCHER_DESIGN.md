@@ -117,7 +117,7 @@ Limits: CI can never run Generate or the wizard end to end, because it has no di
 
 ## 6. Launcher UX/UI issues
 
-Reported by the user (treat as facts), then mapped to source. Everything in "likely cause" is a **hypothesis from reading the source**; none was reproduced in a screenshot in this session.
+Reported by the user (treat as facts), then mapped to source. Everything in "likely cause" is a **hypothesis from reading the source**; none was reproduced in a screenshot in this session. Since T3.11 (2026-10-20), section 6.1 records what the user's screenshots show.
 
 Platform: the UI is **native Dear ImGui** (C++), SDL3 or SDL2, OpenGL 3.3 (GLES2 on Android), drawn with the `LauncherTheme` token table. It is not web, not Electron and has no CSS. [V] `launcher_imgui.cpp` lines 3 and 14662 to 14666; `recomp-ui\README.md`. There is a headless script mode for screenshots: `LNG_SCRIPT="wait:40;view:settings;shot:out.png;quit"` in the standalone harness, and `LNG_VARIANT=psx`. [V] `recomp-ui\README.md` "Build & self-test". To reproduce in our exe, run `build\MythologyKombat.exe` with the launcher, or use the built-in browser pane / the OS screenshot; whether `LNG_SCRIPT` works inside the game exe was not checked. [U] Default window is 1100 by 880 logical pixels, resizable, size remembered in `launcher-window.ini`. [V] README. Layout scales with `px()` (DPI factor); I did not read its definition. [U]
 
@@ -130,6 +130,34 @@ Platform: the UI is **native Dear ImGui** (C++), SDL3 or SDL2, OpenGL 3.3 (GLES2
 | 5a | Settings: Window size has no dropdown | `4065 to 4071`: `Window size` is a **button that cycles** through `kWindowWidths` (`launcher_model_cycle_window_size`, `launcher_model.c:1977`); only the `else` branch (`row_window_scale`, 1960) uses a combo (`settings_combo_row` 1926). The label is generated width x height from the aspect index (`launcher_model.c:1984`) | By design: the Renderer row's comment (4085 to 4088) says a list is better than a cycle for several entries, but the Window size row was never converted | Small patch: replace the button with a `BeginCombo` over `kWindowWidths` (list is in `launcher_model.c`; length `kWindowWidthCount`). Needs exposing a count/label-at accessor like `launcher_model_renderer_label_at`. About 25 lines. |
 | 5b | Renderer: the OpenGL option text does not fit | `4089 to 4118`; control width `SETTINGS_CTRL_W 150.0f` (line 1896) shared by every row; upstream comment 4102 to 4107 says the closed combo shows "OpenGL (exper" for the long label and adds a hover tooltip | The renderer labels come from the host (`kOvlRenderers` / renderer table in `psxrecomp\runtime\src\main.cpp` near 16948, other label source not traced). A 150 px column (scaled by `px()`) is too narrow at the user's DPI/font | Small patch: widen the column for this row, or `CalcTextSize` of the longest label, or truncate the selected label with an ellipsis in the combo. Alternatively our host passes shorter labels (our side, no upstream change). The popup width already sizes to the longest entry (upstream comment). |
 | 5c | Some textboxes have weird internal padding | `FramePadding = (spacing_md, spacing_sm)` at 1539; several widgets override with `PushStyleVar(FramePadding, (14, 8))` at 4706 and 4719; steppers use fixed `bh = 30, bw = 32, fw = 58` (1822 to 1826); buttons fixed 28/30/34 px heights (3152, 4067, 2299); combos use the default frame padding with fixed widths | Mixed fixed pixel heights and frame paddings across controls, so text boxes, steppers and combos do not share a height or inner padding | Unknown which textboxes. Probable fix is a shared helper that sets `FramePadding` once per row. Needs the screenshot; do not patch blind. |
+
+### 6.1 Observed in screenshots (T3.11, 2026-10-20)
+
+Source: the user's five images in `work\screens\` (agent-viewed, not run live). Display: DPI 120 (`AppliedDPI`, which is 125 percent) on a 1920x1080 screen, so about 1536x864 logical pixels are usable. The report does not say which screenshot shows each detail, so the file column lists the set the detail appears in.
+
+| Shot | File |
+|---|---|
+| Main page | `shot_230017.png` |
+| Main page scrolled | `shot_230036.png` |
+| Settings top | `shot_230049.png` |
+| Settings scrolled | `shot_230059.png` |
+| Mods/Features page | `shot_230113.png` |
+
+| # | Status | What the images show | Files |
+|---|---|---|---|
+| 1 | Seen | The main page scrolls. The scrolled view is shown. Cause not traced. | `shot_230017.png`, `shot_230036.png` |
+| 2 | Seen | A calendar-like glyph sits in a blue tile where the game or disc icon should be. This matches the fallback in row 2 (no box art texture). Code path not traced. | `shot_230017.png`, `shot_230036.png` |
+| 3 | Seen | The File row reads `Mortal Kombat Mythologies - Sub-Zero.c`, cut at the right edge. The `.cue` ending is not visible. | Main page shots |
+| 4 | Partly seen | The Analog/D-Pad toggle sits close above the Keyboard row. The spacing is above the Keyboard row, not at the bottom of the card. The user may mean either. The bottom-padding cause is not confirmed. | Main page shots |
+| 5a | Seen | Window size is one button labelled `1920 x 1440`, not a dropdown. | `shot_230049.png`, `shot_230059.png` |
+| 5b | Seen | The closed Renderer combo shows `OpenGL (Recor`, cut short. The dropdown-open view was not captured. | `shot_230049.png`, `shot_230059.png` |
+| 5c | Not confirmed | Dynamic resolution, Perspective textures and Scanlines checkboxes start at different x positions from the rest of the control column. The `Raw` screen-model button is wider than its neighbours. This may be the misaligned control column behind 5c. The user did not say that this is the item meant. | `shot_230049.png`, `shot_230059.png` |
+
+Also seen in the images, not in the five reports [H on cause]:
+
+- Window clipping (new, hypothesis, not tested). The window runs past the right edge. The D-Pad button shows `D-Pa`, the Audio panel controls are not visible and the `conn` status is cut off. Hypothesis: the window is sized from the video setting `1920 x 1440`, which is wider than the 1536 usable logical pixels at 125 percent. The default in this document is 1100 by 880 logical pixels, and 880 is also taller than 864. The bottom edge was not reported as clipped. Test: set the window to fit 1536 by 864 logical pixels, then take a new screenshot. Source of the window size: not traced.
+- The Settings VSync combo shows `Off`, but `build\settings.toml` says `immediate` (user report, file not read in this step). Question 259.
+- The launcher wrote `multitap_analog = true` into the repo `game.toml` at line 52, directly above `[netplay]` at line 53, after the netplay comment at lines 50 to 51 (agent read). Question 260. The `game.toml` change is in the `git status` at the start of T3.11 (`M game.toml`).
 
 Also seen while reading (not reported by the user) [H]:
 
