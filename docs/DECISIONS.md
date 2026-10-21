@@ -255,3 +255,43 @@ _Filled in by the doc-writer as tasks pass review._
 - Reason: the user's choice. The fixes stay separate from the upstream code and can be proposed upstream later.
 - Open items: which items come first, and the outcome after the screenshots (T3.11 and T3.12). The apply step (CMake or a script) and the upstream-or-local choice per item are set in T3.12. Question 243 is open for item order.
 - Outcome (T3.12, 2026-10-20): the apply step is `tools\apply_launcher_patches.ps1` (a copy under `work\`, then `git apply`, not CMake). Patches 0001 to 0007 exist. Per-item outcomes are in `docs/LAUNCHER_DESIGN.md` section 6.2. Item 4 awaits the user's confirmation. Upstream choice per item is still the user's call.
+
+## D20 Licence for this repo's own files: PolyForm Noncommercial 1.0.0 (2026-10-20)
+
+- Decision (Patricio, in chat, 2026-10-20): the repo's own files are licensed under PolyForm Noncommercial License 1.0.0.
+- Files: `LICENSE` and `NOTICE` at the repo root. Copyright line: `Copyright (c) 2026 Patricio Aumedes`.
+- `NOTICE` names each third-party component the kit uses, with its licence and file. It also says that the game, its disc image and anything generated from game code are not covered and not distributed.
+- Not verified yet, and open: the scope paragraph in `LICENSE` was written by an agent, and the user has not yet confirmed its wording or that `seeds\`, `aot\`, `symbols.toml` and `psx_symbols.h` are original to this repo (question 263). SDL3 and zlib licence texts are not in the tree (question 261). The `gl_core_3_1` licence is not stated (question 262).
+- Reason: the user's choice. psxrecomp is PolyForm Noncommercial, so this port stays free (`CLAUDE.md`).
+- Task: T3.14. Its `NOTICE` wording question (question 265) is open.
+
+## D21 Local paths are scrubbed, not kept (2026-10-20)
+
+- Decision (Patricio, in chat, 2026-10-20): local user paths in tracked files are scrubbed. Repo paths use `<REPO_ROOT>`. Retro-tools paths use `<RETRO_TOOLS_DIR>`. `CLAUDE.md` explains the placeholders (its line 41).
+- Scan result (reported to the doc-writer in the task; not re-run by the doc-writer): only 3 literal pattern mentions remain, all in `docs\TASKS.md`. They are the scan commands and the acceptance text of T3.15.
+- Scope: the current tree only. Older commits still hold the old paths and the author email. The history question is D22.
+- Not chosen: keeping the paths. The user chose the scrub.
+- Task: T3.15 (part). Question 250 is answered by D21 and D22.
+
+## D22 Author email: history rewrite plan only, not done (2026-10-20)
+
+- Decision (Patricio, in chat, 2026-10-20): the author email is replaced by a GitHub noreply address, by rewriting history before the first push. No rewrite has happened yet.
+- Facts: the email is in 46 commits (`docs\PUBLISHING_AUDIT.md` section 1a). A rewrite cannot be undone once pushed.
+- Rules, all from the user's answer:
+  1. Rewrite only before the first push.
+  2. The rewrite runs after all other commits are made.
+  3. It is the last step before the T3.23 push.
+  4. Make a backup bundle of the repo first.
+  5. No rewrite happens without the user's final explicit yes in chat.
+- Replacement identity: name `Patricio Aumedes`; email `12850986+PAumedes@users.noreply.github.com`. This comes from the GitHub login `PAumedes` (id 12850986), looked up with `gh api users/paumedes`. The repo-local git config `user.email` changes at that point, not before.
+- The first commit `fa5df2b` was authored as `localuser`. The rewrite maps it to the same identity. Its hash will change after the rewrite.
+- Not chosen: keeping the email, or using the noreply address for future commits only. The user chose the rewrite.
+- Task: T3.15 (remaining part). Question 266 asks whether the email text in `docs\PUBLISHING_AUDIT.md` is also to be scrubbed.
+
+## D23 Derived docs and replay digests may be public (2026-10-20)
+
+- Decision (Patricio, in chat, 2026-10-20): these may be in the public repo: `docs\DISC_MAP.md`, `docs\FORMATS.md`, `docs\SYMBOLS.md`, `docs\EXE_OVERLAYS.md`, `docs\COVERAGE.md` and the replay digests.
+- This widens D8, which named a shorter list. The rules of D8 still apply: no game data, no `generated\`, no extracted files, no `work\` output.
+- Not covered: replay recordings. D16 keeps them local and git-ignored.
+- Reason: the user's answer to question 251.
+- Task: T3.15 (part).

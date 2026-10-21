@@ -28,8 +28,9 @@ import shutil
 import subprocess
 import sys
 
-DEFAULT_GHIDRA = r"<RETRO_TOOLS_DIR>\ghidra\ghidra_12.1.4_PUBLIC"
-DEFAULT_JDK = r"<RETRO_TOOLS_DIR>\jdk\jdk-21.0.12.1+1"
+RETRO_TOOLS = os.environ.get("RETRO_TOOLS_DIR") or os.path.join(os.path.expanduser("~"), "retro-tools")
+DEFAULT_GHIDRA = os.path.join(RETRO_TOOLS, "ghidra", "ghidra_12.1.4_PUBLIC")
+DEFAULT_JDK = os.path.join(RETRO_TOOLS, "jdk", "jdk-21.0.12.1+1")
 PROJ_NAME = "SDK"
 
 

@@ -1,0 +1,100 @@
+MythologyKombat NOTICE
+
+This repository's own files are licensed under the PolyForm Noncommercial
+License 1.0.0 (see LICENSE), Copyright (c) 2026 Patricio Aumedes.
+
+It is a fan project. It contains and ships no game data. You supply your own
+disc image. Mortal Kombat Mythologies: Sub-Zero is the property of its
+respective owners; this project is not affiliated with or endorsed by them.
+
+The kit and the builds made with it use the third-party components below.
+Each stays under its own licence. Paths are relative to the repository root
+(the submodule folders psxrecomp/ and recomp-ui/) and name the file where the
+licence text or notice is kept. Facts are taken from those files; where a
+licence text is not in this tree it says so.
+
+1. psxrecomp (recompiler, runtime, CLI, setup tooling)
+   Licence: PolyForm Noncommercial License 1.0.0
+   Copyright (c) 2026 Matthew Stanley
+   Source:  https://github.com/RetroPortingToolKit/psxrecomp
+   File:    psxrecomp/LICENSE (commercial licensing: see its last paragraph)
+   Effect:  noncommercial use only. This project stays free.
+
+2. recomp-ui (launcher UI)
+   Licence: MIT. Copyright (c) 2026 Matthew Stanley
+   File:    recomp-ui/LICENSE
+   Bundled with it:
+   - Dear ImGui, MIT, Copyright (c) 2014-2025 Omar Cornut
+     File: recomp-ui/src/third_party/imgui/LICENSE.txt
+   - stb_image, stb_image_write, stb_truetype (Sean Barrett), MIT or public
+     domain at your option. Notice at the end of each header in
+     recomp-ui/src/third_party/
+   - tinyfiledialogs 3.21.3 (Guillaume Vareille), zlib licence.
+     File: recomp-ui/src/third_party/tinyfiledialogs.h and .c (header)
+   - gl_core_3_1 (generated OpenGL loader). Its licence is not stated in
+     the header; not verified here.
+   - Fonts: Lato 2.015 Latin subset and Noto Sans Symbols 2 (SIL OFL 1.1);
+     OpenMoji (CC BY-SA 4.0). Flag sheet rendered from Noto Color Emoji
+     (SIL OFL 1.1).
+     File: recomp-ui/assets/common/fonts/NOTICE.md and
+           recomp-ui/assets/common/img/NOTICE.md
+
+3. recomp-net and retcomm-rbengine (netplay libraries, nested submodules
+   of psxrecomp)
+   Licence: MIT. Copyright (c) 2026 recomp-net contributors, and
+            Copyright (c) 2026 retcomm-rbengine contributors
+   Files:   psxrecomp/lib/recomp-net/LICENSE
+            psxrecomp/lib/retcomm-rbengine/LICENSE
+
+4. OpenBIOS (bundled free PS1 BIOS image bios/openbios.bin)
+   Licence: MIT, PCSX-Redux project; also links uC-sdk (permissive licences)
+   Source:  https://github.com/grumpycoders/pcsx-redux (src/mips/openbios)
+   File:    psxrecomp/bios/OpenBIOS.LICENSE (must ride with the image)
+
+5. libchdr (CHD disc decoder)
+   Licence: BSD-3-Clause, Romain Tisserand and contributors. Its bundled
+            Zstandard (BSD-3-Clause / GPL-2.0 dual), LZMA SDK (public
+            domain) and miniz (MIT) come with it.
+   Source:  https://github.com/rtissera/libchdr
+   File:    psxrecomp/runtime/licenses/libchdr-NOTICES.txt
+
+6. libwebp 1.6.0 (texture image decoder)
+   Licence: BSD-3-Clause, Google Inc. and WebM contributors
+   File:    psxrecomp/runtime/licenses/libwebp-NOTICES.txt
+
+7. libjuice v1.7.2 (ICE transport; netplay builds only)
+   Licence: MPL-2.0, Paul-Louis Ageneau and contributors. Unmodified.
+   Source:  https://github.com/paullouisageneau/libjuice
+   File:    psxrecomp/runtime/licenses/libjuice-NOTICES.txt
+
+8. SDL3 3.4.10 and zlib 1.3.1 (pinned in psxrecomp/third_party/deps.manifest)
+   SDL3 is also used by recomp-ui. The licence texts are not in this tree;
+   upstream licences apply (SDL: https://github.com/libsdl-org/SDL;
+   zlib: https://zlib.net). Confirm before release.
+
+9. Other runtime and tooling libraries listed in
+   psxrecomp/THIRD_PARTY_ATTRIBUTION.md, with notices in
+   psxrecomp/runtime/licenses/ (shipped as licenses/ in player packages):
+   - toml11 (Toru Niina), MIT: toml11-NOTICES.txt
+   - stb_image, MIT or public domain: stb_image-NOTICES.txt
+   - xxHash 0.8.3 (Yann Collet), BSD-2-Clause: xxhash-NOTICES.txt
+   - xBR filter (Hyllian), MIT: notice text in THIRD_PARTY_ATTRIBUTION.md
+   - rabbitizer (Decompollaborate), MIT; ELFIO (Serge Lamikhov-Center), MIT;
+     {fmt} (Victor Zverovich), MIT. Recompiler only; not in a player package
+     unless that changes (THIRD_PARTY_ATTRIBUTION.md).
+   - retcomm-studio (Alex Vanderveen), MIT, vendored in
+     psxrecomp/tools/new_project_layout/ (THIRD_PARTY_ATTRIBUTION.md)
+   - JRickey/gba-recomp pieces (audio shadow verifier, colour science),
+     MIT OR Apache-2.0, used with permission (THIRD_PARTY_ATTRIBUTION.md)
+   - OpenXR SDK loader, Apache-2.0 (Khronos Group); only when built with
+     PSX_OPENXR=ON: OpenXR-SDK-NOTICES.txt
+
+10. TinyCC 0.9.27 (overlay compiler; only if the kit or a release zip
+    bundles it)
+    Licence: LGPL-2.1, Fabrice Bellard and the TinyCC contributors.
+    Run as a separate program; nothing links to libtcc.
+    File:    psxrecomp/runtime/licenses/TinyCC-LICENSE.txt
+    Source:  https://bellard.org/tcc/
+
+Not covered by any licence here: the game, its disc image, its BIOS-free
+boot files, and anything generated from the game's code. None is distributed.

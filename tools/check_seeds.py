@@ -71,7 +71,8 @@ def main():
     ana = J("work", "analysis")
     if not a.no_run:
         env = dict(os.environ)
-        env["PATH"] = os.pathsep.join([r"<RETRO_TOOLS_DIR>\cmake-clang\bin",
+        retro = os.environ.get("RETRO_TOOLS_DIR") or os.path.join(os.path.expanduser("~"), "retro-tools")
+        env["PATH"] = os.pathsep.join([os.path.join(retro, "cmake-clang", "bin"),
                                        r"C:\Program Files\Git\bin", env.get("PATH", "")])
         os.makedirs(ana, exist_ok=True)
         r = subprocess.run([J("psxrecomp", "recompiler", "build", "psxrecomp-analyze.exe"),

@@ -18,7 +18,8 @@ import json
 import os
 import re
 
-DEFAULT_GHIDRA = r"<RETRO_TOOLS_DIR>\ghidra\ghidra_12.1.4_PUBLIC"
+RETRO_TOOLS = os.environ.get("RETRO_TOOLS_DIR") or os.path.join(os.path.expanduser("~"), "retro-tools")
+DEFAULT_GHIDRA = os.path.join(RETRO_TOOLS, "ghidra", "ghidra_12.1.4_PUBLIC")
 TEXT_BASE = 0x80010000
 HDR = 0x800
 

@@ -8,9 +8,14 @@
 param(
   [string]$Exe = 'build\MythologyKombat.exe',
   [string]$Session = '',
-  [string]$Python = '<RETRO_TOOLS_DIR>\python\python.exe'
+  [string]$Python = ''
 )
 $root = Split-Path -Parent $PSScriptRoot
+if (-not $Python) {
+  $retro = "$env:USERPROFILE\retro-tools"
+  if ($env:RETRO_TOOLS_DIR) { $retro = $env:RETRO_TOOLS_DIR }
+  $Python = Join-Path $retro 'python\python.exe'
+}
 Set-Location $root
 $disc = 'ps1_game\Mortal Kombat Mythologies - Sub-Zero.cue'
 if ($Session) { $dirs = @(Get-Item -LiteralPath $Session) }

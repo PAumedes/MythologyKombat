@@ -13,6 +13,8 @@ The port is built on PSXRecomp: https://github.com/RetroPortingToolKit/psxrecomp
 
 PSXRecomp is licensed under PolyForm Noncommercial. This port stays free. Do not use it for commercial purposes.
 
+This repo's own files are licensed under PolyForm Noncommercial 1.0.0 (see `LICENSE`). Third-party components and their licences are listed in `NOTICE`.
+
 ## Setup
 
 See [docs/SETUP.md](docs/SETUP.md) for the steps to set up the tools, the framework and the project.

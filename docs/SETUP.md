@@ -468,7 +468,7 @@ analyzeHeadless <project folder> <project name> -import work\disc\SLUS_004.76 -o
 ### Other loader results
 
 - A raw binary import (BinaryLoader, `MIPS:LE:32:default`, base `0x80010000`, file offset `0x800`) found 1934 functions. The PS1 loader is the better path, so it is used.
-- The Ghidra GUI has not been opened. Nothing shows that it opens the EXE with the PS1 loader. No GUI project was found under `%USERPROFILE%`.
+- The Ghidra GUI has not been opened. Nothing shows that it opens the EXE with the PS1 loader. No GUI project was found under the user profile folder.
 
 ### Optional GUI check (user step, not done)
 

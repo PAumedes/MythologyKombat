@@ -38,7 +38,7 @@ a decision that can't be undone). Tasks marked `USER` are such steps: explain ex
 - Generated code is never hand-edited: fix the recompiler or config and regenerate.
 - No invented facts about the game. Unknowns go in `docs/OPEN_QUESTIONS.md`.
 - Every claim about the disc must come from a script in `tools/` whose output can be reproduced.
-- Windows paths: the repo root is `<REPO_ROOT>`. Prefer PowerShell or Python; avoid bash-only scripts.
+- Windows paths: the repo root is the folder holding this file (written `<REPO_ROOT>` in docs; the retro-tools folder is `<RETRO_TOOLS_DIR>`, default `%USERPROFILE%\retro-tools`). Prefer PowerShell or Python; avoid bash-only scripts.
 - Upstream first: before writing framework-level code, read the relevant PSXRecomp doc
   (`docs/GAME_PROJECT_SETUP.md`, `docs/AOT_SHARDING.md`, `docs/WIDESCREEN.md`, `CLAUDE.md` in the submodule).
 - PSXRecomp is PolyForm Noncommercial: this port stays free.

@@ -17,7 +17,7 @@ Audit date: 2026-10-20. Repo HEAD at audit: `b5f9e13` on `master`.
 | Largest tracked files: `assets/psxrecomp.ico` 370 KB, `docs/SETUP.md` 140 KB, `symbols.toml` 94 KB, `psx_symbols.h` 89 KB. Repo object store 2.4 MB | [M] `ls -la`, `git count-objects -vH` |
 | No `.bin/.cue/.exe/.iso`, no `generated/`, no `work/`, no BIOS file, no memory card, no screenshot is tracked | [M] `git ls-files` listing read in full |
 | No tokens, API keys, passwords, private keys found. The word hits (`token`, `secret`) are the "identifier-like token" text in `docs/SYMBOLS.md` and `tools/symbol_hunt.py` | [M] `git grep -i -E 'ghp_\|github_pat\|api[_-]?key\|secret\|token\|password\|AKIA\|BEGIN (RSA\|PRIVATE)'` |
-| History was searched for `localuser` additions with `git log -p -S`. The only additions are the `<RETRO_TOOLS_DIR>\python\python.exe` run lines in tool docstrings and docs | [M] |
+| History was searched for `localuser` additions with `git log -p -S`. The only additions are the `C:\Users\<user>\retro-tools\python\python.exe` run lines in tool docstrings and docs | [M] |
 
 ### 1a. Personal information
 
@@ -25,7 +25,7 @@ Audit date: 2026-10-20. Repo HEAD at audit: `b5f9e13` on `master`.
 |------|-------|----------|
 | Author identity `Patricio Aumedes <the author personal email>` on 46 commits. The first commit `fa5df2b` is `localuser <the author personal email>` (author and committer). Intentional per the task, flagged here. Every commit is public once pushed; the email cannot be removed without rewriting history. GitHub offers a `noreply` address if wanted | all commits | [M] `git log --all --format='%an <%ae>'` |
 | Co-author trailer `Co-Authored-By: Claude ...` in commit messages (per harness rule) | commit messages | [H] not grepped per commit |
-| Local path `%USERPROFILE%\...` (user name `localuser`, tool root `<RETRO_TOOLS_DIR>`) | 25 tracked files: `CLAUDE.md`, `KICKOFF.md`, `docs/SETUP.md` (62 lines), `docs/TASKS.md` (17), `docs/CHANGELOG.md`, `docs/CONTROLS.md`, `docs/DECISIONS.md`, `docs/DISC_MAP.md`, `docs/FORMATS.md`, `docs/OPEN_QUESTIONS.md`, `docs/SYMBOLS.md`, `tests/replays/README.md`, `tools/*.py` and `tools/run_replays.ps1` (docstring "Run:" lines and one default `$Python` parameter) | [M] `git grep -c` |
+| Local path `C:\Users\<user>\...` (user name `localuser`, tool root `C:\Users\<user>\retro-tools`) | 25 tracked files: `CLAUDE.md`, `KICKOFF.md`, `docs/SETUP.md` (62 lines), `docs/TASKS.md` (17), `docs/CHANGELOG.md`, `docs/CONTROLS.md`, `docs/DECISIONS.md`, `docs/DISC_MAP.md`, `docs/FORMATS.md`, `docs/OPEN_QUESTIONS.md`, `docs/SYMBOLS.md`, `tests/replays/README.md`, `tools/*.py` and `tools/run_replays.ps1` (docstring "Run:" lines and one default `$Python` parameter) | [M] `git grep -c` |
 | The email address does not appear in any file content (only in commit metadata) | | [M] `git grep '@gmail'` empty |
 | `tools/check_prereqs.ps1` lists generic search dirs (`Downloads`, `Desktop`, `Documents`, `source`) built from `$HOME`; no literal user name | | [S] line 241 |
 | The text names the user as "Patricio" in `docs/DECISIONS.md`, `docs/TASKS.md`, `docs/SETUP.md`, `docs/OPEN_QUESTIONS.md`, `docs/CHANGELOG.md`, `docs/CONTROLS.md` as the decision maker and play tester | | [M] `grep -c` |
@@ -67,6 +67,8 @@ Facts relevant to sharing:
 Not checked: whether any individual line in `docs/*.md` quotes game text longer than a few words. Only 3 string offsets are cited and a handful of names. A reviewer should skim `docs/SYMBOLS.md` and `docs/FORMATS.md` once.
 
 ## 3. Licence
+
+Status 2026-10-20: `LICENSE` and `NOTICE` exist (D20). Blocker 2 is met, pending the user's check of the scope paragraph (question 263).
 
 | Component | Licence | Evidence |
 |-----------|---------|----------|
@@ -182,7 +184,7 @@ Not verified in this audit: that a clean clone, with only a disc, completes step
 
 1. **Decide the release model.** CI-built playable releases are not possible without committing generated game C or a disc (sections 5, option C). `CLAUDE.md` forbids it. The choices are A (setup host, locally built, not CI-supported upstream) or B (source only). Nothing else in section 5 matters until this is decided. [S]
 2. **Add a licence for this repo's own files** and a `NOTICE`/third-party section. No licence file exists now ([M]). Files copied from the psxrecomp scaffold may need to follow its terms ([H]). Read the whole of `psxrecomp\LICENSE` (only the start was read here).
-3. **Clean user paths and identity in tracked files** (decide, then act): 25 files hold `%USERPROFILE%\...`. The author email is in all 47 commits (no way to change without a history rewrite). If a rewrite is wanted, do it before the first push, not after. [M]
+3. **Clean user paths and identity in tracked files** (decide, then act): 25 files hold `C:\Users\<user>\...`. The author email is in all 47 commits (no way to change without a history rewrite). If a rewrite is wanted, do it before the first push, not after. [M]
 4. **The owner confirms the derived-data scope** (section 2). D8 already approves the main files; `docs/DISC_MAP.md`, `FORMATS.md`, `SYMBOLS.md`, `EXE_OVERLAYS.md` and the replay digests are not named in D8 and are not covered by an explicit decision. [S]
 
 ### Should do
@@ -198,7 +200,7 @@ Not verified in this audit: that a clean clone, with only a disc, completes step
 
 ### Nice to have
 
-13. Replace `<RETRO_TOOLS_DIR>\python\python.exe` in docstrings with a relative `python` or `%RETRO_TOOLS_DIR%`. [S]
+13. Replace `C:\Users\<user>\retro-tools\python\python.exe` in docstrings with a relative `python` or `%RETRO_TOOLS_DIR%`. [S]
 14. Add `CONTRIBUTING`/issue template that says: do not attach disc dumps, BIOS files, or memory cards.
 15. Create a GitHub release only after the model in item 1 is chosen; include `licenses/` per `BUNDLED_RELEASES.md` step 5. [S]
 16. Consider noting the framework dependency on upstream's reorganisation (`mstan/...` vs `RetroPortingToolKit/...` URLs in upstream docs). [S]

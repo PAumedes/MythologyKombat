@@ -71,8 +71,8 @@ Gate notes:
 | T3.11 | Launcher screenshots at default and user scale | T3.1 | USER | done |
 | T3.12 | Launcher fixes as local patch files (D19) | T3.11, T3.13 | agents | done |
 | T3.13 | Box art and disc icon source and licence | T3.11 | USER | todo (superseded, optional) |
-| T3.14 | Licence for this repo's own files (LICENSE and NOTICE) | — | USER + agents | todo |
-| T3.15 | Path, email and derived-data decisions, then the scrub | T3.14 | USER + agents | todo |
+| T3.14 | Licence for this repo's own files (LICENSE and NOTICE) | — | USER + agents | done |
+| T3.15 | Path, email and derived-data decisions, then the scrub | T3.14 | USER + agents | in-progress |
 | T3.16 | No-game-data guard script | — | agents | done |
 | T3.17 | CI workflow (guard, emitters-test, setup-host) | T3.16, T3.18 | agents | todo |
 | T3.18 | Setup-host build in the repo, and the first wizard run | T3.1 | agents + USER | todo |
@@ -423,6 +423,8 @@ Then reply in chat with three answers:
 Agents carry out the answers, then re-run the scans in `docs\PUBLISHING_AUDIT.md` section 1 and record the counts.
 **Accept when:** each of the three answers is recorded in `docs\DECISIONS.md`; the scans show the agreed result; no history rewrite happens without the user's explicit yes.
 
+**Status 2026-10-20 (in-progress):** answers recorded in D20 to D23 (licence, paths, history plan, derived docs). Paths scrubbed (D21). Remaining: the history rewrite (D22). It runs only as the last step before T3.23, after all other commits, with a backup bundle and the user's final yes. Then re-run the scans in `docs\PUBLISHING_AUDIT.md` section 1 and record the counts. The email text in `docs\PUBLISHING_AUDIT.md` is question 266.
+
 ## T3.16 No-game-data guard script (agents)
 Depends on: none. Owner: agents. Source: `docs\LAUNCHER_DESIGN.md` section 5 (`guard` row).
 Write `tools\check_no_game_data.py`. It is stdlib only and reads `git ls-files`. It fails on any tracked path under `generated/`, `ps1_game/` or `work/`; any `*.bin`, `*.cue`, `*.iso`, `*.exe`, `*.dll`, `*.zip`, `*.ovr`, `*.str` or `*.mcd`; `overlay_captures.json`; and any file whose first 8 bytes are `PS-X EXE`. It allows the derived files named in D8.
@@ -518,7 +520,7 @@ Rewrite `README.md` in the eleven parts listed in section 7 of the audit. Includ
 cd <REPO_ROOT>
 Get-Content README.md
 ```
-**Accept when:** every section in the audit's section 7 exists, or is marked "not yet"; no `%USERPROFILE%` path appears; the legal note is the wording the user approved (question 245); each claim maps to a doc or a script; the player steps match the kit from T3.19 and the updater from T3.20.
+**Accept when:** every section in the audit's section 7 exists, or is marked "not yet"; only the 3 literal pattern mentions in `docs\TASKS.md` remain; the legal note is the wording the user approved (question 245); each claim maps to a doc or a script; the player steps match the kit from T3.19 and the updater from T3.20.
 
 ## T3.26 Optional: embedded Python and offline toolchain (agents)
 Depends on: T3.19, T3.22. Owner: agents. Optional: not part of the gate unless the user schedules it. Source: `docs\LAUNCHER_DESIGN.md` sections 2 and 7 (effort row for embedded Python), questions 247, 248 and 254.
