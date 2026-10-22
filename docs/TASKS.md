@@ -80,7 +80,7 @@ Gate notes:
 | T3.20 | Optional: self-hosted runner for the game build (tag only, disc stays on the PC) | T3.17, T3.19 | USER + agents | todo |
 | T3.21 | Launcher updater: check, verify, replace, keep saves | T3.19 | agents | done |
 | T3.22 | Clean-machine test of the downloaded zip (disc only) | T3.19 | USER | done |
-| T3.23 | First push to GitHub, history rewrite (D22) and first CI run | T3.15, T3.17, T3.19 | USER + agents | in-progress |
+| T3.23 | First push to GitHub, history rewrite (D22) and first CI run | T3.15, T3.17, T3.19 | USER + agents | done |
 | T3.24 | Code-signing decision for the release exe | T3.19 | USER | done |
 | T3.25 | README rewrite and legal wording | T3.14, T3.15, T3.21, T3.22, T3.24 | agents + USER | done |
 | T3.26 | Reproducibility of the release exe (Q274) | T3.19 | agents | done |
@@ -440,9 +440,11 @@ Toolchain version: v1.0.14, as in `docs\SETUP.md`. How the pin is applied is ope
 Rules: no job has a disc or a game file. CI does not run `generate` or `rebuild`. CI does not set `PSX_PGO`. CI does not `git add -f` any artifact. The launcher or tool artifacts may be uploaded as workflow artifacts, never committed.
 **Accept when:** the YAML parses, checked with a tool named in the report; the `guard` job gives the same result as T3.16 on the repo; the workflow runs green on the first push (T3.23), or each failure is listed as a new task.
 
-**Status 2026-10-21 (done, with one part deferred):** the workflow file, the local checks and the adversarial review passed (commit `717ee78`). The first run on GitHub is not done. It is deferred to T3.23. Until then the GitHub side is unverified. Details are in `docs/SETUP.md` ("CI (T3.17)") and open questions 286 to 290.
+**Status 2026-10-21 (done, with one part deferred):** the workflow file, the local checks and the adversarial review passed (commit `717ee78`). The first run on GitHub is not done. It is deferred to T3.23. Until then the GitHub side is unverified. Confirmed green on 2026-10-22 (run `39704015526`, see the T3.23 note below). Details are in `docs/SETUP.md` ("CI (T3.17)") and open questions 286 to 290.
 
-**Note 2026-10-21 (first push, T3.23):** the first CI run (`39700721720`) gave `guard` OK and `setup-host-build` OK in 3 min 35 s. `emitters-test` failed 12 of 145 `ctest` tests. Fixes went into `ci.yml` after the run (temp path, `hash_codegen.cmake` step, tolerated-test map). They are unverified until the next push. Open: questions 323 to 326.
+**Note 2026-10-21 (first push, T3.23):** the first CI run (`39700721720`) gave `guard` OK and `setup-host-build` OK in 3 min 35 s. `emitters-test` failed 12 of 145 `ctest` tests. Fixes went into `ci.yml` after the run (temp path, `hash_codegen.cmake` step, tolerated-test map).
+
+**Status 2026-10-22 (T3.17 confirmed green):** the second run `39704015526` (2026-10-22 01:09 UTC, commit `351d0e4`) concluded success: `guard` OK, `setup-host-build` OK, `emitters-test` OK with nine tolerated tests shown as warnings. T3.17 is confirmed green on a runner. Details are in `docs/SETUP.md` ("Second GitHub run (2026-10-22)"). Open: questions 323, 324 and 326.
 
 ## T3.18 Setup-host build in the repo, and the first wizard run (agents + USER)
 Depends on: T3.1. Owner: agents + USER. Source: `docs\LAUNCHER_DESIGN.md` sections 2 and 5, `docs\PUBLISHING_AUDIT.md` section 4 and question 258.
@@ -585,7 +587,7 @@ Do not create a tag or a release until you say so.
 Release order (D30): every commit changes the release exe hash, and the rewrite changes every hash. So the release zip is built with `tools\release.ps1` only after the last commit, the rewrite and the push. The release-candidate zips at the T3.21 commit are evidence only (`docs\SETUP.md`, "Release-candidate verification").
 **Accept when:** the bundle exists outside the repo; `git log --all --format="%ae" | Sort-Object -Unique` shows only the noreply address after the rewrite (D22); the user confirms the push; agents report the first CI run (T3.17), green or with each failure listed as a task; no tag or release exists without the user's yes.
 
-**Status 2026-10-21 (in progress):** first push done. The repo is the private `PAumedes/MythologyKombat`. First CI run `39700721720`: `guard` OK, `setup-host-build` OK in 3 min 35 s, `emitters-test` failed 12 of 145 `ctest` tests. Fixes are in `ci.yml` but not yet run on GitHub. The next push runs them. Still open: the `ctest` count (question 288), the `gpu_frame` cause (question 323), the upstream report (question 324, USER), and the fixed run (question 325). Stays `in-progress` until the fixed run is green or each failure is a task.
+**Status 2026-10-22 (done):** the repo is pushed as the private `PAumedes/MythologyKombat` (commit `351d0e4`). First CI run `39700721720` had `emitters-test` failing 12 of 145 `ctest` tests. The fixed second run `39704015526` (2026-10-22 01:09 UTC) concluded success: `guard`, `setup-host-build` and `emitters-test` OK, with nine tolerated tests as warnings. Details are in `docs/SETUP.md` ("Second GitHub run (2026-10-22)"). Still open, not blocking: the `ctest` count (question 288), the `gpu_frame` cause (question 323), the upstream report (question 324, USER), and question 326. The backup bundles stay outside the repo until the user confirms the push (question 321, USER). The release zip is rebuilt later from the final commit (next steps in `docs/SETUP.md`), not under this task.
 
 ## T3.24 Code-signing decision for the release exe (USER)
 Depends on: T3.19. Owner: USER. Source: question 244, question 255, `docs\LAUNCHER_DESIGN.md` sections 2 and 8 item 3, D25. Smart App Control may block an unsigned exe (question 255, not tested). The release exe is built on your PC (D25), so the GitHub-secrets signing route in the older design does not fit. Options, not decided: (a) sign locally in `tools\release.ps1`, with a certificate kept on your PC; (b) ship unsigned, and say so in the README. A certificate costs money. The choice is yours.

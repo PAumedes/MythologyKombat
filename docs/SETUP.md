@@ -2730,14 +2730,28 @@ The workflow is `.github\workflows\ci.yml`. Its jobs run on GitHub-hosted runner
 - `guard`: passed.
 - `setup-host-build`: passed in 3 min 35 s.
 - `emitters-test`: failed. `ctest` ran 145 tests (147 minus the two excluded interpreter tests). 12 failed. The fixes above and the tolerated-test map were made after this run.
-- The fixed workflow has not run on a runner yet. The fixes are unverified until the next push.
+- The fixes above went into the second run (see "Second GitHub run" below).
 - GitHub showed an `ubuntu-latest` image migration notice. It concerns the `guard` job only, which runs on Ubuntu. The other two jobs run on `windows-latest`.
+
+### Second GitHub run (2026-10-22)
+
+- Run `39704015526`, started 2026-10-22 01:09 UTC, on the pushed commit `351d0e4` (T3.17: CI ctest fixes). Conclusion: success.
+- `guard`: OK.
+- `setup-host-build`: OK.
+- `emitters-test`: OK. The `TEMP` and `TMP` step fixed tests 52 (`cli_generate_aot_static`) and 77 (`disc_companion`). The codegen-hash step fixed test 56 (`compile_overlays_static_tail`). Nine upstream-limited tests are tolerated with warnings. No unexpected failure.
+- T3.17 is confirmed green on a runner. T3.23 is done. Question 325 is closed.
+- The pushed repo is the private `PAumedes/MythologyKombat`. The repo stays private until the user decides otherwise.
+
+Next steps (not done, recorded only):
+
+1. Keep the two history backup bundles outside the repo until the user confirms the pushed repo (question 321).
+2. Rebuild the release zip from the final pushed commit with `tools\release.ps1`. Any older exe or zip has another build id and must not be published.
+3. Create a draft release only after the user types the confirmation. `tools\release.ps1` runs the draft command only after the typed `UPLOAD`. No draft was made in this step.
 
 ### Not verified
 
-- The fixed workflow has not run on GitHub. The next push is the check.
-- Not verified yet: the toolchain download and unpack on a runner, `pwsh` 7 behaviour, the SDL3 lookup, the libchdr `FetchContent`, and cache effects. The first run showed `setup-host-build` passing, so the parts it covers are checked on a runner.
-- Open items: questions 286 to 290 and 324 to 326 in `docs/OPEN_QUESTIONS.md`.
+- Per-step details of the second run (toolchain download, `pwsh` 7 behaviour, SDL3 lookup, libchdr `FetchContent`, cache effects) are not recorded here. The job result is the only evidence in this doc.
+- Open items: questions 286 to 290, 324 and 326 in `docs/OPEN_QUESTIONS.md`.
 
 ## Local release script (T3.19)
 
