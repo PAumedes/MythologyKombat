@@ -501,8 +501,8 @@ See `docs/DECISIONS.md` (D25) and `docs/TASKS.md` (T3.17 to T3.26).
 | 284 | Which updater does the launcher use: its own, or an upstream one? | Answered 2026-10-21 (T3.21, D29): neither. Hell's Gate and Shaolin Monks have no fit (`docs\UPDATER_DESIGN.md` sections 2 and 3). The updater is a standalone PowerShell script in the zip (option B). Task T3.21, done. |
 | 285 | Is there a legal opinion on shipping a release exe with translated game code? | None obtained. The user was told the risks and accepted the takedown risk in chat on 2026-10-21 (D25). Whether to seek a legal opinion is the user's call. Owner: USER. |
 | 286 | Should the CI `emitters-test` job add an MSYS2 gcc leg for the two tests that do not link with the clang pack? | Not decided. `ws_cull_edge_interp_test` and `draw_distance_interp_test` are excluded in CI because they do not link with the clang pack (`docs/SETUP.md`, "CI (T3.17)"). A gcc leg would run them. Owner: agents. Task T3.17 follow-up. |
-| 287 | Does `ctest` run on the GitHub runner, and is it 3.26 or newer there? | Not verified. The job asserts `ctest` 3.26 or newer. `ctest` itself was not run locally. Owner: agents. Task T3.23. |
-| 288 | Which test count is right: 38 or 35? | A count of 38 was given for this suite. 35 tests are registered, and 33 of them (the non-excluded ones) pass when run one by one locally. The two counts are not reconciled. Owner: agents. Task T3.17 follow-up. |
+| 287 | Does `ctest` run on the GitHub runner, and is it 3.26 or newer there? | Partly answered (first CI run `39700721720`, 2026-10-21): `ctest` ran on the `windows-latest` runner and reported 145 tests. Whether the version assert passed is not recorded here. `ctest` was not run locally. Owner: agents. Task T3.23. |
+| 288 | Which test count is right: 38 or 35? | Partly answered. A count of 38 was given for this suite. The earlier local run registered 35 tests. The first CI run registered 145 tests (147 minus 2 excluded). The 38 count is not reconciled. Owner: agents. Task T3.17 follow-up. |
 | 289 | Should `master` stay in the CI triggers? | The workflow runs on push and pull request to `main` and `master`. The local branch is `master`. Not decided. Owner: USER. Task T3.23. |
 | 290 | What has not been verified on a GitHub runner? | No CI job has run on GitHub yet. Not verified: the toolchain download and unpack on a runner, `pwsh` 7 behaviour, the SDL3 lookup, the libchdr `FetchContent`, and cache effects. The first run is at T3.23. Owner: agents. Task T3.23. |
 | 291 | Is the `psx_freeze_dump` `hard_freeze` at frame 0 a false positive? | In the release smoke test (2026-10-21) it appeared about 3 s after start on every boot, including the dev exe. Frames kept advancing during the run. Not investigated. Owner: agents. Task T3.19 follow-up. |
@@ -516,7 +516,7 @@ See `docs/DECISIONS.md` (D25) and `docs/TASKS.md` (T3.17 to T3.26).
 
 | # | Question | Notes |
 |---|----------|-------|
-| 301 | Which GitHub `owner/repo` hosts the releases? | Answered by the user on 2026-10-21: `PAumedes/MythologyKombat` (D28, `docs/DECISIONS.md`). The repo is not created yet. Creation and the first push wait for the user's explicit yes at T3.23. Owner: USER and agents. Task T3.23. |
+| 301 | Which GitHub `owner/repo` hosts the releases? | Answered by the user on 2026-10-21: `PAumedes/MythologyKombat` (D28, `docs/DECISIONS.md`). The private repo was created and pushed on 2026-10-21 (T3.23). Owner: USER and agents. Task T3.23. |
 
 ## Midway logo audio on the release zip (from the 2026-10-21 investigation)
 
@@ -563,3 +563,7 @@ See `docs\PUBLISHING_AUDIT.md` section 9. No task is scheduled for these.
 | 320 | Where do the strings `CONTINUE`, `PASSWORD` and `Complete` in the exe come from? | These occur in the disc strings and in the exe. Their origin (game code, Sony SDK, or framework) is not determined. The other 3 matches (`0123456789ABCDEF`, `0123456789abcdef`, `PS-X EXE`) are generic. Owner: agents. |
 | 321 | When can the two history backup bundles be deleted? | Kept after the 2026-10-21 rewrite (D31): `MythologyKombat-before-rewrite.bundle` and `MythologyKombat-after-identity.bundle`, both outside the repo. Delete only after the user confirms the pushed repo. Owner: USER. Task T3.23. |
 | 322 | What are the new commit hashes for the commits that docs named by hash before the rewrite? | Not recorded. The docs name these commits by task ID or subject now (T0.1, T0.7, T3.2, T3.18, T3.21). The doc-writer run for D31 had no git access, so the new hashes were not read. Owner: USER (`git log --oneline`) if a hash is wanted in the docs. |
+| 323 | Why does the `gpu_frame` test fail on the runner? | Not confirmed. The test needs numpy, which the runner did not have. The numpy cause is not confirmed by a run. The test is tolerated in `ci.yml` until it is fixed (`docs/SETUP.md`, "CI (T3.17)"). Owner: agents. Task T3.23 follow-up. |
+| 324 | Should the upstream test drift be reported to RetroPortingToolKit/psxrecomp? | Open. Nine tests fail against the pinned upstream, and they are tolerated in `ci.yml`. Reporting them upstream is a USER decision. Owner: USER. Task T3.23 follow-up. |
+| 325 | Does the fixed `ci.yml` pass on a runner? | Pending. The fixes after the first run (`TEMP` and `TMP`, the `hash_codegen.cmake` step, and the tolerated-test map) have not run on GitHub. Owner: agents, at the next push. Task T3.23. |
+| 326 | Are the reasons for test numbers 61 and 126 correct? | Not verified locally. Their reasons come from the CI log only. Owner: agents. Task T3.23 follow-up. |
