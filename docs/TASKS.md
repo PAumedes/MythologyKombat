@@ -490,6 +490,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\release.ps1 -Version <
 
 **Status 2026-10-21 (done):** the script, the content check, its 18 tests and the smoke script passed review (commit `717ee78`). A test run wrote `work\release\test\`. Its zip is `MythologyKombat-test-Windows-x64.zip`. The user's own run with the real version is still to do, and the draft upload is still to do. Details are in `docs/SETUP.md` ("Local release script (T3.19)") and open questions 280 to 296. Decisions are in `docs/DECISIONS.md` (D26).
 
+**Note 2026-10-22 (release v0.1.0):** `tools\release.ps1` built the game zip from pushed commit `6dca89f`, and tag `v0.1.0` was created on that commit and pushed. A draft pre-release was then created on the private repo. It was not created through the typed `UPLOAD` prompt. The orchestrator created it at the user's explicit request. Details are in `docs/SETUP.md` ("Draft release v0.1.0"). Open: questions 327 to 329.
+
 ## T3.20 Optional: self-hosted runner for the game build (USER + agents)
 Depends on: T3.17, T3.19. Owner: USER + agents. Optional: the user decides. Source: D25, `docs\LAUNCHER_DESIGN.md` section 5.
 A GitHub Actions self-hosted runner on the user's PC can run the same steps as T3.19 when a version tag is pushed. The disc never leaves the PC.
@@ -601,6 +603,8 @@ Reply in chat: (a) sign locally, or (b) ship unsigned. Do not paste a certificat
 
 **Status note (2026-10-21, done):** the user chose (b), ship unsigned (D30). Question 244 is closed. The README wording (unsigned, the SmartScreen and Smart App Control warnings, and the SHA-256 check) is part of T3.25. Question 255 stays open.
 
+**Note 2026-10-22 (release v0.1.0):** the draft release `MythologyKombat 0.1.0` (tag `v0.1.0`) ships the zip unsigned, as D30 says. Its exe is not signed. Mark of the Web and SmartScreen behaviour on a clean machine are not yet checked (question 327).
+
 ## T3.25 README rewrite and legal wording (agents + USER)
 Depends on: T3.14, T3.15, T3.21, T3.22, T3.24. Owner: agents (doc-writer) + USER (the legal wording, question 245). Source: `docs\PUBLISHING_AUDIT.md` section 7, D25.
 Rewrite `README.md` in the style of the Shaolin Monks Recomp README: download the zip, extract it, start the exe, select your disc, PLAY. Include the checksums (`checksums.txt`), the status (D17), the requirements, the controls link (`docs\CONTROLS.md`), troubleshooting, the update check (T3.21), the signing status (T3.24), the licence and credits, and the legal note.
@@ -635,6 +639,8 @@ These are ideas only. Each needs its own task before work starts.
 | Embedded Python, pinned or offline toolchain, offline kit (formerly T3.26). Not needed by the prebuilt release route (D25) unless the fallback kit is used | Q247, Q253, Q254 |
 | Enhancements | `docs\ENHANCEMENTS.md` |
 | Overlay toolchain and KUSEG shard (left for later, `docs\PERF_AND_ENGINEERING_IDEAS.md` item 5). Intel driver update and GPU choice (item 4) are USER system changes, not scheduled | Q99, Q190 |
+| Verify that the draft release zip (v0.1.0) downloads and runs on a clean machine from GitHub, including Mark of the Web. USER step | Q327 |
+| Decide when to make the repo public and publish the v0.1.0 release. USER decision, each step a separate yes | Q328 |
 
 ## Decisions needing the user (before they block)
 

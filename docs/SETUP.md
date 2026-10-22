@@ -2907,8 +2907,34 @@ Limits:
 
 - T3.19 is done (agent part and review). The user's own run with the real version is still to do.
 - T3.26 is done (agent part and review). Reproducibility holds on this PC for one commit. See D27.
-- The draft upload is still to do. It needs your typed `UPLOAD`.
+- The draft upload was done on 2026-10-22, not through the typed `UPLOAD` prompt. See "Draft release v0.1.0" below.
 - Decisions: `docs/DECISIONS.md` (D26).
+
+### Draft release v0.1.0 (2026-10-22)
+
+Recorded as a fact. The orchestrator created the draft at the user's explicit request ("please create that yourself"). It did not use the typed `UPLOAD` prompt of `tools\release.ps1`. No publish step was taken.
+
+| Item | Value |
+|------|-------|
+| Tag | `v0.1.0`, on commit `6dca89f0c56feeffeab19eed6dd9caf0ef18ab5c`. Pushed |
+| Commit state | Built from the pushed `HEAD` `6dca89f`. Later docs commits come after the tag. That is fine, because the tag is fixed |
+| Repo | `PAumedes/MythologyKombat`, private |
+| Release | Draft pre-release `MythologyKombat 0.1.0` |
+| Build | `tools\release.ps1`, 568 s. Content check: 424 files, 0 violations. Smoke pass at about 60 fps. The build id contains `6dca89f0c56f` |
+| Exe SHA-256 | `73b4a89d835e6fa017d04be1b4f5633d6f178b5a1cb51aa21e79d239d0e433b8` |
+
+Assets on the draft:
+
+| Asset | Size (bytes) | SHA-256 |
+|-------|--------------|---------|
+| `MythologyKombat-0.1.0-Windows-x64.zip` | 27,156,198 | `1639bfdfd8736f66cc61a0b4e87130c16a69c3363669048b7bc1f67502c0de92` |
+| `checksums.txt` | 104 | `258fe062ed85462aa4781df2cbd6ac6fc1cb71109003dff74dac5e1eb5f295d6` |
+
+- The zip hash matches the local build and the digest GitHub shows for the asset.
+- The reproducibility re-run for this tag was not done. Question 329.
+- The draft is not public. The release is not published. Question 328.
+- The download on a clean machine, with Mark of the Web, is not tested. Question 327.
+- Tasks: T3.19 and T3.24 notes in `docs/TASKS.md`.
 
 ## Known issue: Midway logo audio on the release zip (2026-10-21)
 
