@@ -27,11 +27,14 @@
     All host folders are mapped ReadOnly=true except out\.
     The disc folder (<repo>\ps1_game) is mapped read-only and is never copied or modified.
 
-.PARAMETER Zip  Release zip to test. Default: newest MythologyKombat-*-Windows-x64.zip under work\release\rc1-a.
+.PARAMETER Zip        Release zip to test. Default: newest MythologyKombat-*-Windows-x64.zip under
+                  work\release\from-github (draft-release assets downloaded with gh), else work\release\rc1-a.
+.PARAMETER Checksums  checksums.txt to verify against. Default: checksums.txt next to the zip.
 #>
 [CmdletBinding()]
 param(
-    [string]$Zip
+    [string]$Zip,
+    [string]$Checksums
 )
 
 $ErrorActionPreference = 'Stop'
@@ -47,19 +50,21 @@ $Out  = Join-Path $Sbx 'out'
 $Wsb  = Join-Path $Sbx 'mk-test.wsb'
 
 if (-not $Zip) {
-    $dir = Join-Path $Repo 'work\release\rc1-a'
     $cand = @()
-    if (Test-Path -LiteralPath $dir) {
-        $cand = @(Get-ChildItem -LiteralPath $dir -Filter 'MythologyKombat-*-Windows-x64.zip' -File | Sort-Object LastWriteTime -Descending)
+    foreach ($sub in @('from-github', 'rc1-a')) {
+        $dir = Join-Path $Repo ('work\release\' + $sub)
+        if ((Test-Path -LiteralPath $dir) -and $cand.Count -eq 0) {
+            $cand = @(Get-ChildItem -LiteralPath $dir -Filter 'MythologyKombat-*-Windows-x64.zip' -File | Sort-Object LastWriteTime -Descending)
+        }
     }
-    if ($cand.Count -eq 0) { Fail ('no release zip found in ' + $dir + '. Pass -Zip <path>.') }
+    if ($cand.Count -eq 0) { Fail 'no release zip found in work\release\from-github or rc1-a. Pass -Zip <path>.' }
     $Zip = $cand[0].FullName
 }
 if (-not (Test-Path -LiteralPath $Zip -PathType Leaf)) { Fail ('zip not found: ' + $Zip) }
 $Zip = (Resolve-Path -LiteralPath $Zip).Path
 $ZipName = Split-Path -Leaf $Zip
-$SrcSums = Join-Path (Split-Path -Parent $Zip) 'checksums.txt'
-if (-not (Test-Path -LiteralPath $SrcSums -PathType Leaf)) { Fail ('checksums.txt not found next to the zip: ' + $SrcSums) }
+if ($Checksums) { $SrcSums = $Checksums } else { $SrcSums = Join-Path (Split-Path -Parent $Zip) 'checksums.txt' }
+if (-not (Test-Path -LiteralPath $SrcSums -PathType Leaf)) { Fail ('checksums.txt not found: ' + $SrcSums) }
 if (-not (Test-Path -LiteralPath $Disc -PathType Container)) { Fail ('disc folder not found: ' + $Disc) }
 if ($ZipName -ne 'MythologyKombat-0.1.0-Windows-x64.zip') {
     Write-Host ('NOTE: zip name is ' + $ZipName + '; the printed steps use this name.')
@@ -94,33 +99,33 @@ Write-Host ('SHA-256 ok: ' + $actual)
 $steps = @'
 # Mythology Kombat clean-machine test (Windows Sandbox). Read-only helper: it only prints text.
 $ErrorActionPreference = 'Continue'
-Set-Location "$env:USERPROFILE\Desktop"
+Set-Location $env:USERPROFILE
 Write-Host ''
 Write-Host '=== MythologyKombat clean-machine test (Windows Sandbox, offline) ===' -ForegroundColor Cyan
 Write-Host 'Folders on this Desktop:'
-Write-Host '  in    (read-only) release zip + checksums.txt'
+Write-Host '  in    (read-only) release zip + checksums.txt (from the GitHub draft release)'
 Write-Host '  disc  (read-only) your disc image (.cue/.bin)'
 Write-Host '  out   (writable) drop screenshots and logs here; the host sees them in work\sandbox\out'
 Write-Host 'Network is off and the clipboard is off. Audio output may be missing: report it.'
 Write-Host 'Copy a command from below into this window one at a time. Note every message.' -ForegroundColor Yellow
 Write-Host ''
-Write-Host 'OPTIONAL FIRST (Mark of the Web). Real downloads carry it, a mapped folder does not:' -ForegroundColor Yellow
-Write-Host '  New-Item -ItemType Directory -Force Desktop\zipcopy | Out-Null'
-Write-Host '  Copy-Item Desktop\in\MythologyKombat-0.1.0-Windows-x64.zip Desktop\zipcopy\'
-Write-Host '  Set-Content -Path Desktop\zipcopy\MythologyKombat-0.1.0-Windows-x64.zip -Stream Zone.Identifier -Value "[ZoneTransfer]","ZoneId=3"'
-Write-Host '  Get-Content Desktop\zipcopy\MythologyKombat-0.1.0-Windows-x64.zip -Stream Zone.Identifier'
-Write-Host '  (then use Desktop\zipcopy\... instead of Desktop\in\... in step a. NOTE: PowerShell Expand-Archive does'
-Write-Host '   NOT copy the mark onto the extracted files. To get it on them, right-click the zip in File Explorer,'
-Write-Host '   Extract All to Desktop\test, or after step a run:'
-Write-Host '   Get-ChildItem Desktop\test -Recurse -File | ForEach-Object { Set-Content -Path $_.FullName -Stream Zone.Identifier -Value "[ZoneTransfer]","ZoneId=3" } )'
-Write-Host ''
-Write-Host 'a) Expand the zip:' -ForegroundColor Green
-Write-Host '   Expand-Archive Desktop\in\MythologyKombat-0.1.0-Windows-x64.zip -DestinationPath Desktop\test'
-Write-Host '   Get-ChildItem Desktop\test\MythologyKombat-0.1.0 | Select-Object Name, Length'
-Write-Host 'b) Verify the checksum (compare with Desktop\in\checksums.txt):' -ForegroundColor Green
+Write-Host 'a) Copy the zip out of the read-only folder and mark the COPY as downloaded (Mark of the Web, ZoneId=3):' -ForegroundColor Green
+Write-Host '   New-Item -ItemType Directory -Force Desktop\dl | Out-Null'
+Write-Host '   Copy-Item Desktop\in\MythologyKombat-0.1.0-Windows-x64.zip Desktop\dl\'
+Write-Host '   Set-Content -Path Desktop\dl\MythologyKombat-0.1.0-Windows-x64.zip -Stream Zone.Identifier -Value "[ZoneTransfer]`nZoneId=3"'
+Write-Host '   Get-Item Desktop\dl\MythologyKombat-0.1.0-Windows-x64.zip -Stream *      (expect a Zone.Identifier stream)'
+Write-Host 'a2) Extract the COPY, then check whether the exe got the mark:' -ForegroundColor Green
+Write-Host '   Expand-Archive Desktop\dl\MythologyKombat-0.1.0-Windows-x64.zip -DestinationPath Desktop\test'
+Write-Host '   Get-Item Desktop\test\MythologyKombat-0.1.0\MythologyKombat.exe -Stream *'
+Write-Host '   (On the Windows 11 host Expand-Archive did NOT copy the mark: only :$DATA listed. Write down what you see.)'
+Write-Host '   If the exe has no Zone.Identifier, stamp every extracted file, as File Explorer "Extract All" does:'
+Write-Host '   Get-ChildItem Desktop\test -Recurse -File | ForEach-Object { Set-Content -Path $_.FullName -Stream Zone.Identifier -Value "[ZoneTransfer]`nZoneId=3" }'
+Write-Host '   Get-Item Desktop\test\MythologyKombat-0.1.0\MythologyKombat.exe -Stream *      (expect Zone.Identifier now)'
+Write-Host 'b) Verify the checksum of the original zip (compare with Desktop\in\checksums.txt):' -ForegroundColor Green
 Write-Host '   Get-FileHash Desktop\in\MythologyKombat-0.1.0-Windows-x64.zip -Algorithm SHA256'
 Write-Host '   Get-Content Desktop\in\checksums.txt'
-Write-Host 'c) Start the game:' -ForegroundColor Green
+Write-Host '   Expected SHA-256: __EXPECTED__'
+Write-Host 'c) Start the game (run the exe from the extracted, marked folder, Desktop\test):' -ForegroundColor Green
 Write-Host '   c1, straight to the game, no launcher:'
 Write-Host '   & "Desktop\test\MythologyKombat-0.1.0\MythologyKombat.exe" --disc "Desktop\disc\Mortal Kombat Mythologies - Sub-Zero.cue" --no-launcher'
 Write-Host '   If no window opens or it fails on OpenGL, try the software renderer and report both results:'
@@ -140,6 +145,7 @@ Write-Host 'g) Windows version for the report:' -ForegroundColor Green
 Write-Host '   (Get-CimInstance Win32_OperatingSystem).Caption'
 Write-Host ''
 '@
+$steps = $steps.Replace('__EXPECTED__', $expected)
 $StepsPath = Join-Path $In 'sandbox_steps.ps1'
 [System.IO.File]::WriteAllText($StepsPath, ($steps -replace "`r?`n", "`r`n"), (New-Object System.Text.ASCIIEncoding))
 
