@@ -4,7 +4,7 @@ Read-only audit of this repo for a possible public GitHub release. Nothing was p
 No legal conclusions are drawn. Facts only.
 
 Evidence tags: **[M]** measured (a command was run, output seen), **[S]** source-read (a file was read), **[H]** hypothesis (not verified).
-Audit date: 2026-10-20. Repo HEAD at audit: `b5f9e13` on `master`.
+Audit date: 2026-10-20. Repo HEAD at audit: the T3.2 commit on `master` (before the history rewrite, section 10). The facts in sections 1 to 9 describe the repo before 2026-10-21.
 
 ## 1. What is in git
 
@@ -23,7 +23,7 @@ Audit date: 2026-10-20. Repo HEAD at audit: `b5f9e13` on `master`.
 
 | Item | Where | Evidence |
 |------|-------|----------|
-| Author identity `Patricio Aumedes` with the author's personal email on 46 commits. The first commit `fa5df2b` is the original local account name with the same personal email (author and committer). Intentional per the task, flagged here. Every commit is public once pushed; the email cannot be removed without rewriting history. GitHub offers a `noreply` address if wanted | all commits | [M] `git log --all --format='%an <%ae>'` |
+| Author identity with the personal email on 46 commits. The first commit (T0.1) used the original local account name with the same personal email (author and committer). Resolved 2026-10-21 by the history rewrite (D31, section 10): all commits now carry the GitHub noreply identity | all commits | [M] `git log --all --format='%an <%ae>'` |
 | Co-author trailer `Co-Authored-By: Claude ...` in commit messages (per harness rule) | commit messages | [H] not grepped per commit |
 | Local path `C:\Users\<user>\...` (original local account name, tool root `C:\Users\<user>\retro-tools`) | 25 tracked files: `CLAUDE.md`, `KICKOFF.md`, `docs/SETUP.md` (62 lines), `docs/TASKS.md` (17), `docs/CHANGELOG.md`, `docs/CONTROLS.md`, `docs/DECISIONS.md`, `docs/DISC_MAP.md`, `docs/FORMATS.md`, `docs/OPEN_QUESTIONS.md`, `docs/SYMBOLS.md`, `tests/replays/README.md`, `tools/*.py` and `tools/run_replays.ps1` (docstring "Run:" lines and one default `$Python` parameter) | [M] `git grep -c` |
 | The email address does not appear in any file content (only in commit metadata) | | [M] `git grep` for the personal-email domain was empty |
@@ -184,7 +184,7 @@ Not verified in this audit: that a clean clone, with only a disc, completes step
 
 1. **Decide the release model.** CI-built playable releases are not possible without committing generated game C or a disc (sections 5, option C). `CLAUDE.md` forbids it. The choices are A (setup host, locally built, not CI-supported upstream) or B (source only). Nothing else in section 5 matters until this is decided. [S]
 2. **Add a licence for this repo's own files** and a `NOTICE`/third-party section. No licence file exists now ([M]). Files copied from the psxrecomp scaffold may need to follow its terms ([H]). Read the whole of `psxrecomp\LICENSE` (only the start was read here).
-3. **Clean user paths and identity in tracked files** (decide, then act): 25 files hold `C:\Users\<user>\...`. The author email is in all 47 commits (no way to change without a history rewrite). If a rewrite is wanted, do it before the first push, not after. [M]
+3. **Clean user paths and identity in tracked files** (decide, then act): 25 files hold `C:\Users\<user>\...`. The author email is in all 47 commits (no way to change without a history rewrite). If a rewrite is wanted, do it before the first push, not after. [M] **Resolved 2026-10-21:** paths scrubbed (D21) and history rewritten (D31, section 10).
 4. **The owner confirms the derived-data scope** (section 2). D8 already approves the main files; `docs/DISC_MAP.md`, `FORMATS.md`, `SYMBOLS.md`, `EXE_OVERLAYS.md` and the replay digests are not named in D8 and are not covered by an explicit decision. [S]
 
 ### Should do
@@ -224,6 +224,36 @@ Limits:
 - 14.26% of disc bytes (148,826 bytes in 689 ranges) are not covered by the index. Trivial windows were skipped and 5 over-common keys were dropped. So "no run found" is not a proof.
 
 Result: by this method the exe embeds no meaningful game data tables. This is not a legal determination (question 285). The README legal wording (question 245) was approved on 2026-10-21 and is consistent with this result, subject to these limits.
+
+## 10. History rewrite (2026-10-21, D31)
+
+Done with the user's yes, after backups (D22 rules). Facts from the run output (`work\rewrite\run_scrub_output.txt` and `work\rewrite\clone_test_output.txt`; both git-ignored):
+
+| Item | Before | After |
+|------|--------|-------|
+| Author and committer identity, all commits | original local account name (first commit) or the personal email | `Patricio Aumedes` with the GitHub noreply address |
+| Local paths and personal email in every revision | present in old revisions | 0 hits |
+| Commit count | 67 | 67 |
+| Commit dates, subjects and messages | | 0 differences |
+| HEAD tree | `29f337cd87ea2e277fa6307bbfad81dd7713c4f7` | same |
+| Tags and remotes | 0 and 0 | 0 and 0 |
+| `git fsck` | | clean |
+| Commit hashes | | all changed |
+
+- The scrub replaced local paths with `<REPO_ROOT>`, `<RETRO_TOOLS_DIR>` or `%USERPROFILE%`, and removed the personal email and account name.
+- The scrub tool and its self-test are `work\rewrite\scrub.py` and the run script in `work\rewrite\` (not tracked).
+- Backups, outside the repo: `MythologyKombat-before-rewrite.bundle` (original history) and `MythologyKombat-after-identity.bundle` (identity change only, in `%USERPROFILE%`). Keep them until the user confirms the pushed repo (question 321).
+- Docs now name commits by task ID or subject. Old hashes are gone from the docs. New hashes are not recorded (question 322).
+- Release: any exe or zip built before this date has an old commit hash in its build id. It must not be published. Build the release from HEAD of the pushed history (D27, D30).
+- Scans to repeat before the push. These use the bracket-regex style so the pattern does not match itself:
+
+```
+cd <REPO_ROOT>
+git grep -c -E "C:.Users.pa[t]ri" -- . ":!psxrecomp" ":!recomp-ui"
+git log --all --format="%an <%ae>" | Sort-Object -Unique
+```
+
+Expected: the first prints no count, and the second prints one identity only.
 
 ## Commands used (reproducible)
 

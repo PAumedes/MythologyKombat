@@ -271,13 +271,13 @@ _Filled in by the doc-writer as tasks pass review._
 
 - Decision (Patricio, in chat, 2026-10-20): local user paths in tracked files are scrubbed. Repo paths use `<REPO_ROOT>`. Retro-tools paths use `<RETRO_TOOLS_DIR>`. `CLAUDE.md` explains the placeholders (its line 41).
 - Scan result (reported to the doc-writer in the task; not re-run by the doc-writer): only 3 literal pattern mentions remain, all in `docs\TASKS.md`. They are the scan commands and the acceptance text of T3.15.
-- Scope: the current tree only. Older commits still hold the old paths and the author email. The history question is D22.
+- Scope: the current tree only. Older commits held the old paths and the author email until the history rewrite in D31 (2026-10-21).
 - Not chosen: keeping the paths. The user chose the scrub.
 - Task: T3.15 (part). Question 250 is answered by D21 and D22.
 
-## D22 Author email: history rewrite plan only, not done (2026-10-20)
+## D22 Author email: history rewrite plan (2026-10-20). Done 2026-10-21, see D31
 
-- Decision (Patricio, in chat, 2026-10-20): the author email is replaced by a GitHub noreply address, by rewriting history before the first push. No rewrite has happened yet.
+- Decision (Patricio, in chat, 2026-10-20): the author email is replaced by a GitHub noreply address, by rewriting history before the first push. The rewrite was done on 2026-10-21 (D31).
 - Facts: the email is in 46 commits (`docs\PUBLISHING_AUDIT.md` section 1a). A rewrite cannot be undone once pushed.
 - Rules, all from the user's answer:
   1. Rewrite only before the first push.
@@ -286,7 +286,7 @@ _Filled in by the doc-writer as tasks pass review._
   4. Make a backup bundle of the repo first.
   5. No rewrite happens without the user's final explicit yes in chat.
 - Replacement identity: name `Patricio Aumedes`; email `12850986+PAumedes@users.noreply.github.com`. This comes from the GitHub login `PAumedes` (id 12850986), looked up with `gh api users/paumedes`. The repo-local git config `user.email` changes at that point, not before.
-- The first commit `fa5df2b` was authored under the original local account name. The rewrite maps it to the same identity. Its hash will change after the rewrite.
+- The first commit (T0.1) was authored under the original local account name. The rewrite maps it to the same identity. Its hash changed in the rewrite (D31).
 - Not chosen: keeping the email, or using the noreply address for future commits only. The user chose the rewrite.
 - Task: T3.15 (remaining part). Question 266 asks whether the email text in `docs\PUBLISHING_AUDIT.md` is also to be scrubbed.
 
@@ -429,10 +429,37 @@ _Filled in by the doc-writer as tasks pass review._
 - Signing (T3.24, option b): the release exe is unsigned. The README (T3.25) will say so. It will explain the Smart App Control and SmartScreen warnings a player may see, and how to check the SHA-256 in `checksums.txt`. No certificate is bought, and nothing is signed locally. Question 244 is closed. Question 255 (Smart App Control) stays open.
 - First release: version `0.1.0`, marked as a pre-release on the GitHub release page. The label `0.1.0-rc1` is not used. `tools\release.ps1` treats any label that starts with `x.y.z` as a version, and then requires it to equal `VERSION` (and the binary stamp). So a release-candidate label needs `VERSION` to hold that string, or the regex needs an end anchor. Both are open (question 308).
 - Pre-release marking: the script's draft command (`gh release create ... --draft`) has no pre-release flag. Setting it is a manual step on the release page, or a later script change.
-- Rebuild rule: the exe build id holds the commit hash and the commit time (D27). So every new commit gives a new exe hash. The D22 history rewrite changes every hash. The release zip must be built from the final commit, after the rewrite and the push. The release-candidate zips at `e8ec8fe` (`docs/SETUP.md`, "Release-candidate verification") show that the pipeline is reproducible. They are not the release.
+- Rebuild rule: the exe build id holds the commit hash and the commit time (D27). So every new commit gives a new exe hash. The D22 history rewrite changes every hash. The release zip must be built from the final commit, after the rewrite and the push. The release-candidate zips at the T3.21 commit (`docs/SETUP.md`, "Release-candidate verification") show that the pipeline is reproducible. They are not the release.
 - Clean-machine test (T3.22): the planned test machine is Windows Sandbox on this PC. The feature is not enabled yet. Steps are in `docs/TASKS.md` (T3.22). Mapped folders are read-only. Networking is off for the test. Known risk: Windows Sandbox may have no OpenGL 3.3 driver, so the game window may not open there. The software renderer option exists. Whether this edition ships the feature is question 309.
 - Not chosen, and why:
   - Signing locally with a certificate kept on this PC (option a). The user chose not to.
   - A `0.1.0-rc1` label without changing `VERSION`. The script refuses it.
 - Reason: the user's choices. The release-candidate check showed the rebuild rule, and the version rule that a label must match `VERSION`.
 - Status: decided. T3.24 is `done` in `docs/TASKS.md`. T3.22 stays `todo` (USER).
+
+## D31 History rewrite: new identity and no personal data in any commit (T3.15, 2026-10-21)
+
+- Decided: Patricio, in chat, 2026-10-21. The rewrite follows the D22 rules (backup first, the user's yes, last step before the push).
+- What changed in every commit:
+  1. Author and committer set to `Patricio Aumedes` with the GitHub noreply address (from D22). The first commit (T0.1) had used the original local account name. It now has the same identity.
+  2. Content scrub of all past commits: local paths replaced by `<REPO_ROOT>`, `<RETRO_TOOLS_DIR>` or `%USERPROFILE%`; the personal email removed; the account name removed from every revision.
+- What did not change: commit count (67), commit dates, commit subjects and messages (0 differences), HEAD tree `29f337cd87ea2e277fa6307bbfad81dd7713c4f7`, submodule pins (`psxrecomp` 449c31e5, `recomp-ui` 7c635c6). Every commit hash changed.
+- Checks after the rewrite (agent run, output kept in `work\rewrite\`):
+
+| Check | Result |
+|-------|--------|
+| Pattern hits across all revisions (`C:.Users.pa[t]ri` and the email pattern) | 0 |
+| Identities in all revisions | one identity only |
+| Tags and remotes | 0 and 0 |
+| `git fsck` | clean |
+| No-game-data guard (git files) | OK, 114 files checked, 0 violations |
+| Unit tests: no-game-data guard, release content check, exe data check | 19, 25 and 5 tests, all OK |
+| Clean clone test after the rewrite | Same checks as above, run in a fresh clone |
+
+- HEAD right after the rewrite was `17a0e349c8f5537383b8c8497abe9560c63b78ba`. It changes with every new commit.
+- Backups: two bundles outside the repo, kept until the user confirms the pushed repo (question 321). `MythologyKombat-before-rewrite.bundle` has the original history. `MythologyKombat-after-identity.bundle` has the identity change but not the content scrub. The after-identity bundle is in `%USERPROFILE%`.
+- Old commit hashes are no longer in the history. Docs now name a commit by its task ID or its subject. The new hashes are not recorded here. Use `git log --oneline` to look one up.
+- Release impact: the exe build id holds the commit hash (D27). Any exe or zip built before 2026-10-21 has an old hash in its build id. Do not publish it. The release is rebuilt from HEAD of the pushed history (D30).
+- The guard and audit commands in `docs\TASKS.md` (T3.15) and `docs\PUBLISHING_AUDIT.md` use the bracket-regex style (`pa[t]ri`), so the pattern text does not match itself.
+- Not done here: the first push (T3.23) still needs the user's yes. The scrub script and self-test are in `work\rewrite\`, which is git-ignored, so they are not in git.
+- Status: done. T3.15 is `done` in `docs/TASKS.md`. T3.23 stays `todo` (USER).

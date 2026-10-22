@@ -5,7 +5,7 @@
 The repo lives at `<REPO_ROOT>`.
 
 - The repo was created with `git init`. The branch is `master`.
-- First commit: `fa5df2bb544d52b2d604855a7aff9577e4d52eda`, titled "T0.1: Initialise the repo safely".
+- First commit: titled "T0.1: Initialise the repo safely". Its hash changed in the 2026-10-21 history rewrite (D31).
 - The first commit holds 16 kit files. It holds no game data.
 - Git ignores the game and scratch folders. This was checked with `git check-ignore -v`.
 
@@ -16,7 +16,7 @@ The repo lives at `<REPO_ROOT>`.
 
 No `.bin` or `.cue` file is tracked.
 
-The git user name is set in this repo's config to Patricio Aumedes. The first commit used the author name of the original local account. History was not rewritten. See `docs/OPEN_QUESTIONS.md`, question 1.
+The git user name is set in this repo's config to Patricio Aumedes. The first commit used the author name of the original local account until the 2026-10-21 history rewrite (D31), which set every commit to the new identity. See `docs/OPEN_QUESTIONS.md`, question 1.
 
 ## Prerequisite check (T0.2)
 
@@ -246,7 +246,7 @@ Use the explicit targets above instead. No upstream source was changed. It is no
 
 ### Commit note
 
-`.gitmodules` and the `psxrecomp` gitlink were committed in the "T0.7: ..." commit (`beee35b`). They were staged in that commit by accident of staging order.
+`.gitmodules` and the `psxrecomp` gitlink were committed in the T0.7 commit (titled "T0.7: Reference emulator check confirmed by user"). They were staged in that commit by accident of staging order.
 
 ## Leftover debug symbol hunt (T1.2)
 
@@ -2996,7 +2996,7 @@ The first runs 228 checks in about 8 minutes, against the fake server `tests\upd
 
 ## Release-candidate verification (2026-10-21)
 
-This is the agent's check of the release pipeline at commit `e8ec8fe`. It is agent-measured on this PC. It is not a release, and no draft was uploaded. The title screen was not checked by an agent (see below).
+This is the agent's check of the release pipeline at the T3.21 commit (before the history rewrite, D31). It is agent-measured on this PC. It is not a release, and no draft was uploaded. The title screen was not checked by an agent (see below).
 
 ### Command
 
@@ -3047,7 +3047,7 @@ One top folder, `MythologyKombat-0.1.0\`.
 | `update.cmd` | 101 bytes | One CRLF line |
 | `update.ps1` | 49,855 bytes | LF line endings |
 | `manifest.json` | | Hashes of the release files |
-| `release_info.json` | | Repo `PAumedes/MythologyKombat`, version `0.1.0`, tag `v0.1.0` (the tag does not exist yet), commit `e8ec8fe03df4f60e2d7431a45253db72a1ebaddb`, `public_release` true, `pgo` false, toolchain 1.0.14, psxrecomp `449c31e5`, recomp-ui `7c635c6`, 7 launcher patches |
+| `release_info.json` | | Repo `PAumedes/MythologyKombat`, version `0.1.0`, tag `v0.1.0` (the tag does not exist yet), commit: the T3.21 commit (pre-rewrite hash, not kept, D31), `public_release` true, `pgo` false, toolchain 1.0.14, psxrecomp `449c31e5`, recomp-ui `7c635c6`, 7 launcher patches |
 
 ### Title screen: not checked by an agent
 

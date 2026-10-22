@@ -72,7 +72,7 @@ Gate notes:
 | T3.12 | Launcher fixes as local patch files (D19) | T3.11, T3.13 | agents | done |
 | T3.13 | Box art and disc icon source and licence | T3.11 | USER | todo (superseded, optional) |
 | T3.14 | Licence for this repo's own files (LICENSE and NOTICE) | — | USER + agents | done |
-| T3.15 | Path, email and derived-data decisions, then the scrub | T3.14 | USER + agents | in-progress |
+| T3.15 | Path, email and derived-data decisions, then the scrub | T3.14 | USER + agents | done |
 | T3.16 | No-game-data guard script | — | agents | done |
 | T3.17 | CI on GitHub-hosted runners (guard, emitters-test, setup-host build from a clean clone) | T3.16, T3.18 | agents | done |
 | T3.18 | Setup-host build in the repo, and the first wizard run | T3.1 | agents + USER | done |
@@ -423,7 +423,7 @@ Then reply in chat with three answers:
 Agents carry out the answers, then re-run the scans in `docs\PUBLISHING_AUDIT.md` section 1 and record the counts.
 **Accept when:** each of the three answers is recorded in `docs\DECISIONS.md`; the scans show the agreed result; no history rewrite happens without the user's explicit yes.
 
-**Status 2026-10-20 (in-progress):** answers recorded in D20 to D23 (licence, paths, history plan, derived docs). Paths scrubbed (D21). Remaining: the history rewrite (D22). It runs only as the last step before T3.23, after all other commits, with a backup bundle and the user's final yes. Then re-run the scans in `docs\PUBLISHING_AUDIT.md` section 1 and record the counts. The email text in `docs\PUBLISHING_AUDIT.md` is question 266.
+**Status 2026-10-21 (done):** answers recorded in D20 to D23 (licence, paths, history plan, derived docs). Paths scrubbed (D21). The history rewrite was done on 2026-10-21 with the user's yes and backups (D22, D31). All 67 commits now have the new identity, and the scans show 0 hits in all revisions (`docs\PUBLISHING_AUDIT.md` section 10). The guard and audit patterns use bracket-regex style (`pa[t]ri`). Backups stay outside the repo until the user confirms the push (question 321). Any exe or zip built before 2026-10-21 has an old commit hash in its build id and must not be published.
 
 ## T3.16 No-game-data guard script (agents)
 Depends on: none. Owner: agents. Source: `docs\LAUNCHER_DESIGN.md` section 5 (`guard` row).
@@ -580,7 +580,7 @@ git push -u origin master
 ```
 Do not create a tag or a release until you say so.
 
-Release order (D30): every commit changes the release exe hash, and the rewrite changes every hash. So the release zip is built with `tools\release.ps1` only after the last commit, the rewrite and the push. The release-candidate zips at `e8ec8fe` are evidence only (`docs\SETUP.md`, "Release-candidate verification").
+Release order (D30): every commit changes the release exe hash, and the rewrite changes every hash. So the release zip is built with `tools\release.ps1` only after the last commit, the rewrite and the push. The release-candidate zips at the T3.21 commit are evidence only (`docs\SETUP.md`, "Release-candidate verification").
 **Accept when:** the bundle exists outside the repo; `git log --all --format="%ae" | Sort-Object -Unique` shows only the noreply address after the rewrite (D22); the user confirms the push; agents report the first CI run (T3.17), green or with each failure listed as a task; no tag or release exists without the user's yes.
 
 ## T3.24 Code-signing decision for the release exe (USER)

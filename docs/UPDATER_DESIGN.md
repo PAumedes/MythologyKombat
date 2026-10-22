@@ -82,7 +82,7 @@ Files that appear at run time next to the exe (dev build folder `build\` listing
 | `launcher-window.ini` | yes |
 | `mods\state.toml`, `mods\texture-packs\` | yes |
 | `cache\` (per-serial cache, `cache\SLUS-00476`), `overlay_captures.json` and `.d\`, `psx_execution\`, `psx_freeze_*.json`, `psx_last_run_report.json`, `diagnostics-location.txt`, `replay-diagnostics.py`, `work\` | yes (not shipped, so untouched). Whether `cache\` content becomes stale after an exe change is not known [H]. Question to add. |
-| `game.toml` | **special.** It is shipped, and the launcher has written into it in the past: `multitap_analog = true` appeared in the repo `game.toml` (questions 260 and 279, commit `6cfe55c`). In a release folder the launcher probably writes the same file [H, not tested]. A blind overwrite could drop a player's choice; a blind keep could keep stale defaults. |
+| `game.toml` | **special.** It is shipped, and the launcher has written into it in the past: `multitap_analog = true` appeared in the repo `game.toml` (questions 260 and 279, the T3.18 commit "T3.18: first wizard run recorded ..."). In a release folder the launcher probably writes the same file [H, not tested]. A blind overwrite could drop a player's choice; a blind keep could keep stale defaults. |
 | `game_options.toml` | shipped; whether the launcher writes it is not known [H]. Treat like `game.toml`. |
 
 Gaps in the zip for an updater (changes to T3.19, small):
