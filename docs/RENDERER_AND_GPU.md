@@ -114,3 +114,55 @@ Notes: the entry is keyed by the exact exe path, so a rebuilt exe at the same pa
 - Confirm that the Vulkan backend is a stub in this exe by running it once with `--renderer vulkan` and reading the log (expected: fallback to software or OpenGL, no `vulkan: device` line). Not run, because this research was read-only.
 - Whether the CLI `--renderer vulkan` bypasses the `offer_vulkan` gate (the gate is visible only in the settings.toml path, `main.cpp:18357`). Not verified.
 - Session telemetry does not record vsync mode or GPU used (see question 222 in `docs/OPEN_QUESTIONS.md`); record both in each A/B run by hand.
+- The 9x (4K) telemetry drop of 10.3 percent above 33 ms (section 3) was not reproduced in the 2026-10-22 A/B (section 6). Question 334 in `docs/OPEN_QUESTIONS.md`.
+
+## 6. Results: visible A/B, Intel vs MX150, 1x vs 4K (2026-10-22)
+
+Tags as above. Method and scripts: `tools\perf_ab.ps1`, `tools\perf_ab_matrix.ps1`, `tools\perf_ab_gpu.ps1`, `tools\perf_ab_summary.py`. Results are under `work\perf_ab\` (git-ignored). Run the summary with `<RETRO_TOOLS_DIR>\python\python.exe -I tools\perf_ab_summary.py`.
+
+Method [M]:
+
+- The copy of the 0.1.0 release exe runs in its own folder, with its own `settings.toml`. That file is derived from the video keys only. `[disc]` and `[memcard]` are removed, and `--memcard-dir work\perf_ab\saves` is used.
+- The recorder is enabled only in the copy's manifest. The original is kept as `manifest.toml.orig`.
+- Vsync is set per run by the environment variable `PSX_VSYNC` (0 off, 1 on, -1 adaptive).
+- Each run lasts 75 s. The first 8 s are skipped.
+- The route is boot, the movie intros (`cd_xa != 0`), then title and attract. It is the same route each time. It has no fight.
+- Three interleaved rounds. The Ultimate Performance power plan was active.
+- Avg fps is 1000 divided by the mean host interval. Table values are the median of 3 runs.
+
+Table (median of 3) [M]:
+
+| Run | GPU | Avg fps | p99 (ms) | Non-movie share above 33 ms |
+|---|---|---|---|---|
+| 1x, vsync off | Intel HD 630 | 58.7 | 36.4 | 0.00% |
+| 2x, vsync off | Intel HD 630 | 59.6 | 37.3 | 0.00% |
+| 3x (720p), vsync off | Intel HD 630 | 59.2 | 37.3 | 0.00% |
+| 4K (9x), vsync off | Intel HD 630 | 60.0 | 36.3 | 0.48% |
+| 4K, vsync off, borderless fullscreen | Intel HD 630 | 59.2 | 36.1 | 0.48% |
+| 4K, vsync on | Intel HD 630 | 51.8 | 38.9 | 0.00% (13.55% of all frames above 33 ms) |
+| 4K, adaptive | Intel HD 630 | 51.7 | 39.0 | not in report |
+| 1x, vsync on | Intel HD 630 | 52.3 | 38.7 | not in report |
+| 1x, vsync off | MX150 | 59.7 | 36.9 | 0.89% |
+| 2x, vsync off | MX150 | 59.8 | 36.4 | 0.00% |
+| 4K, vsync off | MX150 | 58.6 | 37.0 | 0.47% |
+| 4K, vsync on | MX150 | 59.5 | 36.7 | 0.95% |
+
+Which GPU ran [M]: the startup log shows `Intel(R) HD Graphics 630` (OpenGL 3.3.0, driver Build 22.20.16.4708) on the default run. With the Windows per-app preference `GpuPreference=2;` set on the copy exe, the log shows `NVIDIA GeForce MX150` (OpenGL 3.3.0 NVIDIA 582.78). So OpenGL honours the Windows preference.
+
+The preference key `HKCU\Software\Microsoft\DirectX\UserGpuPreferences` did not exist before the test. The test created it for the copy exe path only. The entry was deleted afterwards, and the deletion was checked.
+
+Findings [M, from the table]:
+
+1. Internal resolution makes no measurable difference on this route. 4K passes the under-1% rule on both GPUs (0.48% Intel, 0.47% MX150). So the default does not change.
+2. Vsync on costs about 8 fps on the Intel GPU (51.8 against 60.0 at 4K). It costs about 6 fps at 1x too (52.3 against 58.7). So it is a frame pacing effect, not GPU load. The MX150 does not show it (59.5 at 4K). Vsync off stays the default (D9). The data is consistent with D9.
+3. With vsync off, Intel and MX150 look the same (58 to 60 fps, p99 36 to 37 ms).
+4. Adaptive vsync on Intel (51.7 fps) behaves like vsync on.
+5. The earlier 10 percent figure at 9x (section 3, telemetry from older sessions) was not reproduced here. At 4K with vsync off the share is 0.48%.
+
+Caveats [M]:
+
+- The telemetry is host vblank intervals. There is no GPU timer in the Release build, so GPU cost is not measured directly.
+- One route only, with no fight. Gameplay at 4K is not measured (question 330 in `docs/OPEN_QUESTIONS.md`).
+- Run-to-run p99 varies from 33 to 53 ms. Rare single spikes reach 789 ms. Those are single events, not a trend.
+- Exclusive fullscreen was not tried (question 331).
+- What the player sees (tearing, stutter) is a USER step (T3.7, T3.8). It is not in this report.

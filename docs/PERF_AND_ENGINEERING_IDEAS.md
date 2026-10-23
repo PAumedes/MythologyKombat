@@ -156,3 +156,17 @@ Also cheap: add the no-disc lint set (3.5) and resolve the dirty-submodule quest
 - Which vsync mode and which `settings.toml` were active in each telemetry session (`session.json` does not record it, existing Q222). Add `vsync` and `internal_resolution` to the run metadata.
 - Whether the HD 630 is GPU-bound at 9x: needs `frame_perf` on a visible run. Not measured here.
 - Whether `ccache` is active for this build: not checked beyond the cache file.
+
+## 7. Outcome of the A/B (2026-10-22, T3.7 and T3.8)
+
+Full numbers and method: `docs/RENDERER_AND_GPU.md` section 6. Tags: [M].
+
+| Item | Outcome | Status |
+|---|---|---|
+| 1 (cap internal resolution) | 4K passes the under-1% rule on both GPUs (0.48% Intel, 0.47% MX150) on the test route. No default change. The 9x drop from the older telemetry was not reproduced (question 334). | Measured, route has no fight (question 330) |
+| 2 (measurement baseline) | Done in T3.6. The A/B used copies of the exe with their own settings (`tools\perf_ab.ps1`). | Done |
+| 3 and 9 (vsync and window mode) | Vsync on costs about 8 fps on Intel at 4K (51.8 against 60.0) and about 6 fps at 1x. The MX150 does not show it. Adaptive matches vsync on. Borderless fullscreen at 4K with vsync off gives 59.2 fps. Vsync off stays the default (D9). Present-side cadence (item 9) was not measured. Exclusive fullscreen was not tried (question 331). | Measured. User visual check pending (T3.8) |
+| 4 (GPU choice) | The Windows per-app preference works (the log names the MX150). With vsync off the two GPUs look the same. No default change proposed. | Measured |
+| 6, 7, 16, 17 (profile, PGO, LTO, SIMD) | The sampling profile (T3.9) was not run. It needs an elevated shell (question 332). | Open |
+
+Next steps, in order: the optional fight run (question 330), then the elevated profile (T3.9, question 332). Neither changes a default by itself.

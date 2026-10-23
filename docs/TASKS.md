@@ -311,6 +311,8 @@ Get-ChildItem build\saves\diagnostics -Directory | Sort-Object LastWriteTime | S
 Tell the orchestrator the folder names and say in one line each what you saw (stutter, tearing, picture). That is user-reported, not agent-observed.
 **Accept when:** both sessions exist with the T3.6 meta; agents report, per variant, the share of non-movie intervals above 33 ms; the rule in `PERF_AND_ENGINEERING_IDEAS.md` section 3.1 (highest setting with the share under 1%) is applied; a change to the default is written to `docs\DECISIONS.md` only if the user agrees; `build\settings.toml` matches `work\settings_before_ab.toml`.
 
+**Note 2026-10-22 (measurement part done; user visual check pending):** measured with `tools\perf_ab.ps1` on a copy of the 0.1.0 release exe (visible window, three interleaved rounds, median of 3). At 4K the non-movie share above 33 ms is 0.48% on Intel and 0.47% on the MX150, so the under-1% rule passes at the highest tested setting and the default does not change. Internal resolution made no measurable difference on this route. Results: `docs/RENDERER_AND_GPU.md` section 6. Not measured: a fight route (question 330). Pending USER: "what I saw" at 1x and 4K (stutter, tearing, picture), using the steps above. Status column left for the orchestrator.
+
 ## T3.8 Vsync and window mode A/B (USER + agents)
 Depends on: T3.6. Owner: USER + agents. Source: `docs\PERF_AND_ENGINEERING_IDEAS.md` items 3 and 9, section 3.2, question 168. D9 keeps the vsync default. Do not change it without this visible test.
 Variants: `vsync = "off"` (the current default), `"adaptive"`, and `"on"`. If the launcher offers a fullscreen or borderless option, add it as a fourth variant (the key name is not verified).
@@ -322,6 +324,8 @@ notepad build\settings.toml
 ```
 In Notepad, set the `vsync` line in the `[video]` section, save and close. Then start the game as in T3.7 and play the same minute. Repeat for each variant. Restore with `Copy-Item work\settings_before_ab.toml build\settings.toml -Force`. Tell the orchestrator the session folder for each variant and one line on what you saw.
 **Accept when:** each variant has a session with the T3.6 meta; agents report p50, p90 and p99 of the host interval and the share above 33 ms per variant; any default change is proposed in `docs\DECISIONS.md` and made only with the user's yes; the settings file is restored.
+
+**Note 2026-10-22 (measurement part done; user visual check pending):** measured with `tools\perf_ab.ps1` on a copy of the 0.1.0 release exe, same method as T3.7. Vsync on costs about 8 fps on Intel (51.8 against 60.0 at 4K, and 52.3 against 58.7 at 1x), adaptive matches it (51.7 at 4K), and the MX150 shows no such cost (59.5 at 4K). Vsync off stays the default (D9), consistent with the data. No default change is proposed. Borderless fullscreen was measured at 4K with vsync off (59.2 fps, p99 36.1 ms, 0.48%). Exclusive fullscreen was not tried (question 331). Results: `docs/RENDERER_AND_GPU.md` section 6. Pending USER: "what I saw" for each vsync mode, using the steps above. Status column left for the orchestrator.
 
 ## T3.9 Sampling profile of the Release exe during the FMV (USER + agents)
 Depends on: T3.6. Owner: USER + agents. Source: `docs\PERF_AND_ENGINEERING_IDEAS.md` section 1 item 3, section 2 items 16 and 17. The 13 to 14 ms per FMV frame is in AOT code, and no profile shows where. Do this before any PGO, LTO or SIMD work.
@@ -338,6 +342,15 @@ wpr -stop work\perf\fmv_cpu.etl
 ```
 Tell the orchestrator when the trace is saved.
 **Accept when:** the trace is in `work\perf\` (git-ignored); agents report the top sampled code by count, with names only where `symbols.toml` or the generated code allows; the report says whether the cost is in AOT code, the interpreter, the GL driver or the audio path; question 256 is updated.
+
+**Note 2026-10-22 (stays `todo`, not run):** the trace needs an elevated shell. A non-elevated `wpr -start CPU -filemode` failed with "Failed to enable the policy to profile system performance". `xperf` and Windows Performance Analyzer are not installed, so the trace cannot be read yet. USER step, in PowerShell opened as Administrator:
+```
+cd <REPO_ROOT>
+wpr -start CPU -filemode
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\perf_ab.ps1 -Name prof_4k -Resolution 4k -Seconds 60
+wpr -stop work\perf\fmv_cpu.etl
+```
+Analysis needs Windows Performance Analyzer (from the Microsoft Store). Question 332 in `docs/OPEN_QUESTIONS.md`. Question 256 is partly answered.
 
 ## T3.10 PGO and LTO trial (agents)
 Depends on: T3.6, T3.7, T3.8, T3.9. Owner: agents. Source: `docs\PERF_AND_ENGINEERING_IDEAS.md` items 6, 7 and section 3.4. Only if T3.9 points at compiled code.
